@@ -14,7 +14,7 @@ def archive_details(request):
 
 
 def chat(request):
-    return render(request, 'caht.html')
+    return render(request, 'chat.html')
 
 
 def explore(request):
