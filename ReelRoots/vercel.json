@@ -1,13 +1,13 @@
 {
     "builds": [{
-      "src": "ReelRoots/ReelRoots/wsgi.py",
+      "src": "ReelRoots/wsgi.py",
       "use": "@vercel/python",
       "config": { "maxLambdaSize": "15mb", "runtime": "python3.12" }
     }],
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "ReelRoots/ReelRoots/wsgi.py"
+        "dest": "ReelRoots/wsgi.py"
       }
     ]
 }
