@@ -13,7 +13,33 @@ PEXEL_API_KEY=os.getenv("PEXEL_API_KEY")
 
 # Create your views here.
 def home(request):
-    return render(request, 'index.html')
+    headers = {
+        "Authorization": PEXEL_API_KEY
+    }
+
+    response = requests.get(
+        "https://api.pexels.com/videos/search?query=Kenyan heritage/&per_page=10",
+        headers=headers
+    )
+
+    data = response.json()
+
+    reels = []
+
+    for video in data.get("videos", []):
+        reels.append({
+            "title": "Historical Visual Archive",
+            "summary": "Stock archival style footage",
+            "video_url": video["video_files"][0]["link"],
+            "creator": "Pexels",
+            "likes": "—",
+            "comments": "—",
+            "shares": "—",
+            "hashtags": ["Archive", "VisualHistory"]
+        })
+
+    context = {"reels": reels}
+    return render(request, 'index.html', context)
 
 
 def admin_dashboard(request):
