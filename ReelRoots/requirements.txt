@@ -1,4 +1,21 @@
+
+Django
+python-dotenv
 google-generativeai
-google-genai 
 africastalking
+Flask
+google-genai
+# langchain-classic
+# langchain-text-splitters
+# langchain
+# langchain-community
+# langchain-core
+# langchain-google-genai
+
+
+
+
+
+
+
 
