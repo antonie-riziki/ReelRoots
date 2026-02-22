@@ -18,7 +18,7 @@ def home(request):
     }
 
     response = requests.get(
-        "https://api.pexels.com/videos/search?query=Kenyan heritage/&per_page=10",
+        "https://api.pexels.com/videos/search?query=kenya%20culture/&per_page=10",
         headers=headers
     )
 
@@ -38,7 +38,7 @@ def home(request):
             "hashtags": ["Archive", "VisualHistory"]
         })
 
-    context = {"reels": reels}
+    context = {"reels": reels[::-1]}
     return render(request, 'index.html', context)
 
 
