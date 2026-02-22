@@ -119,13 +119,15 @@
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Trending Archives</h3>
                 <a class="text-sm font-semibold text-primary" href="#">See all</a>
             </div>
+
+            {% for reel in reels %}
             <div class="flex gap-4 overflow-x-auto px-4 no-scrollbar pb-2">
                 <!-- Reel 1 -->
                 <div class="flex-none w-40 space-y-2">
                     <div class="relative aspect-[9/16] rounded-2xl overflow-hidden shadow-md group">
                         <img class="w-full h-full object-cover"
                             data-alt="Vintage photograph of a neighborhood block party in the 1970s"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKl9f4bXCzARkFXLdM3RIxo0LZGuyuTWddKO16UKIBdz0DpJuzAtgyfQoNRFhLbYs24TY3XdGfK7icMAI8K1OF8klonUnzIeHn1NW1P49fAI4Ed8TDmenN1VHEAJksb8JF0H-AOiNwLIV_BSGZA307zWSELUjy5MoVe5SoRB1d6jYZejd6liMhJpkv6N7R0v8ZJ9_TCtVpDw8wwvCKPNt2eTjf_FSWTw75QncuI4trameIYCIXO56zicK3-QN6fg4P4e21GYJHNeVH" />
+                            src="{{ reel.video_url }}" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
                         </div>
                         <div class="absolute bottom-3 left-3 right-3 text-white">
@@ -137,41 +139,11 @@
                         </div>
                     </div>
                 </div>
-                <!-- Reel 2 -->
-                <div class="flex-none w-40 space-y-2">
-                    <div class="relative aspect-[9/16] rounded-2xl overflow-hidden shadow-md">
-                        <img class="w-full h-full object-cover"
-                            data-alt="Close up of elderly hands preparing a traditional ancestral recipe"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ9zrHDVsylm2h3eDvufsgNRxhjIPYHgf6nyxbEWCp5WAU8nPtg-BHInk3WjPaOFpAfetxIf0uuOCmT0eRnIMmSyYdb_62jbal1DLz3G16hht7tStj_RXU7HILOKlhV1VJuBXx6dFspp37Gp6w7YbIg8RSxVN2RDdhRdrPQV_2iqPIpKmFH1mCzA1SRXbSIevVQWERhyV5wvByVBQ86g_xOQX27ph2mJBJSrtCjVqBNq69j0_HKxIs5vckLRa6rgpG2rsMDHSJJ0xM" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
-                        </div>
-                        <div class="absolute bottom-3 left-3 right-3 text-white">
-                            <div class="flex items-center gap-1 mb-1">
-                                <span class="material-symbols-outlined text-xs">visibility</span>
-                                <span class="text-[10px] font-medium">8.2k</span>
-                            </div>
-                            <p class="text-xs font-bold leading-tight">Ancestral Flavors</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Reel 3 -->
-                <div class="flex-none w-40 space-y-2">
-                    <div class="relative aspect-[9/16] rounded-2xl overflow-hidden shadow-md">
-                        <img class="w-full h-full object-cover"
-                            data-alt="Group of people celebrating at a cultural street festival"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1CdHQjWnvJO4Tn1CJxi5H0l-KgGv9HtNpzGoBlMpizyqUZgz7GD4TIL0N3xr8U9JX1XPvRQRdRGefkX99CmKgxPqJnBqXn-jZSpmTEwqApnCqRw6P5hRrsIVQ_fAns9WD6BizvEI0QT9FUvWBTU87i_mUv2XqCm-V9NFc78AiXu1JxOUxLx7JgIPi_31INa1YnJVEMBNtiq45jfnkb73nl0o2Rg0kkIWVaxU65xUeTQBsoGe2iTdaLNMw5bnipt3MFQLslP_s8ATf" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
-                        </div>
-                        <div class="absolute bottom-3 left-3 right-3 text-white">
-                            <div class="flex items-center gap-1 mb-1">
-                                <span class="material-symbols-outlined text-xs">visibility</span>
-                                <span class="text-[10px] font-medium">15.9k</span>
-                            </div>
-                            <p class="text-xs font-bold leading-tight">The First Festival</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
+            
+            {% endfor %}
+
         </section>
         <!-- On This Day Section -->
         <section class="px-4 py-6">
