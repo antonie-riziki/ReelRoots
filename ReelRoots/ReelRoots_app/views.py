@@ -168,3 +168,53 @@ def reels(request):
         })
 
     return render(request, "reels.html", {"reels": reels})
+
+
+
+
+# def home(request):
+#     search_url = "https://www.googleapis.com/youtube/v3/search"
+
+#     search_params = {
+#         "part": "snippet",
+#         "q": "history documentary",
+#         "type": "video",
+#         "maxResults": 5,
+#         "videoDuration": "short",
+#         "key": YOUTUBE_API_KEY
+#     }
+
+#     search_response = requests.get(search_url, params=search_params)
+#     search_data = search_response.json()
+
+#     video_ids = [item["id"]["videoId"] for item in search_data.get("items", [])]
+
+#     # 🔥 Second call to check embeddable status
+#     videos_url = "https://www.googleapis.com/youtube/v3/videos"
+
+#     videos_params = {
+#         "part": "status",
+#         "id": ",".join(video_ids),
+#         "key": YOUTUBE_API_KEY
+#     }
+
+#     videos_response = requests.get(videos_url, params=videos_params)
+#     videos_data = videos_response.json()
+
+#     reels = []
+
+#     for video in videos_data.get("items", []):
+#         if video["status"]["embeddable"]:
+
+#             reels.append({
+#                 "video_url": f"https://www.youtube.com/embed/{video['id']}?autoplay=1&mute=1&playsinline=1",
+#                 "creator": "YouTube",
+#                 "summary": "Historical archive footage",
+#                 "likes": "—",
+#                 "comments": "—",
+#                 "shares": "—",
+#                 "hashtags": ["Archive", "History"]
+#             })
+
+#         context = {"reels": reels}
+#     return render(request, 'index.html', context)

@@ -114,20 +114,30 @@
             </div>
         </section>
         <!-- Featured Archive Reels Carousel -->
-        <section class="py-6">
+        <section class="py-6 overflow-hidden">
             <div class="flex items-center justify-between px-4 mb-4">
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white">Trending Archives</h3>
                 <a class="text-sm font-semibold text-primary" href="#">See all</a>
             </div>
 
-            {% for reel in reels %}
+            
             <div class="flex gap-4 overflow-x-auto px-4 no-scrollbar pb-2">
+                
+                {% for reel in reels %}
                 <!-- Reel 1 -->
                 <div class="flex-none w-40 space-y-2">
                     <div class="relative aspect-[9/16] rounded-2xl overflow-hidden shadow-md group">
-                        <img class="w-full h-full object-cover"
-                            data-alt="Vintage photograph of a neighborhood block party in the 1970s"
-                            src="{{ reel.video_url }}" />
+                        <video autoplay muted loop class="absolute inset-0 w-full h-full object-cover">
+                            <source src="{{ reel.video_url }}" type="video/mp4">
+                        </video>
+                        <!-- <iframe
+                            class="absolute inset-0 w-full h-full"
+                            src="{{ reel.video_url }}"
+                            frameborder="0"
+                            allow="autoplay; encrypted-media"
+                            allowfullscreen>
+                        </iframe> -->
+
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
                         </div>
                         <div class="absolute bottom-3 left-3 right-3 text-white">
@@ -139,10 +149,11 @@
                         </div>
                     </div>
                 </div>
+                {% endfor %}
 
             </div>
             
-            {% endfor %}
+            
 
         </section>
         <!-- On This Day Section -->
@@ -241,7 +252,19 @@
     </nav>
 
 
+<script>
 
+    if ( parent && parent !== parent.top ) {
+        // IE11 does not have attachEvent, so all must suffer
+        if ( parent.addEventListener ) {
+            parent.addEventListener( "unload", unloadHandler, false );
+        } else if ( parent.attachEvent ) {
+            parent.attachEvent( "onunload", unloadHandler );
+        }
+    }
+
+
+</script>
 
 </body>
 
