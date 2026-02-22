@@ -5,5 +5,13 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name="home"),
+    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('archive_details/', views.archive_details, name='archive_details'),
+    path('chat/', views.chat, name='chat'),
+    path('explore/', views.explore, name='explore'),
+    path('upload/', views.new_upload, name='upload'),
+    path('reels/', views.reels, name='reels'),
+    path('story_mode/', views.story_mode, name='story_mode'),
+    path('user_profile/', views.story_mode, name='story_mode'),
 
 ]
