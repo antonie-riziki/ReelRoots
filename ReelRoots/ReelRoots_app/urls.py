@@ -11,7 +11,9 @@ urlpatterns = [
     path('explore/', views.explore, name='explore'),
     path('upload/', views.new_upload, name='upload'),
     path('reels/', views.reels, name='reels'),
+    # path("api/reels/", views.reels_api, name="reels_api"),
     path('story_mode/', views.story_mode, name='story_mode'),
     path('user_profile/', views.story_mode, name='story_mode'),
+    path('animation/', views.animation, name='animation')
 
 ]

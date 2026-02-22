@@ -77,93 +77,89 @@
                 </button>
             </div>
         </div>
-        <!-- Main Video Feed Area -->
-        <div class="relative flex-1 bg-slate-900 flex items-center justify-center">
-            <!-- Simulated Video Content -->
-            <div class="absolute inset-0 w-full h-full bg-cover bg-center"
-                data-alt="Grainy black and white archival video of 1960s protest march"
-                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCpojV7dDjgtN2RC_nOZ_Yr5aOFF3D2vle5p-uGpzYQXKUV2zlBngnlOO3r-DWZAYLFl8Nl9nfIkiXtHxF7Gnu44MCNtusepGS7BinljKy9EeYY91MnleMxXx3TMDY-97kxFzS9mp-TvW3_1swk2No9wJEVcM7zDgmqVkUVueTStXG_EfcXs49--3OkaunRIH1fz1DdtwGbzHNbT3SLVP89-1zHrAb6vn4eyo30_wsgTZ-ADi-TbKDKXPqcaGciEeoZp7jNjvUx8A0S')">
-            </div>
-            <!-- Video Interaction Overlay (Sidebar) -->
-            <div class="absolute right-4 bottom-32 z-10 flex flex-col items-center gap-6">
-                <!-- Profile Pic with Follow Plus -->
-                <div class="relative mb-2">
-                    <div class="size-12 rounded-full border-2 border-white overflow-hidden bg-white shadow-lg">
-                        <img alt="Profile avatar" class="w-full h-full object-cover"
-                            data-alt="Profile picture of history creator account"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlEQhMdtDXLIOct5p5h0OzHbskTbPhwQlTKdD5w9RXJXPIxJr9zI0lJ-Zq983b-znTMUywqvXKhtssBUK3E4WPEtG7JKlx-vLRtTxXj-yFwIUtaEL6cU_wAvaZvPUswUuZsX9oA2mNHsz984YFD2IQkW5tY660silcXmVGwv695mdg0xYJChegmICIsvrlKuEFUroBkGjrudnaBLqsT_UFOuhykl2KeCQ5NqpyFnttlXZfebKo5S8lu1KgK072SVNkIWuHfbLa74Xm" />
-                    </div>
-                    <div
-                        class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-primary text-white size-5 rounded-full flex items-center justify-center shadow-md">
-                        <span class="material-symbols-outlined text-[14px] font-bold">add</span>
-                    </div>
+
+        <!-- Scroll Container -->
+        <div class="h-screen overflow-y-scroll snap-y snap-mandatory">
+
+            {% for reel in reels %}
+
+            <!-- Each Reel = Full Screen -->
+            <div class="relative h-screen w-full snap-start bg-slate-900 flex items-center justify-center">
+
+                <iframe
+                    class="absolute inset-0 w-full h-full"
+                    src="{{ reel.video_url }}"
+                    frameborder="0"
+                    allow="autoplay; encrypted-media"
+                    allowfullscreen>
+                </iframe>
+
+                <!-- Video -->
+                <!-- <video autoplay muted loop playsinline
+                    class="absolute inset-0 w-full h-full object-cover">
+                    <source src="{{ reel.video_url }}" type="video/mp4">
+                </video> -->
+
+                <!-- Right Sidebar -->
+                <div class="absolute right-4 bottom-32 z-10 flex flex-col items-center gap-6">
+
+                    <button class="flex flex-col items-center gap-1">
+                        <div class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white">
+                            <span class="material-symbols-outlined text-3xl">favorite</span>
+                        </div>
+                        <span class="text-white text-xs font-bold drop-shadow-md">
+                            {{ reel.likes }}
+                        </span>
+                    </button>
+
+                    <button class="flex flex-col items-center gap-1">
+                        <div class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white">
+                            <span class="material-symbols-outlined text-3xl">chat_bubble</span>
+                        </div>
+                        <span class="text-white text-xs font-bold drop-shadow-md">
+                            {{ reel.comments }}
+                        </span>
+                    </button>
+
+                    <button class="flex flex-col items-center gap-1">
+                        <div class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white">
+                            <span class="material-symbols-outlined text-3xl">share</span>
+                        </div>
+                        <span class="text-white text-xs font-bold drop-shadow-md">
+                            {{ reel.shares }}
+                        </span>
+                    </button>
+
                 </div>
-                <!-- Like -->
-                <button class="flex flex-col items-center gap-1 group">
-                    <div
-                        class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white group-active:scale-90 transition-transform">
-                        <span class="material-symbols-outlined text-3xl">favorite</span>
-                    </div>
-                    <span class="text-white text-xs font-bold drop-shadow-md">24.8K</span>
-                </button>
-                <!-- Comments -->
-                <button class="flex flex-col items-center gap-1 group">
-                    <div class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white">
-                        <span class="material-symbols-outlined text-3xl">chat_bubble</span>
-                    </div>
-                    <span class="text-white text-xs font-bold drop-shadow-md">1.2K</span>
-                </button>
-                <!-- Archive CTA (Differentiator) -->
-                <button class="flex flex-col items-center gap-1 group">
-                    <div
-                        class="bg-primary/90 p-3 rounded-xl text-white shadow-[0_0_15px_rgba(17,17,212,0.4)] transition-all group-hover:bg-primary">
-                        <span class="material-symbols-outlined text-3xl">folder_managed</span>
-                    </div>
-                    <span
-                        class="text-white text-[10px] font-bold uppercase tracking-wider drop-shadow-md">Archive</span>
-                </button>
-                <!-- Share -->
-                <button class="flex flex-col items-center gap-1 group">
-                    <div class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white">
-                        <span class="material-symbols-outlined text-3xl">share</span>
-                    </div>
-                    <span class="text-white text-xs font-bold drop-shadow-md">432</span>
-                </button>
-            </div>
-            <!-- Content Info Overlay (Bottom) -->
-            <div class="absolute inset-x-0 bottom-0 video-gradient p-6 pt-24 z-0">
-                <div class="max-w-[80%]">
-                    <h3 class="text-white font-bold text-lg mb-1 flex items-center gap-2">
-                        @HistoryUncut
-                        <span class="material-symbols-outlined text-blue-400 text-sm">verified</span>
+
+                <!-- Bottom Info -->
+                <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+
+                    <h3 class="text-white font-bold text-lg mb-1">
+                        @{{ reel.creator }}
                     </h3>
-                    <p class="text-white/90 text-sm leading-relaxed line-clamp-2 mb-3">
-                        Rare color footage of the 1963 March on Washington. The atmosphere of hope was palpable as
-                        thousands gathered for justice.
+
+                    <p class="text-white/90 text-sm mb-3">
+                        {{ reel.summary }}
                     </p>
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span
-                            class="px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg text-white/80 text-[11px] font-medium border border-white/10">#CivilRights</span>
-                        <span
-                            class="px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg text-white/80 text-[11px] font-medium border border-white/10">#1960s</span>
-                        <span
-                            class="px-2 py-1 bg-white/10 backdrop-blur-sm rounded-lg text-white/80 text-[11px] font-medium border border-white/10">#WashingtonDC</span>
+
+                    <div class="flex flex-wrap gap-2">
+                        {% for tag in reel.hashtags %}
+                        <span class="px-2 py-1 bg-white/10 rounded-lg text-white/80 text-[11px]">
+                            #{{ tag }}
+                        </span>
+                        {% endfor %}
                     </div>
-                    <!-- Audio Track -->
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-white/70 text-sm">music_note</span>
-                        <marquee class="text-white/70 text-xs w-48">Mahalia Jackson - How I Got Over (Live 1963)
-                        </marquee>
-                    </div>
+
                 </div>
+
             </div>
-            <!-- Progress Bar -->
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-                <div class="h-full bg-primary w-1/3 relative shadow-[0_0_8px_rgba(17,17,212,0.8)]">
-                    <div class="absolute right-0 top-1/2 -translate-y-1/2 size-2 bg-white rounded-full"></div>
-                </div>
-            </div>
+
+            {% endfor %}
+
         </div>
+
+
         <!-- Bottom Navigation Bar (iOS Style) -->
         <nav
             class="glass-nav border-t border-slate-200 dark:border-slate-800 safe-area-bottom px-6 py-3 flex justify-between items-center z-30">
