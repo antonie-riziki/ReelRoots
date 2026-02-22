@@ -36,52 +36,52 @@ def new_upload(request):
     return render(request, 'new_upload.html')
 
 
-def reels(request):
-    search_url = "https://www.googleapis.com/youtube/v3/search"
+# def reels(request):
+#     search_url = "https://www.googleapis.com/youtube/v3/search"
 
-    search_params = {
-        "part": "snippet",
-        "q": "history documentary",
-        "type": "video",
-        "maxResults": 5,
-        "videoDuration": "short",
-        "key": YOUTUBE_API_KEY
-    }
+#     search_params = {
+#         "part": "snippet",
+#         "q": "history documentary",
+#         "type": "video",
+#         "maxResults": 5,
+#         "videoDuration": "short",
+#         "key": YOUTUBE_API_KEY
+#     }
 
-    search_response = requests.get(search_url, params=search_params)
-    search_data = search_response.json()
+#     search_response = requests.get(search_url, params=search_params)
+#     search_data = search_response.json()
 
-    video_ids = [item["id"]["videoId"] for item in search_data.get("items", [])]
+#     video_ids = [item["id"]["videoId"] for item in search_data.get("items", [])]
 
-    # 🔥 Second call to check embeddable status
-    videos_url = "https://www.googleapis.com/youtube/v3/videos"
+#     # 🔥 Second call to check embeddable status
+#     videos_url = "https://www.googleapis.com/youtube/v3/videos"
 
-    videos_params = {
-        "part": "status",
-        "id": ",".join(video_ids),
-        "key": YOUTUBE_API_KEY
-    }
+#     videos_params = {
+#         "part": "status",
+#         "id": ",".join(video_ids),
+#         "key": YOUTUBE_API_KEY
+#     }
 
-    videos_response = requests.get(videos_url, params=videos_params)
-    videos_data = videos_response.json()
+#     videos_response = requests.get(videos_url, params=videos_params)
+#     videos_data = videos_response.json()
 
-    reels = []
+#     reels = []
 
-    for video in videos_data.get("items", []):
-        if video["status"]["embeddable"]:
+#     for video in videos_data.get("items", []):
+#         if video["status"]["embeddable"]:
 
-            reels.append({
-                "video_url": f"https://www.youtube.com/embed/{video['id']}?autoplay=1&mute=1&playsinline=1",
-                "creator": "YouTube",
-                "summary": "Historical archive footage",
-                "likes": "—",
-                "comments": "—",
-                "shares": "—",
-                "hashtags": ["Archive", "History"]
-            })
+#             reels.append({
+#                 "video_url": f"https://www.youtube.com/embed/{video['id']}?autoplay=1&mute=1&playsinline=1",
+#                 "creator": "YouTube",
+#                 "summary": "Historical archive footage",
+#                 "likes": "—",
+#                 "comments": "—",
+#                 "shares": "—",
+#                 "hashtags": ["Archive", "History"]
+#             })
 
-        context = {"reels": reels}
-    return render(request, "reels.html", context)
+#         context = {"reels": reels}
+#     return render(request, "reels.html", context)
     
 
 
@@ -115,30 +115,30 @@ def animation(request):
 
 
 
-# def reels(request):
-#     headers = {
-#         "Authorization": PEXEL_API_KEY
-#     }
+def reels(request):
+    headers = {
+        "Authorization": PEXEL_API_KEY
+    }
 
-#     response = requests.get(
-#         "https://api.pexels.com/videos/search?query=Kenyan heritage/&per_page=10",
-#         headers=headers
-#     )
+    response = requests.get(
+        "https://api.pexels.com/videos/search?query=Kenyan heritage/&per_page=10",
+        headers=headers
+    )
 
-#     data = response.json()
+    data = response.json()
 
-#     reels = []
+    reels = []
 
-#     for video in data.get("videos", []):
-#         reels.append({
-#             "title": "Historical Visual Archive",
-#             "summary": "Stock archival style footage",
-#             "video_url": video["video_files"][0]["link"],
-#             "creator": "Pexels",
-#             "likes": "—",
-#             "comments": "—",
-#             "shares": "—",
-#             "hashtags": ["Archive", "VisualHistory"]
-#         })
+    for video in data.get("videos", []):
+        reels.append({
+            "title": "Historical Visual Archive",
+            "summary": "Stock archival style footage",
+            "video_url": video["video_files"][0]["link"],
+            "creator": "Pexels",
+            "likes": "—",
+            "comments": "—",
+            "shares": "—",
+            "hashtags": ["Archive", "VisualHistory"]
+        })
 
-#     return render(request, "reels.html", {"reels": reels})
+    return render(request, "reels.html", {"reels": reels})
