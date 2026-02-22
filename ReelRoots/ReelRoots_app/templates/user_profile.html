@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>User Profile &amp; Collections - ReelRoots</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1111d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+    <!-- Main Container (Phone Mockup/Mobile First) -->
+    <div
+        class="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto bg-white dark:bg-background-dark shadow-2xl overflow-x-hidden pb-20">
+        <!-- Top Navigation Bar -->
+        <div
+            class="sticky top-0 z-20 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-slate-200 dark:border-slate-800">
+            <div class="text-slate-900 dark:text-slate-100 flex size-10 items-center justify-center cursor-pointer">
+                <span class="material-symbols-outlined">arrow_back_ios</span>
+            </div>
+            <h2
+                class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">
+                alex_roots</h2>
+            <div class="flex w-10 items-center justify-end">
+                <button
+                    class="flex items-center justify-center rounded-lg h-10 w-10 bg-transparent text-slate-900 dark:text-slate-100">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+            </div>
+        </div>
+        <!-- Profile Header Section -->
+        <div class="flex p-6 @container">
+            <div class="flex w-full flex-col gap-5 items-center">
+                <div class="relative">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-28 w-28 border-4 border-primary/10 p-1"
+                        data-alt="Close up portrait of a young man smiling"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVoAKcBq2f6Qf_2aTSlplq-6G_dSlbTmefcTxFIkNxnQW4YhTUT8_syApfyOJw7jkUNxsLR4PGYtvOlzQtKS_VfVep0MDE2FjPFhuryKX_RBMWixYo4F_EHXkGes94LdGvbaYmhAqPeXb3D04WsZ4KjKKg3xU9Mw0YCIsYz_PT6GsJ_uAOyhYyu08_-Td1lnmLQDUyefHdouA-dxRB0bAbHY89kUm_sSg59WVQgBFGcwgfr8v7MXCFE2zOblwxd38Y_PWRf1a-taTS");'>
+                    </div>
+                    <div
+                        class="absolute bottom-0 right-0 bg-primary text-white rounded-full p-1 border-2 border-white dark:border-background-dark">
+                        <span class="material-symbols-outlined text-sm !text-[16px] block">verified</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center justify-center text-center">
+                    <p class="text-slate-900 dark:text-slate-100 text-2xl font-extrabold leading-tight">Alex Chen</p>
+                    <p class="text-primary font-semibold text-sm mb-2">AI Heritage Curator</p>
+                    <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed max-w-[280px]">
+                        Preserving community stories through AI. <span class="text-primary">#HistoryKeeper</span>
+                        #Roots2024
+                    </p>
+                </div>
+                <div class="flex gap-3 w-full max-w-[320px]">
+                    <button
+                        class="flex-1 flex cursor-pointer items-center justify-center rounded-lg h-11 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20">
+                        <span>Follow</span>
+                    </button>
+                    <button
+                        class="flex-1 flex cursor-pointer items-center justify-center rounded-lg h-11 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm font-bold">
+                        <span>Message</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Contribution Stats Grid -->
+        <div class="flex flex-wrap gap-3 px-6 py-2">
+            <div
+                class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-slate-800 p-3 items-center text-center bg-slate-50/50 dark:bg-slate-900/50">
+                <p class="text-slate-900 dark:text-slate-100 text-xl font-bold">124</p>
+                <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider font-bold">Archives
+                </p>
+            </div>
+            <div
+                class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-slate-800 p-3 items-center text-center bg-slate-50/50 dark:bg-slate-900/50">
+                <p class="text-slate-900 dark:text-slate-100 text-xl font-bold">12.8k</p>
+                <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider font-bold">Impact</p>
+            </div>
+            <div
+                class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-slate-800 p-3 items-center text-center bg-slate-50/50 dark:bg-slate-900/50">
+                <p class="text-slate-900 dark:text-slate-100 text-xl font-bold">42</p>
+                <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider font-bold">Badges</p>
+            </div>
+        </div>
+        <!-- Impact Badges Horizontal Scroll -->
+        <div class="mt-6">
+            <div class="flex items-center justify-between px-6 mb-3">
+                <h4 class="text-slate-900 dark:text-slate-100 text-sm font-extrabold uppercase tracking-widest">Impact
+                    Badges</h4>
+                <span class="text-primary text-xs font-bold cursor-pointer">View All</span>
+            </div>
+            <div class="flex gap-4 px-6 overflow-x-auto hide-scrollbar pb-2">
+                <div class="flex flex-col items-center gap-2 shrink-0">
+                    <div
+                        class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                        <span class="material-symbols-outlined !text-3xl">auto_awesome</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Storyweaver</p>
+                </div>
+                <div class="flex flex-col items-center gap-2 shrink-0">
+                    <div
+                        class="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 border border-amber-200">
+                        <span class="material-symbols-outlined !text-3xl">temple_buddhist</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Preserver</p>
+                </div>
+                <div class="flex flex-col items-center gap-2 shrink-0">
+                    <div
+                        class="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 border border-emerald-200">
+                        <span class="material-symbols-outlined !text-3xl">groups</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Uniter</p>
+                </div>
+                <div class="flex flex-col items-center gap-2 shrink-0">
+                    <div
+                        class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 border border-indigo-200">
+                        <span class="material-symbols-outlined !text-3xl">history_edu</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Scribe</p>
+                </div>
+                <div class="flex flex-col items-center gap-2 shrink-0 opacity-50">
+                    <div
+                        class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
+                        <span class="material-symbols-outlined !text-3xl">lock</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Locked</p>
+                </div>
+            </div>
+        </div>
+        <!-- Content Tabs -->
+        <div class="mt-6 border-t border-slate-200 dark:border-slate-800">
+            <div class="flex bg-white dark:bg-background-dark">
+                <button class="flex-1 py-4 flex flex-col items-center gap-1 border-b-2 border-primary">
+                    <span class="material-symbols-outlined text-primary">grid_view</span>
+                    <span class="text-[10px] font-bold uppercase text-primary tracking-widest">Reels</span>
+                </button>
+                <button class="flex-1 py-4 flex flex-col items-center gap-1 border-b-2 border-transparent opacity-40">
+                    <span class="material-symbols-outlined">archive</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Archives</span>
+                </button>
+                <button class="flex-1 py-4 flex flex-col items-center gap-1 border-b-2 border-transparent opacity-40">
+                    <span class="material-symbols-outlined">bookmark</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Saved</span>
+                </button>
+            </div>
+            <!-- Media Grid -->
+            <div class="grid grid-cols-3 gap-0.5 p-0.5">
+                <div class="aspect-[9/16] bg-slate-200 dark:bg-slate-800 relative group overflow-hidden">
+                    <img class="w-full h-full object-cover" data-alt="Vintage family portrait archival photo"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHFNqHyJrZlOsiynFx28d3qpDIeywNi2trQeLThIjqadDw2b9N5BKvkAJtTFM7dZptjQenNtsrHORew24tXXH7mQn8dcN2YUefgv-3uEYco3mcODbHo_HHbyVPQZV_bO3z2LFbXt0lcWO89FFITy__xIvDDFbivZmCJqnMgFU-TrPXEX74qkdiqlxQrUZEfEoKASTJXzF3HslPXZZN-ifGedMLyxCFcWiVfCz21PQRPIXr7W20vNiKTvKXHql3oJY4u6HjaALO3oiz" />
+                    <div class="absolute bottom-2 left-2 flex items-center gap-1 text-white text-[10px] font-bold">
+                        <span class="material-symbols-outlined !text-xs">play_arrow</span> 2.4k
+                    </div>
+                </div>
+                <div class="aspect-[9/16] bg-slate-200 dark:bg-slate-800 relative group overflow-hidden">
+                    <img class="w-full h-full object-cover" data-alt="Old city street black and white photo"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGnx5JfbD_6wusjDcflAt8y4Y1Oiz8NQ2k1y-1fpXc-4QyAniql29hYE90Ryed-JIfhzlL7ZmuaGSkez2zFr7Jj8a-dXIj01reco8GaJIJReA3I37sFIFGrgFUBSy7K2Yb_aIM3HPjcvkwI1EpdfNywwRqe_fgArtwBaDV-GXF4_JSAS2bX791hC5lLwleOA77GbvlcfVgKIfRZufCsXF7qRCAlV0uBeD0Kl99quIg1AXL8SROv7GYxxj_BYIYULk03t484lfEYSr3" />
+                    <div class="absolute bottom-2 left-2 flex items-center gap-1 text-white text-[10px] font-bold">
+                        <span class="material-symbols-outlined !text-xs">play_arrow</span> 1.1k
+                    </div>
+                </div>
+                <div class="aspect-[9/16] bg-slate-200 dark:bg-slate-800 relative group overflow-hidden">
+                    <img class="w-full h-full object-cover" data-alt="Traditional cultural festival gathering"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYRb5qmOI2xEvwi7zP8pPoYbWzYStyiswNOwzV2PhF4IAtP0cksUFCSlEkDbcU-ESKlLW35jRPsJEN7cVf0IryIjZoKFrOABwDW9aRCKyNj_AFi5DfJj_sjeApjIgvwVnCSw4dUcywD-SF9Xja6qb0x1E_KpSPlW6VS0CxHLZeB0m-AZi7z16Q8lUHseIzKuEU_2zHT3hHOXEfhmW6uILQzAkIB2PHUlFV8sTPh5L6D132wOb2ZdBHUxl7CiaWObp_FNkukeu7ETOz" />
+                    <div class="absolute bottom-2 left-2 flex items-center gap-1 text-white text-[10px] font-bold">
+                        <span class="material-symbols-outlined !text-xs">play_arrow</span> 856
+                    </div>
+                </div>
+                <div class="aspect-[9/16] bg-slate-200 dark:bg-slate-800 relative group overflow-hidden">
+                    <img class="w-full h-full object-cover" data-alt="Handwritten old letter and ink pen"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkYTh6KxTGTFkfJ-gmWUEBUg2zuI3V7rtQSvYxCxYF2Xl5IrJhFVO_lP7LBW2RJK97rF8romyaG4n_1D0r6gzmI1I_m1zw3wl8dlREaRjcq5AkyC5vel1KfeFPmHn9MtgbIozbud_QTHlIqwpDWQ487JUyypkdGAYqqYkWq7367ZpHvUMimTeZzPUbh8WXeq1c4zHZQwoQEDbzywvleSWZPT_VuHDAOKwV5m0cI-YSrswsI18ZVUwSIVNjladAb_HyoYOuwmJKz_q-" />
+                    <div class="absolute bottom-2 left-2 flex items-center gap-1 text-white text-[10px] font-bold">
+                        <span class="material-symbols-outlined !text-xs">play_arrow</span> 4.2k
+                    </div>
+                </div>
+                <div class="aspect-[9/16] bg-slate-200 dark:bg-slate-800 relative group overflow-hidden">
+                    <img class="w-full h-full object-cover" data-alt="Vinyl record player detail shot"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBswyhP_B3sLF_b0VC2Rp9CPuJwfVbPO5JXpnp-M7fybED3Gmm0enqa-uhT8ImJcfVCVCKPS68t3ShFNSOxrrdPUWseapIUIdo45-C3A3eZTTg70eeEUUge1owACytTRSR1qpJAmiqiq7dk3_1ZNmkjAdhJUi-i_rMkzvo4TXsUOnHR602ShqYbTNjw9Y1NT3eJiyiJh6xSbURCLVnbVEqKheaiAVLpKAuok1fbEqHpdONt-ugSYxl8otNz3O-PJglc-_hkCXs7QSYd" />
+                    <div class="absolute bottom-2 left-2 flex items-center gap-1 text-white text-[10px] font-bold">
+                        <span class="material-symbols-outlined !text-xs">play_arrow</span> 12k
+                    </div>
+                </div>
+                <div class="aspect-[9/16] bg-slate-200 dark:bg-slate-800 relative group overflow-hidden">
+                    <img class="w-full h-full object-cover" data-alt="Young person listening to headphones intently"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI5cb8MYRzdOB9SP-8I4WNoXR6VvAr-VvL700BlIZHdo5W_6jFG1y51Kqf4zOf7vnA7kQ8AxP5mTpKvAfGeOEvEv1GzQyond3d38RdGNXMakmv94wacEvp4sG91-GKxrzlul28Kcg7S2mnTWTxBYtTjGadEQMO6gQ5-3MoGNLdZvEJj0Vej_0bLV62SrMMObJN7DKPbjGI7NThJs603YeNs2bTgy_wvZYKVIygfAJhhIgb9gZzqmh-w5j7eAKF4X9hgPtJfVnJ4zD1" />
+                    <div class="absolute bottom-2 left-2 flex items-center gap-1 text-white text-[10px] font-bold">
+                        <span class="material-symbols-outlined !text-xs">play_arrow</span> 3.1k
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Navigation Bar (Fixed to bottom of screen) -->
+        <div
+            class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-background-dark/90 backdrop-blur-xl px-4 pb-8 pt-3 z-30">
+            <div class="flex justify-between items-center max-w-sm mx-auto">
+                <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                    <span class="material-symbols-outlined !text-[28px]">home</span>
+                    <p class="text-[10px] font-medium leading-normal tracking-wide">Home</p>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                    <span class="material-symbols-outlined !text-[28px]">explore</span>
+                    <p class="text-[10px] font-medium leading-normal tracking-wide">Explore</p>
+                </a>
+                <a class="flex flex-col items-center justify-center -mt-8" href="#">
+                    <div
+                        class="bg-primary text-white p-4 rounded-full shadow-lg shadow-primary/40 ring-4 ring-white dark:ring-background-dark">
+                        <span class="material-symbols-outlined !text-[32px]">add</span>
+                    </div>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                    <span class="material-symbols-outlined !text-[28px]">auto_videocam</span>
+                    <p class="text-[10px] font-medium leading-normal tracking-wide">AI Create</p>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-primary" href="#">
+                    <span class="material-symbols-outlined !text-[28px] fill-[1]">person</span>
+                    <p class="text-[10px] font-bold leading-normal tracking-wide">Profile</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

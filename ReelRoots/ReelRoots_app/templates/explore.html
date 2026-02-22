@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Explore Archives Grid - ReelRoots</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1111d4",
+                        "accent-gold": "#D4AF37",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    <!-- iOS Status Bar Spacer -->
+    <div class="h-12 w-full bg-background-light dark:bg-background-dark sticky top-0 z-50"></div>
+    <!-- Header & Search Section -->
+    <header
+        class="sticky top-12 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 pb-4 space-y-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight text-primary">Explore</h1>
+            <button class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">account_circle</span>
+            </button>
+        </div>
+        <!-- Search Bar -->
+        <div class="relative group">
+            <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+            <input
+                class="w-full bg-white dark:bg-slate-800 border-none rounded-xl py-3 pl-10 pr-4 shadow-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 text-sm"
+                placeholder="Search archives, stories, eras..." type="text" />
+        </div>
+        <!-- Filter Chips (Horizontal Scroll) -->
+        <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4 pb-1">
+            <button
+                class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-full text-xs font-semibold shrink-0">
+                <span class="material-symbols-outlined text-sm">calendar_today</span>
+                1960 - 1980
+                <span class="material-symbols-outlined text-sm">expand_more</span>
+            </button>
+            <button
+                class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-medium shrink-0">
+                <span class="material-symbols-outlined text-sm text-accent-gold">location_on</span>
+                Harlem, NY
+                <span class="material-symbols-outlined text-sm">expand_more</span>
+            </button>
+            <button
+                class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-medium shrink-0">
+                <span class="material-symbols-outlined text-sm text-primary">photo_library</span>
+                Photos
+                <span class="material-symbols-outlined text-sm">expand_more</span>
+            </button>
+            <button
+                class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-medium shrink-0">
+                <span class="material-symbols-outlined text-sm text-primary">mic</span>
+                Oral Histories
+            </button>
+        </div>
+    </header>
+    <!-- Main Content Area: Grid View -->
+    <main class="flex-1 px-4 py-2">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500">Recent Discoveries</h2>
+            <button class="text-primary text-xs font-bold flex items-center gap-1">
+                View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+        </div>
+        <!-- Archive Grid -->
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Card 1 -->
+            <div class="group relative flex flex-col gap-2">
+                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        data-alt="Vintage photograph of a 1970s soul band performing"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuACk2riURVL6_fD_hspoyIYTfDQfGN-CkxldZIV-DhCJ4jeNu4b4082AMoB4fy6qEQ15_2W2mBbnPmn472JQX6ZQyXf2tLX8Qs_1Ho8NTiS8JvISSRPa0dcPIC8dh-ULWgDKjaCE8CMjOZRcA7et-rp5t5vLjJnIbClyoscpwdvCFMRX1MljD7OBQfL3_yG7MdeTFhQ81K-ENomVZutyfKyDsm6gf5G2EUUR2Ff5S7SFlyFUwKCSyZ1XIcTKH01VJBZNQUjufWWXXCL" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <button
+                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">bookmark</span>
+                    </button>
+                    <div class="absolute bottom-2 left-2 flex items-center gap-1">
+                        <span
+                            class="px-2 py-0.5 rounded bg-accent-gold/90 text-[10px] font-bold text-white uppercase tracking-tighter">Gold
+                            Era</span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Sunday Service Choir</h3>
+                    <p class="text-xs text-slate-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1974 • Harlem
+                    </p>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="group relative flex flex-col gap-2">
+                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        data-alt="Black and white photo of a jazz saxophonist"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoywq1CKRPQVZ6GV4dhuw6kHPTm2ajlsg-SyDET6cgdvfvMk4prBaQOBWhbIqKAPAQXJDaZD9VqGgFyoo0H6adiO0WVkqzF6Rj1r8twGxz4ABOga2QPXQ4cXRxLh4exDV02-uzQXYozuAV0nS0SBDJa7hljppt2rbZ32O-zZ4gLOE92tBD9rRFDK2Nt-wYIvcdIMBBv7o-qfmXR70XKA4DRCxak_8DfIKW6rpE2LbcrCin2jZMP2DQ0OlGU7WZVjuHjPksNnLUqPxi" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <button
+                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">bookmark</span>
+                    </button>
+                    <div class="absolute bottom-2 left-2 flex items-center gap-1">
+                        <span
+                            class="px-2 py-0.5 rounded bg-primary text-[10px] font-bold text-white uppercase tracking-tighter">Audio</span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm leading-tight line-clamp-1">The Jazz Era Sessions</h3>
+                    <p class="text-xs text-slate-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1962 • Chicago
+                    </p>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="group relative flex flex-col gap-2">
+                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        data-alt="People at a community garden in the city"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeVP4lCnvpeD14SMmV9tskE0JaDnnooHaDpy0OibFuFf46Y01RsUotnV4RmmgkCNnpspgLBNfu6wMxEM9b5xUbUfXlFAQFnmKplkiW3GdDrFti_UR3OAjTW9B4ICPWdyDC6fadP5Og5CUvgZN2g2KJeEFq76SJbVFbyIe2y65_7XQ5lbx6ZTFzdAcbx3gu0Oz1kj2jkhlHdCBemBE4mn8J0TEY2SEgdvig91ZFvhww9CSa6yAM0k7TmQk-cYEv28l5B3oPMcoE0Y6e" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <button
+                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">bookmark</span>
+                    </button>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Brixton Roots Garden</h3>
+                    <p class="text-xs text-slate-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1981 • London
+                    </p>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="group relative flex flex-col gap-2">
+                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        data-alt="Old street fair with vibrant banners"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4oBezxJ75Q3QRehhQuGMEZwvZzDcMX589rW_rdDNBrHJW1GQ9zQrB6I2hRKFx-hjB51KbX2hziRHBnOenYDyYEZ5o24IU_yECUnjpoWFHivYviHBh5gLx7Wi8E_ASsw9aIds2xpwGquFy4LGio1SN8PHEKjpB1hJwELgSV_Z0O6olrndFDjaxSSFmRQbNHABAQv2g1eoe9DP9Z1LAQ_lKWOfoks36gPq7cw9s5AZLRfPt1s3nUtMQ7_u5CP8Z5G5p-xz7OaxYZRpw" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <button
+                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">bookmark</span>
+                    </button>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Annual Block Party</h3>
+                    <p class="text-xs text-slate-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1978 • Oakland
+                    </p>
+                </div>
+            </div>
+            <!-- Card 5 -->
+            <div class="group relative flex flex-col gap-2">
+                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        data-alt="Vintage cassette player and microphone"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSmfHo_AHeWr2s9I4K-6yO3Cs-LvP2UXPPpvPFAW4gcRgVqYG0btSzvOJs5HmBoTnwmd5R0tDAKPcQ_qQ0nLdRSEN4N1sqbZTJ-X8NqXOlyBOweh91oA_3zHKBTnB2LHC50tJCbQgN_zKeVW8wPakCY1c1c_5eepaSC43dmEtnHQ074055UHHoxzbrKVFeZu-wbotEBE7rtBaXTewJJBCxy1R1bwsvolFKYJNTWiPoePU12_GRYKabqckHmd4eusnN4sUagI9SZoHd" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <button
+                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">bookmark</span>
+                    </button>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Voices of the Elders</h3>
+                    <p class="text-xs text-slate-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1965 • Memphis
+                    </p>
+                </div>
+            </div>
+            <!-- Card 6 -->
+            <div class="group relative flex flex-col gap-2">
+                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        data-alt="A handshake between two community leaders"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuClConqOwfzbm7u7oKUSNhVpq0vPrLbpLls4gVu4cBbyj0hBPkQfl2eDfAJP2TsJpdcQ-8RgNktB0JKN7YgDouk1S7qW7cZWUpr0bGd0D40l3zjrkCxI6QmdE1BaoANqxOyMPBAJ9sD8hVlf_VQQKt1__4G4l3eYexbeLiwGtEqZA1nld4MJCJUdBO3hDHalyEJIil0yG9ITaiIj-iZjEfvSCKYO5T0CAtRlvYyMwtX7LatYYVK-yRZrA4VsSyLpZwE7m0DxXK6qZIu" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <button
+                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
+                        <span class="material-symbols-outlined text-sm">bookmark</span>
+                    </button>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Labor Union March</h3>
+                    <p class="text-xs text-slate-500 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1971 • Detroit
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- Pagination Spacer -->
+        <div class="h-24"></div>
+    </main>
+    <!-- Floating Action Button -->
+    <button
+        class="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center z-50">
+        <span class="material-symbols-outlined scale-125">add</span>
+    </button>
+    <!-- Bottom Navigation Bar (iOS Style) -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 pb-8 pt-3 px-6 z-50">
+        <div class="flex items-center justify-between max-w-md mx-auto">
+            <a class="flex flex-col items-center gap-1 text-primary" href="#">
+                <span class="material-symbols-outlined filled leading-none">explore</span>
+                <span class="text-[10px] font-bold">Explore</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined leading-none">collections_bookmark</span>
+                <span class="text-[10px] font-medium">Archive</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined leading-none">auto_stories</span>
+                <span class="text-[10px] font-medium">Stories</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined leading-none">group</span>
+                <span class="text-[10px] font-medium">Community</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined leading-none">person</span>
+                <span class="text-[10px] font-medium">Profile</span>
+            </a>
+        </div>
+    </nav>
+    <!-- iOS Home Indicator -->
+    <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60]">
+    </div>
+</body>
+
+</html>

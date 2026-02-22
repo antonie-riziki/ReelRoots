@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ask the Archive AI Chat - ReelRoots</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1111d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+    <div
+        class="relative flex h-screen max-w-[430px] mx-auto flex-col bg-background-light dark:bg-background-dark overflow-hidden border-x border-slate-200 dark:border-slate-800 shadow-2xl">
+        <!-- Header -->
+        <header
+            class="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-3">
+                <button
+                    class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined text-slate-700 dark:text-slate-300">arrow_back_ios_new</span>
+                </button>
+                <div class="flex flex-col">
+                    <h1 class="text-lg font-bold leading-tight tracking-tight">AI Historian</h1>
+                    <div class="flex items-center gap-1.5">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            Online • Archive Access</p>
+                    </div>
+                </div>
+            </div>
+            <button
+                class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                <span class="material-symbols-outlined text-slate-700 dark:text-slate-300">info</span>
+            </button>
+        </header>
+        <!-- Chat Area -->
+        <main class="flex-1 overflow-y-auto p-4 space-y-6 hide-scrollbar pb-32">
+            <!-- System Timestamp -->
+            <div class="flex justify-center">
+                <span
+                    class="px-3 py-1 rounded-full bg-slate-200/50 dark:bg-slate-800/50 text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Today</span>
+            </div>
+            <!-- AI Message -->
+            <div class="flex items-start gap-3">
+                <div
+                    class="h-9 w-9 shrink-0 rounded-full bg-primary flex items-center justify-center text-white shadow-lg">
+                    <span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+                </div>
+                <div class="flex flex-col gap-2 max-w-[85%]">
+                    <div
+                        class="bg-white dark:bg-slate-800 p-4 rounded-xl rounded-tl-none shadow-sm border border-slate-100 dark:border-slate-700">
+                        <p class="text-sm leading-relaxed">Hello! I'm your ReelRoots assistant. I can help you explore
+                            our community archives, from local street art movements to family migration stories. What
+                            would you like to learn about today?</p>
+                    </div>
+                </div>
+            </div>
+            <!-- User Message -->
+            <div class="flex items-start gap-3 justify-end">
+                <div class="flex flex-col gap-2 max-w-[85%] items-end">
+                    <div class="bg-primary text-white p-4 rounded-xl rounded-tr-none shadow-lg shadow-primary/20">
+                        <p class="text-sm leading-relaxed">Can you tell me about the local street art movement in the
+                            1990s?</p>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-medium px-1">10:42 AM</span>
+                </div>
+                <div class="h-9 w-9 shrink-0 rounded-full overflow-hidden border-2 border-primary/20">
+                    <img class="h-full w-full object-cover" data-alt="Portrait of a young man smiling"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL3Oyf6d8KBZnV7IehkoiZO328Xjl_Z0s3l8SxFpZpwuCYwPsANv4-V2Fw8MCVYRvujLk0HeiaBTSDJJmAinga6NpSpV326War2pp1Gw7vXL9m9iniD8R_O6TrhmYwCC3Ki9yuOaT7-jqwOR9SGpZWU-wqhDkj0SwPs39Zbfi5QOGggBHmyY6eyNznMzvbMMDz4vMzFtYtv1uLyYBxqVPbQHMi44-xSCh9oq0j2gvkFEpHCdmv8YAc53kmkoUlAWgle4phPjtyUQv7" />
+                </div>
+            </div>
+            <!-- AI Detailed Response with Citations -->
+            <div class="flex items-start gap-3">
+                <div
+                    class="h-9 w-9 shrink-0 rounded-full bg-primary flex items-center justify-center text-white shadow-lg">
+                    <span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+                </div>
+                <div class="flex flex-col gap-3 max-w-[85%]">
+                    <div
+                        class="bg-white dark:bg-slate-800 p-4 rounded-xl rounded-tl-none shadow-sm border border-slate-100 dark:border-slate-700">
+                        <p class="text-sm leading-relaxed mb-3">The 1990s street art scene in your area was defined by a
+                            shift from clandestine graffiti to social advocacy. High-contrast murals became a tool for
+                            the youth to reclaim public spaces during the urban renewal phases of 1994.</p>
+                        <!-- Citation Section -->
+                        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter mb-2">Sources from
+                                Archive</p>
+                            <div class="flex flex-col gap-2">
+                                <a class="flex items-center gap-3 p-2 rounded-lg bg-primary/5 hover:bg-primary/10 transition-colors border border-primary/10 group"
+                                    href="#">
+                                    <div class="h-10 w-10 shrink-0 rounded bg-slate-200 overflow-hidden">
+                                        <img class="h-full w-full object-cover"
+                                            data-alt="Vintage photograph of graffiti on a brick wall"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdLZ3pF_laClYKYlimZhiTGsKihMFBRHAxeksHTuq3NmIzgLrGN7GRJ68eMgCylMGii0Y6iC1R5c1jhun7PamLrFVBsJDWt9cHNXAWTYCrQKiVif6NXySzAc3E_F3oJP9ODMzEAjreHI0r566PYDRWJCaU6PN-wVo5TnStcGHOmRGqPr_ArK4uTeKz84pGUN6NtzXNZeeArwolHAdLSVwm_SmcfZAL1GsXL5YgUCxl0ngO7kSr2nkiKtjBEs0v8wVlSvVYJpA5ab02" />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-primary truncate">Downtown Mural Project (1994)
+                                        </p>
+                                        <p class="text-[10px] text-slate-500">Video Fragment • 0:45s</p>
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-primary text-sm group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                                </a>
+                                <a class="flex items-center gap-3 p-2 rounded-lg bg-primary/5 hover:bg-primary/10 transition-colors border border-primary/10 group"
+                                    href="#">
+                                    <div class="h-10 w-10 shrink-0 rounded bg-slate-200 overflow-hidden">
+                                        <img class="h-full w-full object-cover"
+                                            data-alt="Black and white photo of city architecture"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXevpoM836F3DmOuYvpO66zY4sEr5sHeKC4fJvlYvwTeqr2l2t_ZwoatylAGpKEu_IXRqQCTQyiONP97Xv3aK2u5t2hIECMUttPExx-YPZUGWBuEahz_3Bmpa8jrtxp0DmVByPv6-QjfrIJj1pl6vWmkLE7al0YtZKs2zG4Bp_dE5VwTPHCuE4F80wZVVv4yDC1kXablDoJtwWtOw41k6ddj18n8K_Ue8pCV1Ski5YVLJdhQNUtrUwdRMpM9VHe-pvZRe4yGYJZ-fh" />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-xs font-bold text-primary truncate">Urban Renewal Interview #12
+                                        </p>
+                                        <p class="text-[10px] text-slate-500">Audio Transcript • Page 4</p>
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-primary text-sm group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Floating Input & Prompts Section -->
+        <div class="absolute bottom-0 left-0 right-0 z-30 flex flex-col">
+            <!-- Suggested Prompts -->
+            <div class="flex gap-2 overflow-x-auto px-4 pb-3 hide-scrollbar">
+                <button
+                    class="shrink-0 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 text-[13px] font-medium text-slate-700 dark:text-slate-300 shadow-sm hover:border-primary/50 transition-colors">
+                    Tell me about 1960s street art
+                </button>
+                <button
+                    class="shrink-0 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 text-[13px] font-medium text-slate-700 dark:text-slate-300 shadow-sm hover:border-primary/50 transition-colors">
+                    Migration patterns in '75
+                </button>
+                <button
+                    class="shrink-0 px-4 py-2 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 text-[13px] font-medium text-slate-700 dark:text-slate-300 shadow-sm hover:border-primary/50 transition-colors">
+                    Find my family records
+                </button>
+            </div>
+            <!-- Input Bar -->
+            <div
+                class="p-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800">
+                <div
+                    class="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 rounded-2xl p-2 pr-2.5 transition-all focus-within:ring-2 focus-within:ring-primary/20">
+                    <button
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">add_circle</span>
+                    </button>
+                    <input
+                        class="flex-1 bg-transparent border-none focus:ring-0 text-sm py-2 px-1 dark:text-slate-100 placeholder:text-slate-400 font-medium"
+                        placeholder="Ask about your history..." type="text" />
+                    <button
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all">
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </div>
+                <!-- iOS Home Indicator Spacing -->
+                <div class="h-6"></div>
+            </div>
+        </div>
+        <!-- Bottom Navigation Bar (Context Component Overlay) -->
+        <div
+            class="hidden absolute bottom-0 left-0 right-0 flex gap-2 border-t border-slate-200 bg-white px-4 pb-3 pt-2 z-50">
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[24px]">home</span>
+                <p class="text-[10px] font-medium leading-normal tracking-tight">Home</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[24px]">inventory_2</span>
+                <p class="text-[10px] font-medium leading-normal tracking-tight">Archive</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+                <span class="material-symbols-outlined text-[24px]"
+                    style="font-variation-settings: 'FILL' 1">forum</span>
+                <p class="text-[10px] font-medium leading-normal tracking-tight">Ask AI</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+                <span class="material-symbols-outlined text-[24px]">person</span>
+                <p class="text-[10px] font-medium leading-normal tracking-tight">Profile</p>
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

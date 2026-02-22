@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Archive Detailed View - ReelRoots</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1111d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+
+        .ios-blur {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen pb-40">
+    <!-- Header Navigation -->
+    <nav
+        class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 ios-blur border-b border-primary/10 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <button
+                class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+                <span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back_ios_new</span>
+            </button>
+            <div>
+                <h1 class="text-sm font-bold leading-tight">Oral History: Smith Family</h1>
+                <p class="text-[10px] uppercase tracking-widest text-primary font-semibold">Archive ID: RR-1942-SF</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-primary/10">
+                <span class="material-symbols-outlined">share</span>
+            </button>
+            <button class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-primary/10">
+                <span class="material-symbols-outlined">bookmark</span>
+            </button>
+        </div>
+    </nav>
+    <main class="max-w-md mx-auto">
+        <!-- Metadata Header -->
+        <div class="p-5">
+            <div class="flex gap-5 items-start mb-4">
+                <div class="relative group">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl w-28 h-28 shadow-lg border-2 border-white dark:border-slate-800"
+                        data-alt="Vintage family portrait from the 1940s"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5nuIud3HpiVEBxqsHvSn0yGAiOAwGeNcC_Oqk4PwBT9uiL7asUGJj2FEDQ1LF9jYO8SvvDTONC0IQ6JBCBL0DJmuuYdGWtac4odkapr5JQa_wwnElXxXLaHBJ4n-fR8uwhVQghQfK_qu-mtlUXSFdvYnXgMI-_uKowEeCqCy83HmxN4YQHEXHnJOKr0P_kZwELBP_AR_xHQ5kaBnyEAIhgk1cfZtquSjH-e08rhNnP5dLH8w0px2tYeq6Nw1FxreGllB4Gx3Prae_");'>
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 bg-primary text-white p-1.5 rounded-lg shadow-md">
+                        <span class="material-symbols-outlined text-sm">verified</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <h2 class="text-xl font-bold leading-tight tracking-tight">The Smith Family Records</h2>
+                    <p class="text-primary/80 text-sm font-medium flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">location_on</span>
+                        Oakland Archive • 1942
+                    </p>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Era: WWII • Language: English</p>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <span
+                            class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">BIPOC
+                            History</span>
+                        <span
+                            class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase">Oral
+                            History</span>
+                    </div>
+                </div>
+            </div>
+            <p
+                class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed italic border-l-2 border-primary/30 pl-3">
+                "A rare audio-visual collection documenting the Great Migration's impact on West Coast shipyard
+                families."
+            </p>
+        </div>
+        <!-- Document Viewer -->
+        <div class="px-4 mb-6">
+            <div class="relative group overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-800 shadow-inner">
+                <div class="w-full aspect-[3/4] bg-center bg-no-repeat bg-cover transition-transform duration-500 group-hover:scale-105"
+                    data-alt="Handwritten historical letter on aged yellow paper"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAEnJTsMj4FXm2SLyT3h1MLasgYsX9uOf6p3pMY9IF_XPIzaajMPzEgxgcVqUHsDWFfI8LUBwp4t1Ulf3vpYIXfrHtv2YqIJOppStv-9H3TpITdZAd17_QiV7cpXNxQKctFPwuKTu2VhGd-0MExBVX7-WiY9SOC-Ke7BR4u0uYge4LQbp4eZ0k2Dn_FG7YnXy02VrTQY4Pu0RMTUJcAqsNH34fJNH-XOAU8AcU2X8ynbSoWBi159-89QkUovMtMKgM7sqVbaz1XYC5z");'>
+                </div>
+                <!-- Overlay Controls -->
+                <div
+                    class="absolute inset-x-0 top-0 p-4 flex justify-between items-start bg-gradient-to-b from-black/40 to-transparent">
+                    <span
+                        class="bg-black/50 ios-blur text-white text-[10px] px-2 py-1 rounded font-medium uppercase tracking-wider">Page
+                        1 of 12</span>
+                    <button class="bg-white/90 dark:bg-slate-900/90 p-2 rounded-lg shadow-lg">
+                        <span class="material-symbols-outlined text-slate-900 dark:text-slate-100">fullscreen</span>
+                    </button>
+                </div>
+                <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+                    <div class="flex justify-center gap-4">
+                        <button
+                            class="flex items-center gap-2 bg-white/20 ios-blur hover:bg-white/30 text-white px-4 py-2 rounded-full text-xs font-medium border border-white/30 transition-all">
+                            <span class="material-symbols-outlined text-sm">zoom_in</span> Zoom
+                        </button>
+                        <button
+                            class="flex items-center gap-2 bg-white/20 ios-blur hover:bg-white/30 text-white px-4 py-2 rounded-full text-xs font-medium border border-white/30 transition-all">
+                            <span class="material-symbols-outlined text-sm">auto_stories</span> View Text
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- AI Insights Section (Content before floating panel) -->
+        <div class="px-5 pb-10">
+            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Key Details</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="p-3 bg-white dark:bg-slate-900 rounded-lg border border-primary/5 shadow-sm">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Main Topic</p>
+                    <p class="text-sm font-semibold mt-1">Housing Security</p>
+                </div>
+                <div class="p-3 bg-white dark:bg-slate-900 rounded-lg border border-primary/5 shadow-sm">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Archive Type</p>
+                    <p class="text-sm font-semibold mt-1">Correspondence</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Floating AI Assistant Panel -->
+    <div class="fixed bottom-0 inset-x-0 z-50 px-4 pb-6">
+        <div
+            class="max-w-md mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] border border-primary/10 overflow-hidden">
+            <!-- AI Header -->
+            <div class="px-4 py-3 bg-primary/5 flex items-center justify-between border-b border-primary/5">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                    <span class="text-xs font-bold text-primary uppercase tracking-tighter">AI Archivist Active</span>
+                </div>
+                <button class="text-slate-400">
+                    <span class="material-symbols-outlined text-lg">keyboard_arrow_down</span>
+                </button>
+            </div>
+            <!-- AI Insight Text -->
+            <div class="p-4">
+                <div class="bg-primary/5 rounded-xl p-3 mb-4">
+                    <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                        <span class="font-bold text-primary italic">Summary:</span> This letter details the family's
+                        first impressions of California, mentioning specific shipyard wages and local neighborhood
+                        dynamics in 1942.
+                    </p>
+                </div>
+                <!-- AI Tools Grid -->
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <button
+                        class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-primary/10 transition-colors group">
+                        <span
+                            class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">lightbulb</span>
+                        <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Explain Simply</span>
+                    </button>
+                    <button
+                        class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-primary/10 transition-colors group">
+                        <span
+                            class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">translate</span>
+                        <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Translate</span>
+                    </button>
+                    <button
+                        class="flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-primary/10 transition-colors group">
+                        <span
+                            class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">volume_up</span>
+                        <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">Read Aloud</span>
+                    </button>
+                </div>
+                <!-- Primary CTA -->
+                <button
+                    class="w-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center gap-3 py-4 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+                    <span class="material-symbols-outlined">auto_videocam</span>
+                    Generate ReelRoots Reel
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Bottom Nav Bar Component Integration -->
+    <div
+        class="fixed bottom-0 left-0 right-0 z-[60] border-t border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark/95 ios-blur px-4 pb-6 pt-2 hidden md:block">
+        <div class="flex max-w-md mx-auto">
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">home</span>
+                <p class="text-[10px] font-medium leading-normal">Home</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">search</span>
+                <p class="text-[10px] font-medium leading-normal">Search</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">archive</span>
+                <p class="text-[10px] font-medium leading-normal">Archive</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">auto_awesome</span>
+                <p class="text-[10px] font-medium leading-normal">Assistant</p>
+            </a>
+            <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">account_circle</span>
+                <p class="text-[10px] font-medium leading-normal">Profile</p>
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

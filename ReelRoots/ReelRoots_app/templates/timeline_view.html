@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Historical Timeline View - ReelRoots</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1111d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .timeline-line {
+            background: linear-gradient(90deg, transparent 0%, #1111d4 50%, transparent 100%);
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+    <!-- Top Navigation Bar (iOS Style) -->
+    <header
+        class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl font-bold">history_edu</span>
+                <h1 class="text-xl font-bold tracking-tight">ReelRoots</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
+                <div
+                    class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden border border-primary/30">
+                    <img alt="Profile" class="w-full h-full object-cover"
+                        data-alt="Close up portrait of a young person smiling"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGX6qTcWQnGuw61gtuUyB_JZlfbCfZi9mLA9QyZh5x_O1tDzyslDdhMNZt96LCzppxj283bj1Au8mNHdfgPpsonbuy63qZCwP-P7hzcUrvLQuByFAQ411ZxQg8h3z5-IrFH2yTD_TlluW-IgihTthxd250P9D47XDOt0-PfCxab2UbtLXpWkPv0OzhH9Nbr1ACI6MySa_g6kLhRM7cMrlhvAiQZjRAMLiQWi_ZGHupsK9mqj902oyzQEfbYtEUc_E2emDmp_WgJ6fU" />
+                </div>
+            </div>
+        </div>
+        <!-- Filter Pill Bar -->
+        <div class="flex gap-2 px-4 pb-3 overflow-x-auto hide-scrollbar">
+            <button
+                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary text-white px-4 text-sm font-semibold shadow-sm">
+                <span>All Eras</span>
+            </button>
+            <button
+                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-200 dark:bg-slate-800 px-4 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                <span class="material-symbols-outlined text-lg">diversity_3</span>
+                <span>Black History</span>
+            </button>
+            <button
+                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-200 dark:bg-slate-800 px-4 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                <span class="material-symbols-outlined text-lg">transgender</span>
+                <span>Queer Archives</span>
+            </button>
+            <button
+                class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-200 dark:bg-slate-800 px-4 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                <span class="material-symbols-outlined text-lg">location_on</span>
+                <span>Local Stories</span>
+            </button>
+        </div>
+    </header>
+    <main class="relative min-h-[calc(100vh-140px)] flex flex-col">
+        <!-- Active Era Header -->
+        <div class="pt-6 px-4 text-center">
+            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white">1960s</h2>
+            <p class="text-primary font-medium mt-1">The Decade of Change</p>
+        </div>
+        <!-- Horizontal Timeline Scroller -->
+        <div class="flex-1 overflow-x-auto hide-scrollbar flex items-center py-8">
+            <div class="flex gap-6 px-[20vw]">
+                <!-- Timeline Card 1 -->
+                <div class="w-[280px] shrink-0 transform transition-transform hover:scale-[1.02]">
+                    <div
+                        class="relative aspect-[3/4] rounded-xl overflow-hidden shadow-xl border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-800">
+                        <img alt="History 1" class="w-full h-full object-cover"
+                            data-alt="Vintage black and white photo of a civil rights march"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-J9Ok8A2RgsM5I-J7WTyuWDSsP3SoQXRv7ZifSjycNhObo0sVAfiAnB569nWK88v-W0lXfZjU6TIymhSTRmBmehqdB4yZquxiy1ybySdbrKrx9Mz9fhe_WzkMvjvl-JXzwKRC3IKtfV59FN6g6mGL5Pn-PhjMlAZ9WAPw731NoCiNWiq6oWQd2p0xaQghhOn4lWXLC_WZLQrUKalKS1qQIxsl8rme7uCpzqHAtZ11O1wgn8rzIzH-9vTtp9WEAtFcGqk8j6_EYt1Z" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                        </div>
+                        <div class="absolute bottom-0 p-4 text-white">
+                            <span
+                                class="inline-block px-2 py-0.5 rounded bg-primary text-[10px] font-bold uppercase mb-2">1963</span>
+                            <h3 class="text-lg font-bold leading-tight mb-1">March on Washington</h3>
+                            <p class="text-xs text-slate-300 line-clamp-2">A pivotal moment in the Civil Rights Movement
+                                capturing the spirit of unity.</p>
+                        </div>
+                        <button
+                            class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                            <span class="material-symbols-outlined text-lg">auto_awesome</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Timeline Card 2 -->
+                <div class="w-[280px] shrink-0 transform translate-y-8 transition-transform hover:scale-[1.02]">
+                    <div
+                        class="relative aspect-[3/4] rounded-xl overflow-hidden shadow-xl border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-800">
+                        <img alt="History 2" class="w-full h-full object-cover"
+                            data-alt="Grained archival footage of a 1960s street festival"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA29Y2dSxhV1WrhPhgHN_3K3rVzCqYS8vGyC39KDEbZh8Pqz2sNZUArOfRe9NnhXotJzO_hBf6sicsGf8rsZnkBGDx9TLQx_GkLxTlVOFefbKbeiILgy-4hv-gdg5iUXtLlkhAleW_E5oZUNlXzMZTawm5Qr2vM_8W90cO5iGNOtCWnQaOymF1btCCECkFVt2HVS6TKi5T-VGlvAkqXdhLWorc3IaIwvSW1glSULFkjoV5i3dFAzGLmZay1TJYawdMiInYqPMlwMwlG" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                        </div>
+                        <div class="absolute bottom-0 p-4 text-white">
+                            <span
+                                class="inline-block px-2 py-0.5 rounded bg-primary text-[10px] font-bold uppercase mb-2">1967</span>
+                            <h3 class="text-lg font-bold leading-tight mb-1">Summer of Love</h3>
+                            <p class="text-xs text-slate-300 line-clamp-2">The counterculture movement peaks in San
+                                Francisco's Haight-Ashbury.</p>
+                        </div>
+                        <button
+                            class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                            <span class="material-symbols-outlined text-lg">play_circle</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Timeline Card 3 -->
+                <div class="w-[280px] shrink-0 transform -translate-y-4 transition-transform hover:scale-[1.02]">
+                    <div
+                        class="relative aspect-[3/4] rounded-xl overflow-hidden shadow-xl border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-800">
+                        <img alt="History 3" class="w-full h-full object-cover"
+                            data-alt="Old newspaper clipping with headline about Apollo 11"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2JdBjhy7EXM4pD-nmWpcKAxQLJ-Fd7BbGcdG_z9ia8KHG5RMlS0nkYpzOSMVDmFEp-a6aOaV0mtVRFo6X_h984AqiSvR_mlSV1vzqKspVshh216yzVxKjvkE9kUw-TmSJQUOKTtyCaXfLEYip58s2Jar3PA642kg1YYupMoK7WONq64Hldr8r2NS8lDEz3HtnGypOywIfqodBj6FWWEkPb6I5EMnqBRjDEILaScyU76DFy3E4bbE7GQ7HNDOCsUVqN-LAj4JgJiej" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                        </div>
+                        <div class="absolute bottom-0 p-4 text-white">
+                            <span
+                                class="inline-block px-2 py-0.5 rounded bg-primary text-[10px] font-bold uppercase mb-2">1969</span>
+                            <h3 class="text-lg font-bold leading-tight mb-1">Apollo 11 Landing</h3>
+                            <p class="text-xs text-slate-300 line-clamp-2">Humanity's first steps on the lunar surface
+                                captured on live TV.</p>
+                        </div>
+                        <div
+                            class="absolute top-3 right-3 px-2 py-1 rounded-full bg-emerald-500 text-[10px] font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[12px]">verified</span>
+                            <span>ROOTS MATCH</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Timeline Card 4 -->
+                <div class="w-[280px] shrink-0 transform translate-y-4 transition-transform hover:scale-[1.02]">
+                    <div
+                        class="relative aspect-[3/4] rounded-xl overflow-hidden shadow-xl border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-800">
+                        <img alt="History 4" class="w-full h-full object-cover"
+                            data-alt="Sepia toned photo of students in a 1960s classroom"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDbvziaeU9shuaEJGIGXmKgPMFJwTfYwEylZ8UVl4c6Fi90kgMyG0XS3g-DthgJPtCj9izdKybq9es2mlDmEvQYmeB03Nqs0R5rBCsQ-Pu4tPkjzK8vbPjCQTqxx4kpcpeo4FFvInCmE3QQK8Glw1rT8ix2U1M2OhpP8lakZYd0MKTK4gwuEh4ed5Up2VwURGkp6WjcMIn-15g8tFu1TP3U4UspAhM_LcX3plszhl5ZTlr0SLmqLSEDsBbQv6LFtRrTUEEDk1k5ArM" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent">
+                        </div>
+                        <div class="absolute bottom-0 p-4 text-white">
+                            <span
+                                class="inline-block px-2 py-0.5 rounded bg-primary text-[10px] font-bold uppercase mb-2">1964</span>
+                            <h3 class="text-lg font-bold leading-tight mb-1">Student Activism</h3>
+                            <p class="text-xs text-slate-300 line-clamp-2">Youth-led protests that reshaped educational
+                                freedom across the nation.</p>
+                        </div>
+                        <button
+                            class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                            <span class="material-symbols-outlined text-lg">mic</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Scrubber and Axis -->
+        <div
+            class="relative h-24 bg-background-light dark:bg-background-dark mt-auto border-t border-slate-200 dark:border-slate-800 overflow-hidden">
+            <!-- Timeline Track -->
+            <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-300 dark:bg-slate-700 -translate-y-1/2"></div>
+            <!-- Center Indicator -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+                <div class="w-1 h-12 bg-primary rounded-full mb-1 shadow-[0_0_8px_rgba(17,17,212,0.5)]"></div>
+                <div class="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">NOW</div>
+            </div>
+            <!-- Years Scale (Static representation of scrollable axis) -->
+            <div class="flex items-center justify-between px-8 h-full opacity-60 pointer-events-none">
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-bold">1960</span>
+                    <div class="h-4 w-px bg-slate-400 mt-1"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="h-2 w-px bg-slate-400"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="h-2 w-px bg-slate-400"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="h-2 w-px bg-slate-400"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-bold">1965</span>
+                    <div class="h-4 w-px bg-slate-400 mt-1"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="h-2 w-px bg-slate-400"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="h-2 w-px bg-slate-400"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="h-2 w-px bg-slate-400"></div>
+                </div>
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-bold text-primary">1970</span>
+                    <div class="h-4 w-px bg-primary mt-1"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Bottom Navigation Bar (iOS Style) -->
+    <nav
+        class="sticky bottom-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
+        <div class="flex justify-around items-end pb-6 pt-2 px-2">
+            <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">explore</span>
+                <span class="text-[10px] font-medium">Explore</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-primary" href="#">
+                <span class="material-symbols-outlined fill-1">schedule</span>
+                <span class="text-[10px] font-bold">Timeline</span>
+            </a>
+            <div class="relative -top-4">
+                <button
+                    class="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/40 border-4 border-background-light dark:border-background-dark">
+                    <span class="material-symbols-outlined text-3xl">add</span>
+                </button>
+            </div>
+            <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">diversity_1</span>
+                <span class="text-[10px] font-medium">Community</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+                href="#">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-[10px] font-medium">Profile</span>
+            </a>
+        </div>
+        <!-- iOS Home Indicator Spacing -->
+        <div class="h-5"></div>
+    </nav>
+</body>
+
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Archive Story Mode - ReelRoots</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1111d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                        "earth-clay": "#a45d41",
+                        "earth-sand": "#f5f2ed",
+                        "earth-sage": "#7a8471"
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif
+        }
+
+        .comic-panel-border {
+            border: 3px solid #101022
+        }
+
+        .paper-texture {
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCASNpwTNmDD1rWZeFuFmXx_BY_IfDRDFUo2y7YthwvD2GavG1RCkvtsX74XGnCbyVxGknKFxtOpufS45YEY8dR0t4QdAoYb4buEuKrhi7OU--OTMKgIyyJ3zl_HKjO0ASsBvi4y6F5rj4n7VdzYhRPoIQpgptCMUwbo6NaTmAdQE4D-VhZL-CkVcP9-5NPsow59xCqPnzoEucGS0Jzhg-dMTGDPprtkzkFyY855A1exI5aUzAHVAinHJF4P9208zyOsFkScv5XrWYr)
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-earth-sand dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col">
+    <!-- Top Navigation Bar -->
+    <header
+        class="sticky top-0 z-50 bg-earth-sand/90 backdrop-blur-md border-b border-primary/10 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <button
+                class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+                <span class="material-symbols-outlined text-slate-900">arrow_back_ios_new</span>
+            </button>
+            <div>
+                <h1 class="text-sm font-bold tracking-tight text-primary uppercase">Story Mode</h1>
+                <p class="text-xs text-slate-500 font-medium">The 1954 Migration Archive</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/5 text-primary">
+                <span class="material-symbols-outlined">share</span>
+            </button>
+            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/5 text-primary">
+                <span class="material-symbols-outlined">more_horiz</span>
+            </button>
+        </div>
+    </header>
+    <!-- Progress Segmented Bar -->
+    <div class="px-4 py-4 flex gap-1.5 w-full">
+        <div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+        <div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+        <div class="h-1.5 flex-1 rounded-full bg-primary"></div>
+        <div class="h-1.5 flex-1 rounded-full bg-primary/20"></div>
+        <div class="h-1.5 flex-1 rounded-full bg-primary/20"></div>
+        <div class="h-1.5 flex-1 rounded-full bg-primary/20"></div>
+    </div>
+    <!-- Main Comic Content Area -->
+    <main class="flex-1 px-4 pb-32 space-y-6 overflow-y-auto">
+        <!-- Intro Panel -->
+        <div class="relative group">
+            <div
+                class="comic-panel-border bg-white rounded-lg overflow-hidden shadow-[8px_8px_0px_0px_rgba(17,17,212,0.1)]">
+                <div class="aspect-[4/3] bg-cover bg-center paper-texture"
+                    data-alt="Vintage black and white photo of a group of people arriving at a port with wooden trunks"
+                    style="background-image: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBXhT_3V3gJ-NRFA9vd2TOutvPY57Ed21gsDNmZxr83AlCHszEFRWp-gxCXUIQi4ZLptww-1-oKoYovkBpvmNxM2Xpt2QrEJzd7BKDQWkZjEOxjRxap29UqCJxRSQJ0AohD6G-ckmeJ4426CACqCj0K9BVMB1pSvQUR-aKEGQ6VuBSxuFjFUiJaUissM6H4GK38qher04eqM8_Kpbvl5mj5YMCXQjkf56cCb6FjhuFHdel2s0phVGDQIYM6PUwLW_X7CwVQmDwsita');">
+                </div>
+                <div class="p-4 bg-white border-t-2 border-slate-900">
+                    <p class="text-lg font-bold leading-tight italic">
+                        "They carried their history in wooden trunks, not knowing that the roots they planted today
+                        would shelter us forever."
+                    </p>
+                </div>
+            </div>
+            <div
+                class="absolute -top-3 -left-2 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg transform -rotate-3">
+                CHAPTER 1: THE ARRIVAL
+            </div>
+        </div>
+        <!-- Multi-Panel Layout -->
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Left Panel -->
+            <div class="comic-panel-border rounded-lg overflow-hidden shadow-[4px_4px_0px_0px_rgba(164,93,65,0.2)]">
+                <div class="aspect-square bg-cover bg-center"
+                    data-alt="Close up of a weathered hand holding an old sepia photograph"
+                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAq6iKuch5yRcWUSTVfXv52rEqaS-f65AiIvM60IT_-5gTWlLG6DwuawSJUp3rMPlYf8aA5fo71OZuL3N8cG7LLT72bEc_QCmNjtH3Gkx9-RGxQXAHmrYkXvMQjTcMKeJLTtl3BusSZr4bl3KxRyLAC4unvrj0JqlTzw_RG8527vU-zIJM5FnP47y_UX7kXe_uWm_hSDg3BWsqmyp1UDVMAHr6EM4LY3OW3hm4Us7PeKoB2KrZA2Tmc3i4Dg4KfO8irbS7nQST79nkI');">
+                </div>
+                <div class="p-3 bg-earth-clay text-white">
+                    <p class="text-xs font-bold leading-snug">The only link to the home they left behind.</p>
+                </div>
+            </div>
+            <!-- Right Panel Stack -->
+            <div class="flex flex-col gap-4">
+                <div class="comic-panel-border rounded-lg overflow-hidden h-full">
+                    <div class="h-full min-h-[120px] bg-cover bg-center"
+                        data-alt="Abstract painterly landscape in autumn colors representing a new land"
+                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzbpBblPOqiw7x0ULhE628ghxxSTW3Kfe55Z1Z4MB0g4ZpW_mwp5Ncvg0Gmr27yPqpHRWo8nlX1kxnmHICcriLKC3t3Am3b1qBqwgtv_Qb8ZSyGCnInjnmwpvfdr-gFeov6LuOzEK_oLMJt9y8hRqoWw1SwPeEre4IkGMhRFiauT9yN4RgE1b-XTaJC3DC4vmiXrKGx1F-duLDSgrVhk_FpwWNPkmkONKxmni4LDmJjYjcM8fyQf1_cvzc3A-QDQitbwjRP03T1GzQ');">
+                    </div>
+                </div>
+                <div class="comic-panel-border rounded-lg overflow-hidden bg-primary p-3">
+                    <p class="text-xs text-white font-bold text-center uppercase tracking-widest">A New Horizon</p>
+                </div>
+            </div>
+        </div>
+        <!-- Full Width Descriptive Panel -->
+        <div class="comic-panel-border bg-white rounded-lg overflow-hidden flex flex-col md:flex-row">
+            <div class="md:w-1/2 aspect-video md:aspect-auto bg-cover bg-center border-b-2 md:border-b-0 md:border-r-2 border-slate-900"
+                data-alt="Old-style illustration of mountain peaks and valley below"
+                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCtcmw6C8OTuL4vurTy87rqCxrHYoENfw-zo9UPzZR9gjlIXpftYrEDSOcIWMSnwllbmE1YqSVgbPjqo8RRFKvcfMPs_JKuG57CEhCfBeVwTh552UQlpMJtuu2LluBOzCTasSAFtZ7sTRCtFZPtt8KTX6PNGoY9WkyXUL8tjA5tV7FqLMwUwNQhmiOricPaT1aE6JWBx8zFBffnBE91sL0mgwletGOsbvukVUnbuV_JApyhak976ZTkrH2S7AqG-5TyviWZnkxr_z-2');">
+            </div>
+            <div class="p-4 md:w-1/2 bg-earth-sand/50 italic flex items-center">
+                <p class="text-base text-slate-700 leading-relaxed">
+                    By nightfall, the air turned crisp. This wasn't the warmth of the valley, but it was the smell of
+                    opportunity.
+                </p>
+            </div>
+        </div>
+        <!-- Interactive AI Caption Bubble -->
+        <div class="flex justify-center py-6">
+            <div class="relative bg-white border-2 border-slate-900 px-6 py-4 rounded-3xl max-w-[85%] shadow-xl">
+                <div
+                    class="absolute -bottom-3 left-10 w-6 h-6 bg-white border-b-2 border-r-2 border-slate-900 transform rotate-45">
+                </div>
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white flex-shrink-0">
+                        <span class="material-symbols-outlined text-sm">auto_awesome</span>
+                    </div>
+                    <p class="text-sm font-medium text-slate-800">
+                        AI Insight: The trunks mentioned were often made of cedar to protect against pests during long
+                        sea voyages.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Floating Play Narration Button -->
+    <div class="fixed bottom-24 right-6 z-50">
+        <button
+            class="w-16 h-16 rounded-full bg-primary text-white shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform">
+            <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1">play_arrow</span>
+            <div class="absolute -top-1 -right-1 flex h-4 w-4">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-4 w-4 bg-primary border-2 border-white"></span>
+            </div>
+        </button>
+    </div>
+    <!-- iOS Bottom Navigation Bar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 pb-8 pt-3 flex justify-between items-center z-50">
+        <a class="flex flex-col items-center gap-1 group" href="#">
+            <span
+                class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">home</span>
+            <span class="text-[10px] font-bold text-slate-400 group-hover:text-primary">HOME</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 group" href="#">
+            <span
+                class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">search</span>
+            <span class="text-[10px] font-bold text-slate-400 group-hover:text-primary">SEARCH</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 group" href="#">
+            <div class="p-2 -mt-6 bg-primary rounded-full shadow-lg shadow-primary/30">
+                <span class="material-symbols-outlined text-white"
+                    style="font-variation-settings: 'FILL' 1">auto_stories</span>
+            </div>
+            <span class="text-[10px] font-bold text-primary mt-1">STORIES</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 group" href="#">
+            <span
+                class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">archive</span>
+            <span class="text-[10px] font-bold text-slate-400 group-hover:text-primary">ARCHIVE</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 group" href="#">
+            <span
+                class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">person</span>
+            <span class="text-[10px] font-bold text-slate-400 group-hover:text-primary">PROFILE</span>
+        </a>
+    </nav>
+    <!-- Interaction Bar Overlay (iOS style small floating) -->
+    <div
+        class="fixed bottom-32 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur px-6 py-3 rounded-full flex gap-8 items-center text-white/80 shadow-2xl z-40">
+        <button class="flex items-center gap-2 hover:text-white">
+            <span class="material-symbols-outlined text-lg">favorite</span>
+            <span class="text-xs font-bold">1.2k</span>
+        </button>
+        <div class="w-px h-4 bg-white/20"></div>
+        <button class="flex items-center gap-2 hover:text-white">
+            <span class="material-symbols-outlined text-lg">comment</span>
+            <span class="text-xs font-bold">48</span>
+        </button>
+        <div class="w-px h-4 bg-white/20"></div>
+        <button class="flex items-center gap-2 hover:text-white">
+            <span class="material-symbols-outlined text-lg">bookmark</span>
+            <span class="text-xs font-bold">Save</span>
+        </button>
+    </div>
+</body>
+
+</html>

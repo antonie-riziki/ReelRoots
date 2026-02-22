@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Archivist Admin Dashboard - ReelRoots</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1111d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101022",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen pb-24">
+    <!-- Header Section -->
+    <header
+        class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10 px-4 pt-6 pb-4">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div
+                    class="size-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
+                    <img alt="Admin user profile picture" class="w-full h-full object-cover"
+                        data-alt="Professional headshot of a system administrator"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeNFYWdJxK6FBM661_joMqD6GOBJbPtSFOWVidOUMMOhQB3OnAVkwMvFHd8JjmtAYpZmm5r-VMOZe3aYdRFpwCeRO3ew0vwmouUvunUJLaBn5mwQkT3raXx8UxBMppcQ9tdJy5EF9Te2wX39jjeovImtjYVkTIDq_p3hzNYkTHfT88HjuIn2CHNkq26lRJWFOnNHowwPm3EJDowgtFYKxMygwSHb6I4FxivVm3CnP8Rph6h3lHALfCrLvbnf4CM2BQfjyQy8tQsy9k" />
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Welcome back,</p>
+                    <h1 class="text-lg font-bold leading-tight">Archivist Admin</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button
+                    class="size-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <span class="material-symbols-outlined text-primary">notifications</span>
+                </button>
+            </div>
+        </div>
+        <!-- Global Search -->
+        <div class="relative group">
+            <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+            <input
+                class="w-full h-12 pl-10 pr-4 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-sm transition-all shadow-sm"
+                placeholder="Search archives, OCR logs, or metadata..." type="text" />
+        </div>
+    </header>
+    <main class="px-4 py-6 space-y-8">
+        <!-- Live Status Metrics -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500">Live Status</h2>
+                <span
+                    class="flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full uppercase">
+                    <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Systems Nominal
+                </span>
+            </div>
+            <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+                <div
+                    class="flex-none w-40 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <span class="material-symbols-outlined text-primary mb-2">cloud_upload</span>
+                    <p class="text-2xl font-bold tracking-tight">14</p>
+                    <p class="text-xs text-slate-500 font-medium">Active Uploads</p>
+                </div>
+                <div
+                    class="flex-none w-40 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <span class="material-symbols-outlined text-amber-500 mb-2">neurology</span>
+                    <p class="text-2xl font-bold tracking-tight">89</p>
+                    <p class="text-xs text-slate-500 font-medium">AI Tasks Pending</p>
+                </div>
+                <div
+                    class="flex-none w-40 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <span class="material-symbols-outlined text-emerald-500 mb-2">verified</span>
+                    <p class="text-2xl font-bold tracking-tight">1,284</p>
+                    <p class="text-xs text-slate-500 font-medium">Verified Records</p>
+                </div>
+            </div>
+        </section>
+        <!-- Quick Actions Grid -->
+        <section>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Tools &amp; Workflow</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <button
+                    class="flex flex-col items-center justify-center p-6 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 space-y-2">
+                    <span class="material-symbols-outlined text-3xl">document_scanner</span>
+                    <span class="text-sm font-semibold">OCR Scanner</span>
+                </button>
+                <button
+                    class="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm space-y-2">
+                    <span class="material-symbols-outlined text-primary text-3xl">edit_note</span>
+                    <span class="text-sm font-semibold">Metadata Editor</span>
+                </button>
+                <button
+                    class="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm space-y-2">
+                    <span class="material-symbols-outlined text-primary text-3xl">analytics</span>
+                    <span class="text-sm font-semibold">Analytics</span>
+                </button>
+                <button
+                    class="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm space-y-2">
+                    <span class="material-symbols-outlined text-primary text-3xl">groups</span>
+                    <span class="text-sm font-semibold">Moderation</span>
+                </button>
+            </div>
+        </section>
+        <!-- Insights Chart Preview -->
+        <section>
+            <div
+                class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="font-bold text-lg">Engagement</h3>
+                        <p class="text-xs text-slate-500">Weekly user interactions</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-emerald-500 font-bold text-sm">+12.4%</p>
+                        <p class="text-[10px] text-slate-400 uppercase font-bold">vs last week</p>
+                    </div>
+                </div>
+                <!-- Simple CSS Bar Chart -->
+                <div class="flex items-end justify-between h-32 gap-2 mb-2">
+                    <div class="flex-1 bg-primary/10 rounded-t-lg h-[40%]"></div>
+                    <div class="flex-1 bg-primary/10 rounded-t-lg h-[60%]"></div>
+                    <div class="flex-1 bg-primary/10 rounded-t-lg h-[45%]"></div>
+                    <div class="flex-1 bg-primary/10 rounded-t-lg h-[85%]"></div>
+                    <div class="flex-1 bg-primary/30 rounded-t-lg h-[55%]"></div>
+                    <div class="flex-1 bg-primary/10 rounded-t-lg h-[70%]"></div>
+                    <div class="flex-1 bg-primary rounded-t-lg h-[95%]"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-400 font-bold uppercase">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                </div>
+            </div>
+        </section>
+        <!-- Recent Activity Feed -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500">Recent Activity</h2>
+                <button class="text-xs font-bold text-primary">View All</button>
+            </div>
+            <div class="space-y-3">
+                <!-- Activity Item 1 -->
+                <div
+                    class="flex gap-4 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div class="size-10 shrink-0 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-emerald-500">check_circle</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold">OCR Scan Complete</p>
+                        <p class="text-xs text-slate-500 mb-2">"1940s Harlem Collection" processed (24 docs).</p>
+                        <span class="text-[10px] text-slate-400 font-medium">2 hours ago</span>
+                    </div>
+                </div>
+                <!-- Activity Item 2 -->
+                <div
+                    class="flex gap-4 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div class="size-10 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">person_add</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold">New Community Contributor</p>
+                        <p class="text-xs text-slate-500 mb-2">@maya_roots joined the archival team.</p>
+                        <span class="text-[10px] text-slate-400 font-medium">5 hours ago</span>
+                    </div>
+                </div>
+                <!-- Activity Item 3 -->
+                <div
+                    class="flex gap-4 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div class="size-10 shrink-0 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-amber-500">warning</span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold">Metadata Alert</p>
+                        <p class="text-xs text-slate-500 mb-2">Missing location tags in "Block Party 1982" series.</p>
+                        <span class="text-[10px] text-slate-400 font-medium">Yesterday</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Bottom Navigation Bar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3 flex justify-between items-center z-[100]">
+        <a class="flex flex-col items-center gap-1 group" href="#">
+            <span class="material-symbols-outlined text-primary fill-[1]">dashboard</span>
+            <span class="text-[10px] font-bold text-primary">Dashboard</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 group text-slate-400" href="#">
+            <span class="material-symbols-outlined">folder_open</span>
+            <span class="text-[10px] font-bold">Library</span>
+        </a>
+        <div class="relative -top-8">
+            <button
+                class="size-14 bg-primary rounded-full flex items-center justify-center text-white shadow-xl shadow-primary/40 border-4 border-background-light dark:border-background-dark">
+                <span class="material-symbols-outlined text-3xl">add</span>
+            </button>
+        </div>
+        <a class="flex flex-col items-center gap-1 group text-slate-400" href="#">
+            <span class="material-symbols-outlined">construction</span>
+            <span class="text-[10px] font-bold">Tools</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 group text-slate-400" href="#">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="text-[10px] font-bold">Settings</span>
+        </a>
+    </nav>
+</body>
+
+</html>
