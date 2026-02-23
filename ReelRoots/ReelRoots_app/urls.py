@@ -13,7 +13,7 @@ urlpatterns = [
     path('reels/', views.reels, name='reels'),
     # path("api/reels/", views.reels_api, name="reels_api"),
     path('story_mode/', views.story_mode, name='story_mode'),
-    path('user_profile/', views.story_mode, name='story_mode'),
+    path('user_profile/', views.user_profile, name='user_profile'),
     path('animation/', views.animation, name='animation')
 
 ]
