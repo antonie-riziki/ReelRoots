@@ -15,6 +15,6 @@ urlpatterns = [
     path('story_mode/', views.story_mode, name='story_mode'),
     path('user_profile/', views.user_profile, name='user_profile'),
     path('animation/', views.animation, name='animation'),
-    path('chatbot/', views.chatbot_response, name='chatbot')
+    path('chatbot-response/', views.chatbot_response, name='chatbot-response')
 
 ]
