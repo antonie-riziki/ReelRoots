@@ -123,6 +123,10 @@ def animation(request):
     return render(request, 'animation.html')
 
 
+def chatbot(request):
+    return render(request, 'chatbot.html')
+
+
 # def reels_api(request):
 #     response = requests.get("https://jsonplaceholder.typicode.com/posts?_limit=5")
 #     data = response.json()
