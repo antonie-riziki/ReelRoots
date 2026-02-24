@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+
+{% load static %}
+
+
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive Nexus - Preserving Knowledge. Connecting History.</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1111d4',
+                        'accent-gold': '#d4af37',
+                        'background-light': '#f9f9fb',
+                        'background-dark': '#101022',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="font-sans antialiased bg-background-light dark:bg-background-dark text-gray-900 dark:text-white transition-colors duration-300">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                        <i data-lucide="archive" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        Reel<span class="text-primary">Roots</span>
+                    </span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white font-medium transition-colors">Home</a>
+                    <a href="#features" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white font-medium transition-colors">Explore</a>
+                    <a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white font-medium transition-colors">About</a>
+                </div>
+
+                <!-- Right Side Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle dark mode">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    </button>
+
+                    <!-- Auth Buttons -->
+                    <a href="/auth" class="px-6 py-2.5 border-2 border-primary text-primary font-semibold rounded-xl hover:bg-primary hover:text-white transition-all duration-200">
+                        Sign In
+                    </a>
+                    <a href="/auth" class="px-6 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all duration-200">
+                        Sign Up
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center space-x-4">
+                    <button id="theme-toggle-mobile" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                    </button>
+                    <button id="mobile-menu-btn" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-background-light dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">Home</a>
+                <a href="#features" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">Explore</a>
+                <a href="#about" class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">About</a>
+                <div class="pt-4 space-y-3">
+                    <a href="/auth" class="block w-full px-4 py-3 text-center border-2 border-primary text-primary font-semibold rounded-xl hover:bg-primary hover:text-white transition-all">
+                        Sign In
+                    </a>
+                    <a href="/auth" class="block w-full px-4 py-3 text-center bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-all">
+                        Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[calc(100vh-5rem)] flex items-center justify-center overflow-hidden bg-background-light dark:bg-background-dark transition-colors duration-300">
+        <!-- Abstract Background Shape -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-20 right-20 w-64 h-64 bg-accent-gold/5 dark:bg-accent-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <!-- Content -->
+                <div class="text-center lg:text-left space-y-8">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-300 text-sm font-semibold mb-4">
+                        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        Trusted by 500+ Academic Institutions
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-gray-900 dark:text-white">
+                        Preserving Knowledge.<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 dark:from-blue-400 dark:to-blue-600">
+                            Connecting History.
+                        </span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        Unlock centuries of historical data with our advanced digital archive platform. 
+                        Designed for researchers, librarians, and historians worldwide.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                        <a href="/auth" class="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-semibold rounded-2xl hover:bg-primary/90 shadow-xl shadow-primary/20 hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200">
+                            Create Account
+                            <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
+                        </a>
+                        <a href="/auth" class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-2xl hover:border-primary hover:text-primary dark:hover:border-blue-400 dark:hover:text-blue-400 transition-all duration-200">
+                            Sign In
+                        </a>
+                    </div>
+
+                    <div class="pt-8 flex items-center justify-center lg:justify-start gap-6 text-sm text-gray-500 dark:text-gray-400">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-accent-gold"></i>
+                            <span>Secure Access</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-accent-gold"></i>
+                            <span>24/7 Availability</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Illustration -->
+                <div class="relative">
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 dark:shadow-black/50 bg-white dark:bg-gray-800 p-2">
+                        <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-900 relative">
+                            <img src="https://static.photos/library/1024x768/42" alt="Historical Library Archive" class="w-full h-full object-cover opacity-90 dark:opacity-80">
+                            <div class="absolute inset-0 bg-gradient-to-t from-background-light/20 dark:from-background-dark/40 to-transparent"></div>
+                            
+                            <!-- Floating Card Overlay -->
+                            <div class="absolute bottom-6 left-6 right-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-accent-gold/20 flex items-center justify-center">
+                                        <i data-lucide="book-open" class="w-5 h-5 text-accent-gold"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">Digital Manuscripts</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">12,450+ documents indexed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Decorative Elements -->
+                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-accent-gold/20 rounded-full blur-2xl"></div>
+                    <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-white dark:bg-[#16162a] transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-accent-gold font-semibold tracking-wide uppercase text-sm mb-3">Platform Features</h2>
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                    Everything you need for historical research
+                </h3>
+                <p class="text-lg text-gray-600 dark:text-gray-300">
+                    Powerful tools designed specifically for academic and institutional research needs.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1: Digital Archives -->
+                <div class="group bg-background-light dark:bg-background-dark rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-800 hover:-translate-y-1">
+                    <div class="w-14 h-14 rounded-xl bg-accent-gold/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="database" class="w-7 h-7 text-accent-gold"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                        Digital Archives
+                    </h4>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Access millions of digitized documents, manuscripts, and rare texts with high-resolution imaging and preservation standards.
+                    </p>
+                    <div class="mt-6 flex items-center text-primary dark:text-blue-400 font-semibold text-sm">
+                        <span>Learn more</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Library Discovery -->
+                <div class="group bg-background-light dark:bg-background-dark rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-800 hover:-translate-y-1">
+                    <div class="w-14 h-14 rounded-xl bg-accent-gold/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="search" class="w-7 h-7 text-accent-gold"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                        Library Discovery
+                    </h4>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Advanced search capabilities across multiple collections with AI-powered metadata tagging and cross-referencing tools.
+                    </p>
+                    <div class="mt-6 flex items-center text-primary dark:text-blue-400 font-semibold text-sm">
+                        <span>Learn more</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Research Tools -->
+                <div class="group bg-background-light dark:bg-background-dark rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-800 hover:-translate-y-1">
+                    <div class="w-14 h-14 rounded-xl bg-accent-gold/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="microscope" class="w-7 h-7 text-accent-gold"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                        Research Tools
+                    </h4>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                        Collaborative annotation, citation management, and analytical tools designed for serious academic research workflows.
+                    </p>
+                    <div class="mt-6 flex items-center text-primary dark:text-blue-400 font-semibold text-sm">
+                        <span>Learn more</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section (Bonus for credibility) -->
+    <section class="py-16 bg-primary dark:bg-primary/90">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-4xl font-bold text-white mb-2">2.5M+</div>
+                    <div class="text-blue-200 text-sm">Documents Archived</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-white mb-2">500+</div>
+                    <div class="text-blue-200 text-sm">Institutions</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-white mb-2">150</div>
+                    <div class="text-blue-200 text-sm">Countries</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold text-white mb-2">99.9%</div>
+                    <div class="text-blue-200 text-sm">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-background-dark text-gray-400 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                            <i data-lucide="archive" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white">
+                            Reel<span class="text-primary">Roots</span>
+                        </span>
+                    </div>
+                    <p class="text-sm leading-relaxed max-w-sm">
+                        Preserving humanity's knowledge for future generations. 
+                        Secure, accessible, and comprehensive digital archival solutions.
+                    </p>
+                </div>
+                
+                <div>
+                    <h5 class="text-white font-semibold mb-4">Platform</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-accent-gold transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-accent-gold transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-accent-gold transition-colors">Security</a></li>
+                        <li><a href="#" class="hover:text-accent-gold transition-colors">API</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h5 class="text-white font-semibold mb-4">Support</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-accent-gold transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-accent-gold transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-accent-gold transition-colors">Contact</a></li>
+                        <li><a href="#" class="hover:text-accent-gold transition-colors">Status</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm">
+                    © 2026 Reel Roots. All rights reserved.
+                </p>
+                <div class="flex gap-6 text-sm">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                    <a href="#" class="hover:text-white transition-colors">Cookie Settings</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

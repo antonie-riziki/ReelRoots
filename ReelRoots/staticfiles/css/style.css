@@ -1,0 +1,135 @@
+/* Base Styles & Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Selection Color */
+::selection {
+    background-color: #1111d4;
+    color: white;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f9f9fb;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1111d4;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0c0ca3;
+}
+
+.dark ::-webkit-scrollbar-track {
+    background: #101022;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #2a2a5a;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a7a;
+}
+
+/* Focus Styles for Accessibility */
+*:focus-visible {
+    outline: 2px solid #1111d4;
+    outline-offset: 2px;
+}
+
+/* Animation for Hero Elements */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dark .glass {
+    background: rgba(16, 16, 34, 0.7);
+}
+
+/* Button Hover Effects */
+.btn-hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(17, 17, 212, 0.3);
+}
+
+/* Gold Accent Glow */
+.gold-glow {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+/* Image Overlay Gradient */
+.image-overlay {
+    background: linear-gradient(135deg, rgba(17, 17, 212, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+}
+
+/* Smooth transitions for all interactive elements */
+a, button {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Mobile Menu Animation */
+#mobile-menu {
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+#mobile-menu.active {
+    max-height: 400px;
+    opacity: 1;
+}
+
+/* Feature Card Hover Enhancement */
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feature-card:hover::before {
+    opacity: 1;
+}

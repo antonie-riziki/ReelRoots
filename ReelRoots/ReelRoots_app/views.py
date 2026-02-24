@@ -222,6 +222,15 @@ def get_gemini_response(prompt):
 
 
 # Create your views here.
+
+def landing_page(request):
+    return render(request, 'landing_page.html')
+
+
+def auth(request):
+    return render(request, 'auth.html')
+
+
 def home(request):
     headers = {
         "Authorization": PEXEL_API_KEY
