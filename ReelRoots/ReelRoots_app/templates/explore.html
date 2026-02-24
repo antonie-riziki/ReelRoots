@@ -7,6 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Explore Archives Grid - ReelRoots</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
@@ -14,6 +15,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
+
+
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -38,6 +42,8 @@
             },
         }
     </script>
+
+
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -52,6 +58,8 @@
             scrollbar-width: none;
         }
     </style>
+
+
     <style>
         body {
             min-height: max(884px, 100dvh);
@@ -60,8 +68,10 @@
 </head>
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    
     <!-- iOS Status Bar Spacer -->
     <div class="h-12 w-full bg-background-light dark:bg-background-dark sticky top-0 z-50"></div>
+    
     <!-- Header & Search Section -->
     <header
         class="sticky top-12 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 pb-4 space-y-4">
@@ -71,6 +81,7 @@
                 <span class="material-symbols-outlined">account_circle</span>
             </button>
         </div>
+
         <!-- Search Bar -->
         <div class="relative group">
             <span
@@ -79,31 +90,95 @@
                 class="w-full bg-white dark:bg-slate-800 border-none rounded-xl py-3 pl-10 pr-4 shadow-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400 text-sm"
                 placeholder="Search archives, stories, eras..." type="text" />
         </div>
+
         <!-- Filter Chips (Horizontal Scroll) -->
         <div class="flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4 pb-1">
-            <button
-                class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-full text-xs font-semibold shrink-0">
-                <span class="material-symbols-outlined text-sm">calendar_today</span>
-                1960 - 1980
-                <span class="material-symbols-outlined text-sm">expand_more</span>
-            </button>
-            <button
-                class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-medium shrink-0">
-                <span class="material-symbols-outlined text-sm text-accent-gold">location_on</span>
-                Harlem, NY
-                <span class="material-symbols-outlined text-sm">expand_more</span>
-            </button>
-            <button
-                class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-medium shrink-0">
-                <span class="material-symbols-outlined text-sm text-primary">photo_library</span>
-                Photos
-                <span class="material-symbols-outlined text-sm">expand_more</span>
-            </button>
-            <button
-                class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-medium shrink-0">
-                <span class="material-symbols-outlined text-sm text-primary">mic</span>
-                Oral Histories
-            </button>
+
+            <!-- DATE RANGE -->
+            <div class="relative shrink-0">
+                <button type="button" onclick="toggleDropdown('dateDropdown')"
+                    class="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-full text-xs font-semibold">
+                    <span class="material-symbols-outlined text-sm">calendar_today</span>
+                    Date Range
+                    <span class="material-symbols-outlined text-sm">expand_more</span>
+                </button>
+
+                <div id="dateDropdown"
+                    class="hidden absolute mt-2 w-72 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-4 z-50">
+
+                    <label class="text-xs font-medium text-slate-500 dark:text-slate-400">Start Date</label>
+                    <input type="date"
+                        class="w-full mt-1 mb-3 px-3 py-2 text-sm border rounded-lg dark:bg-slate-900 dark:border-slate-700">
+
+                    <label class="text-xs font-medium text-slate-500 dark:text-slate-400">End Date</label>
+                    <input type="date"
+                        class="w-full mt-1 mb-3 px-3 py-2 text-sm border rounded-lg dark:bg-slate-900 dark:border-slate-700">
+
+                    <button class="w-full bg-primary text-white text-xs py-2 rounded-lg font-semibold">
+                        Apply
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- LOCATION -->
+            <div class="relative shrink-0">
+                <button type="button" onclick="toggleDropdown('locationDropdown')"
+                    class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-medium">
+                    <span class="material-symbols-outlined text-sm text-accent-gold">location_on</span>
+                    Location
+                    <span class="material-symbols-outlined text-sm">expand_more</span>
+                </button>
+
+                <div id="locationDropdown" 
+                    class="hidden absolute mt-2 w-64 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-3 z-50 text-sm">
+
+                    <!-- Kenya (Exact Locations) -->
+                    <p class="text-xs font-semibold text-slate-400 mb-2">Kenya</p>
+                    <ul class="space-y-1 mb-3">
+                        <li class="hover:text-primary cursor-pointer">Nairobi County</li>
+                        <li class="hover:text-primary cursor-pointer">Mombasa County</li>
+                        <li class="hover:text-primary cursor-pointer">Kisumu County</li>
+                        <li class="hover:text-primary cursor-pointer">Nakuru County</li>
+                        <li class="hover:text-primary cursor-pointer">Eldoret (Uasin Gishu)</li>
+                    </ul>
+
+                    <!-- Aggregated Regions -->
+                    <p class="text-xs font-semibold text-slate-400 mb-2">Regions</p>
+                    <ul class="space-y-1">
+                        <li class="hover:text-primary cursor-pointer">East Africa</li>
+                        <li class="hover:text-primary cursor-pointer">Africa</li>
+                        <li class="hover:text-primary cursor-pointer">Worldwide</li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- MEDIA TYPE -->
+            <div class="relative shrink-0">
+                <button type="button" onclick="toggleDropdown('mediaDropdown')"
+                    class="flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-medium">
+                    <span class="material-symbols-outlined text-sm text-primary">photo_library</span>
+                    Media
+                    <span class="material-symbols-outlined text-sm">expand_more</span>
+                </button>
+
+                <div id="mediaDropdown"
+                    class="hidden absolute mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-3 z-50 text-sm">
+
+                    <ul class="space-y-2">
+                        <li class="hover:text-primary cursor-pointer flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">photo</span>
+                            Photos
+                        </li>
+                        <li class="hover:text-primary cursor-pointer flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">videocam</span>
+                            Videos
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </header>
     <!-- Main Content Area: Grid View -->
@@ -240,19 +315,63 @@
                 </div>
             </div>
         </div>
+
         <!-- Pagination Spacer -->
         <div class="h-24"></div>
     </main>
+
     <!-- Floating Action Button -->
     <button
         class="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center z-50">
         <span class="material-symbols-outlined scale-125">add</span>
     </button>
+
     <!-- Bottom Navigation Bar (iOS Style) -->
     {% include 'navbar.html' %}
+
     <!-- iOS Home Indicator -->
     <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60]">
     </div>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        window.toggleDropdown = function(id) {
+            document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+                if (el.id !== id) el.classList.add('hidden');
+            });
+
+            const target = document.getElementById(id);
+            if (target) {
+                target.classList.toggle('hidden');
+            }
+        };
+
+        document.addEventListener('click', function (event) {
+            if (!event.target.closest('.relative')) {
+                document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+                    el.classList.add('hidden');
+                });
+            }
+        });
+
+    });
+</script>
+
+<script>
+
+    window.toggleDropdown = function(id) {
+        document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+            if (el.id !== id) el.classList.add('hidden');
+        });
+        document.getElementById(id).classList.toggle('hidden');
+    }
+
+
+</script>
+
 </body>
 
 </html>
