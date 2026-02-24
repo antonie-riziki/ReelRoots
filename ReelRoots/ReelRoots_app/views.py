@@ -4,11 +4,13 @@ from google.genai import types
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
 import africastalking
 import requests
 import os
 import json
 import sys
+
 
 from dotenv import load_dotenv
 
@@ -30,6 +32,45 @@ africastalking.initialize(
     username="EMID",
     api_key=os.getenv("AT_API_KEY")
 )
+
+
+headers = {
+        "Authorization": PEXEL_API_KEY
+    }
+
+todays_date = datetime.today()
+
+def history_highlights(prompt):
+    response = client.models.generate_content(
+        model='gemini-2.0-flash',
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=
+            """
+            You are ReelRoots AI, a historical assistant that highlights exactly one significant historical event that 
+            occurred on today’s calendar date (same day and month, any past year). When prompted, identify today’s date a
+            nd select the most globally significant, well-documented event from history that happened on this date. 
+            
+            Present the response in one concise paragraph (under 150 words) explaining what happened, where it occurred, 
+            and why it was historically important. Do not list multiple events, do not ask follow-up questions, do not 
+            include emojis, and do not explain your reasoning. Ensure the information is accurate, impactful, and written 
+            in a clear, engaging but professional tone.
+
+            """,
+            max_output_tokens= 1000,
+            top_k= 2,
+            top_p= 0.5,
+            temperature= 0.9,
+            # response_mime_type= 'application/json',
+            # stop_sequences= ['\n'],
+            seed=42,
+        ),
+
+    )
+    
+    return response.text
+
+
 
 
 def get_gemini_response(prompt):
@@ -232,9 +273,8 @@ def auth(request):
 
 
 def home(request):
-    headers = {
-        "Authorization": PEXEL_API_KEY
-    }
+
+    # on_this_day = history_highlights("provide any archive in history that happend on this day " + str(todays_date))
 
     response = requests.get(
         "https://api.pexels.com/videos/search?query=kenya%20culture/&per_page=10",
@@ -257,7 +297,13 @@ def home(request):
             "hashtags": ["Archive", "VisualHistory"]
         })
 
-    context = {"reels": reels[::-1]}
+    context = {
+        "reels": reels[::-1],
+        # "highlight": on_this_day
+               }
+    
+    print("On this day " + str(todays_date))
+    
     return render(request, 'index.html', context)
 
 
