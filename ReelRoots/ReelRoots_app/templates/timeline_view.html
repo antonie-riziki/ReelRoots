@@ -245,38 +245,9 @@
         </div>
     </main>
     <!-- Bottom Navigation Bar (iOS Style) -->
-    <nav
-        class="sticky bottom-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
-        <div class="flex justify-around items-end pb-6 pt-2 px-2">
-            <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
-                href="#">
-                <span class="material-symbols-outlined">explore</span>
-                <span class="text-[10px] font-medium">Explore</span>
-            </a>
-            <a class="flex flex-col items-center gap-1 text-primary" href="#">
-                <span class="material-symbols-outlined fill-1">schedule</span>
-                <span class="text-[10px] font-bold">Timeline</span>
-            </a>
-            <div class="relative -top-4">
-                <button
-                    class="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/40 border-4 border-background-light dark:border-background-dark">
-                    <span class="material-symbols-outlined text-3xl">add</span>
-                </button>
-            </div>
-            <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
-                href="#">
-                <span class="material-symbols-outlined">diversity_1</span>
-                <span class="text-[10px] font-medium">Community</span>
-            </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
-                href="#">
-                <span class="material-symbols-outlined">person</span>
-                <span class="text-[10px] font-medium">Profile</span>
-            </a>
-        </div>
-        <!-- iOS Home Indicator Spacing -->
-        <div class="h-5"></div>
-    </nav>
+
+    {% include 'navbar.html' %}
+    
 </body>
 
 </html>

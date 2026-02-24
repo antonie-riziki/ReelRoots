@@ -249,31 +249,7 @@
         <span class="material-symbols-outlined scale-125">add</span>
     </button>
     <!-- Bottom Navigation Bar (iOS Style) -->
-    <nav
-        class="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 pb-8 pt-3 px-6 z-50">
-        <div class="flex items-center justify-between max-w-md mx-auto">
-            <a class="flex flex-col items-center gap-1 text-primary" href="#">
-                <span class="material-symbols-outlined filled leading-none">explore</span>
-                <span class="text-[10px] font-bold">Explore</span>
-            </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
-                <span class="material-symbols-outlined leading-none">collections_bookmark</span>
-                <span class="text-[10px] font-medium">Archive</span>
-            </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
-                <span class="material-symbols-outlined leading-none">auto_stories</span>
-                <span class="text-[10px] font-medium">Stories</span>
-            </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
-                <span class="material-symbols-outlined leading-none">group</span>
-                <span class="text-[10px] font-medium">Community</span>
-            </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
-                <span class="material-symbols-outlined leading-none">person</span>
-                <span class="text-[10px] font-medium">Profile</span>
-            </a>
-        </div>
-    </nav>
+    {% include 'navbar.html' %}
     <!-- iOS Home Indicator -->
     <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60]">
     </div>

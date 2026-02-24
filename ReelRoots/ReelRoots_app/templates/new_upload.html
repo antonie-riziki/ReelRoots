@@ -214,7 +214,10 @@
     <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60]">
     </div>
     <!-- Bottom Nav Placeholder (to match component style if needed for global context) -->
-    <div class="hidden">
+
+    {% include 'navbar.html' %}
+
+    <!-- <div class="hidden">
         <div class="flex gap-2 border-t border-slate-200 bg-background-light px-4 pb-3 pt-2">
             <a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
                 <span class="material-symbols-outlined">home</span>
@@ -237,7 +240,7 @@
                 <p class="text-xs font-medium">Profile</p>
             </a>
         </div>
-    </div>
+    </div> -->
 </body>
 
 </html>

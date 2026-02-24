@@ -161,7 +161,10 @@
 
 
         <!-- Bottom Navigation Bar (iOS Style) -->
-        <nav
+
+        {% include 'navbar.html' %}
+
+        <!-- <nav
             class="glass-nav border-t border-slate-200 dark:border-slate-800 safe-area-bottom px-6 py-3 flex justify-between items-center z-30">
             <a class="flex flex-col items-center gap-1 text-primary" href="#">
                 <span class="material-symbols-outlined text-[28px] font-variation-fill">home</span>
@@ -185,7 +188,7 @@
                 <span class="material-symbols-outlined text-[28px]">person</span>
                 <span class="text-[10px] font-medium">Profile</span>
             </a>
-        </nav>
+        </nav> -->
         <!-- Dynamic Island/Notch Spacer for iPhone 14/15 Pro style -->
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-8 bg-black rounded-b-3xl z-50"></div>
     </div>
