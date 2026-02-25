@@ -84,7 +84,8 @@
                         <p class="text-sm text-gray-600 dark:text-gray-400">Sign in to access your research archive</p>
                     </div>
 
-                    <form class="space-y-5" onsubmit="handleSignIn(event)">
+                    <form class="space-y-5" action="{% url 'home' %}" onsubmit="handleSignIn(event)">
+                        {% csrf_token %}
                         <!-- Email -->
                         <div>
                             <label for="signin-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -167,7 +168,8 @@
                         <p class="text-sm text-gray-600 dark:text-gray-400">Join thousands of researchers worldwide</p>
                     </div>
 
-                    <form class="space-y-5" onsubmit="handleSignUp(event)">
+                    <form class="space-y-5" action="{% url 'home' %}" onsubmit="handleSignUp(event)">
+                        {% csrf_token %}
                         <!-- Full Name -->
                         <div>
                             <label for="signup-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
