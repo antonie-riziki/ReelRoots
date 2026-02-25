@@ -191,34 +191,35 @@
         </div>
         <!-- Archive Grid -->
         <div class="grid grid-cols-2 gap-4">
-            <!-- Card 1 -->
-            <a href="/archive-details">
+            {% for archive in archives %}
+            <a href="{% url 'archive-details' archive.slug %}">
                 <div class="group relative flex flex-col gap-2">
                     <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
-                        <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            data-alt="Vintage photograph of a 1970s soul band performing"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuACk2riURVL6_fD_hspoyIYTfDQfGN-CkxldZIV-DhCJ4jeNu4b4082AMoB4fy6qEQ15_2W2mBbnPmn472JQX6ZQyXf2tLX8Qs_1Ho8NTiS8JvISSRPa0dcPIC8dh-ULWgDKjaCE8CMjOZRcA7et-rp5t5vLjJnIbClyoscpwdvCFMRX1MljD7OBQfL3_yG7MdeTFhQ81K-ENomVZutyfKyDsm6gf5G2EUUR2Ff5S7SFlyFUwKCSyZ1XIcTKH01VJBZNQUjufWWXXCL" />
+
+                        {% with archive.media.all|first as first_media %}
+                            {% if first_media %}
+                                <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    src="{{ first_media.file.url }}"
+                                    alt="{{ archive.title }}">
+                            {% endif %}
+                        {% endwith %}
+
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                        <button
-                            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
-                            <span class="material-symbols-outlined text-sm">bookmark</span>
-                        </button>
-                        <div class="absolute bottom-2 left-2 flex items-center gap-1">
-                            <span
-                                class="px-2 py-0.5 rounded bg-accent-gold/90 text-[10px] font-bold text-white uppercase tracking-tighter">Gold
-                                Era</span>
-                        </div>
                     </div>
+
                     <div>
-                        <h3 class="font-bold text-sm leading-tight line-clamp-1">Sunday Service Choir</h3>
+                        <h3 class="font-bold text-sm leading-tight line-clamp-1">
+                            {{ archive.title }}
+                        </h3>
                         <p class="text-xs text-slate-500 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[10px]">schedule</span> 1974 • Harlem
+                            {{ archive.event_date|date:"Y" }} • {{ archive.city }}, {{ archive.country }}
                         </p>
                     </div>
                 </div>
             </a>
+            {% endfor %}
             <!-- Card 2 -->
-            <div class="group relative flex flex-col gap-2">
+            <!-- <div class="group relative flex flex-col gap-2">
                 <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
                     <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         data-alt="Black and white photo of a jazz saxophonist"
@@ -239,9 +240,9 @@
                         <span class="material-symbols-outlined text-[10px]">schedule</span> 1962 • Chicago
                     </p>
                 </div>
-            </div>
+            </div> -->
             <!-- Card 3 -->
-            <div class="group relative flex flex-col gap-2">
+            <!-- <div class="group relative flex flex-col gap-2">
                 <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
                     <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         data-alt="People at a community garden in the city"
@@ -258,9 +259,9 @@
                         <span class="material-symbols-outlined text-[10px]">schedule</span> 1981 • London
                     </p>
                 </div>
-            </div>
+            </div> -->
             <!-- Card 4 -->
-            <div class="group relative flex flex-col gap-2">
+            <!-- <div class="group relative flex flex-col gap-2">
                 <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
                     <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         data-alt="Old street fair with vibrant banners"
@@ -277,9 +278,9 @@
                         <span class="material-symbols-outlined text-[10px]">schedule</span> 1978 • Oakland
                     </p>
                 </div>
-            </div>
+            </div> -->
             <!-- Card 5 -->
-            <div class="group relative flex flex-col gap-2">
+            <!-- <div class="group relative flex flex-col gap-2">
                 <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
                     <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         data-alt="Vintage cassette player and microphone"
@@ -296,9 +297,9 @@
                         <span class="material-symbols-outlined text-[10px]">schedule</span> 1965 • Memphis
                     </p>
                 </div>
-            </div>
+            </div> -->
             <!-- Card 6 -->
-            <div class="group relative flex flex-col gap-2">
+            <!-- <div class="group relative flex flex-col gap-2">
                 <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
                     <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         data-alt="A handshake between two community leaders"
@@ -315,7 +316,7 @@
                         <span class="material-symbols-outlined text-[10px]">schedule</span> 1971 • Detroit
                     </p>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Pagination Spacer -->

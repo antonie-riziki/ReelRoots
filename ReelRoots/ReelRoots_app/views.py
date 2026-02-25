@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
+from .models import *
 import africastalking
 import requests
 import os
@@ -302,7 +303,7 @@ def home(request):
         # "highlight": on_this_day
                }
     
-    print("On this day " + str(todays_date))
+    # print("On this day " + str(todays_date))
     
     return render(request, 'index.html', context)
 
@@ -320,7 +321,15 @@ def chat(request):
 
 
 def explore(request):
-    return render(request, 'explore.html')
+    archives = Archive.objects.filter(
+        visibility="public",
+        verification_status="verified"
+    ).order_by("-event_date")
+
+    context = {
+        "archives": archives
+    }
+    return render(request, 'explore.html', context)
 
 
 def new_upload(request):
