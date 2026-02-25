@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from google import genai
 from google.genai import types
 from django.http import JsonResponse, HttpResponse
@@ -312,8 +312,15 @@ def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
 
 
-def archive_details(request):
-    return render(request, 'archive_details.html')
+def archive_details(request, slug):
+    archive_details = get_object_or_404(Archive, slug=slug)
+    photos = archive_details.media.filter(media_type="photo")
+    
+    context = {
+        "archive_details": archive_details,
+        "photos": photos,
+               }
+    return render(request, 'archive_details.html', context)
 
 
 def chat(request):
