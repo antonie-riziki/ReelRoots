@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from google import genai
 from google.genai import types
 from django.http import JsonResponse, HttpResponse
@@ -11,6 +11,12 @@ import requests
 import os
 import json
 import sys
+
+
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib import messages
 
 
 from dotenv import load_dotenv
@@ -34,6 +40,7 @@ africastalking.initialize(
     api_key=os.getenv("AT_API_KEY")
 )
 
+sms = africastalking.SMS
 
 headers = {
         "Authorization": PEXEL_API_KEY
@@ -259,7 +266,23 @@ def get_gemini_response(prompt):
 
 
 
+def login_message(phone_number):
 
+    recipients = [f"+254{str(phone_number)}"]
+
+    # Set your message
+    message = f"Welcome back to ReelRoots, a living gateway into the stories, cultures, and defining moments of our past!"
+
+    # Set your shortCode or senderId
+    sender = "AFTKNG"
+ 
+    try:
+        response = sms.send(message, recipients, sender)
+
+        print(response)
+
+    except Exception as e:
+        print(f'Houston, we have a problem: {e}')
 
 
 
@@ -270,6 +293,63 @@ def landing_page(request):
 
 
 def auth(request):
+    if request.method == "POST":
+        form_type = request.POST.get("form_type")
+
+        # ==========================
+        # SIGN IN
+        # ==========================
+        if form_type == "signin":
+            sign_in_phone = request.POST.get("sigin-phone-number")
+            email = request.POST.get("email")
+            password = request.POST.get("password")
+
+            # login_message(sign_in_phone)
+
+            try:
+                user_obj = User.objects.get(email=email)
+                user = authenticate(request, username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                user = None
+
+            if user is not None:
+                login(request, user)
+                return redirect("home")
+            else:
+                messages.error(request, "Invalid email or password")
+
+        # ==========================
+        # SIGN UP
+        # ==========================
+        elif form_type == "signup":
+            name = request.POST.get("name")
+            email = request.POST.get("email")
+            phone = request.POST.get("phone-number")
+            institution = request.POST.get("institution")
+            password = request.POST.get("password")
+            confirm_password = request.POST.get("confirm-password")
+
+
+            if password != confirm_password:
+                messages.error(request, "Passwords do not match")
+                return redirect("auth")
+
+            if User.objects.filter(email=email).exists():
+                messages.error(request, "Email already registered")
+                return redirect("auth")
+
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=password,
+                first_name=name,
+                phone_number=phone
+            )
+
+            login_message(phone)
+            login(request, user)
+            
+            return redirect("home")
     return render(request, 'auth.html')
 
 
@@ -343,6 +423,10 @@ def new_upload(request):
     return render(request, 'new_upload.html')
 
 
+# import requests
+# from django.conf import settings
+# from django.shortcuts import render
+
 # def reels(request):
 #     search_url = "https://www.googleapis.com/youtube/v3/search"
 
@@ -350,45 +434,52 @@ def new_upload(request):
 #         "part": "snippet",
 #         "q": "history documentary",
 #         "type": "video",
-#         "maxResults": 5,
+#         "maxResults": 1,
 #         "videoDuration": "short",
-#         "key": YOUTUBE_API_KEY
+#         "key": os.getenv("YOUTUBE_API_KEY"),
 #     }
 
 #     search_response = requests.get(search_url, params=search_params)
+
+#     if search_response.status_code != 200:
+#         return render(request, "reels.html", {"reels": []})
+
 #     search_data = search_response.json()
 
-#     video_ids = [item["id"]["videoId"] for item in search_data.get("items", [])]
+#     video_ids = [
+#         item["id"]["videoId"]
+#         for item in search_data.get("items", [])
+#         if "videoId" in item["id"]
+#     ]
 
-#     # 🔥 Second call to check embeddable status
+#     if not video_ids:
+#         return render(request, "reels.html", {"reels": []})
+
+#     # Second call
 #     videos_url = "https://www.googleapis.com/youtube/v3/videos"
 
 #     videos_params = {
 #         "part": "status",
 #         "id": ",".join(video_ids),
-#         "key": YOUTUBE_API_KEY
+#         "key": os.getenv("YOUTUBE_API_KEY"),
 #     }
 
 #     videos_response = requests.get(videos_url, params=videos_params)
+
+#     if videos_response.status_code != 200:
+#         return render(request, "reels.html", {"reels": []})
+
 #     videos_data = videos_response.json()
 
 #     reels = []
 
 #     for video in videos_data.get("items", []):
-#         if video["status"]["embeddable"]:
-
+#         if video.get("status", {}).get("embeddable"):
 #             reels.append({
-#                 "video_url": f"https://www.youtube.com/embed/{video['id']}?autoplay=1&mute=1&playsinline=1",
-#                 "creator": "YouTube",
-#                 "summary": "Historical archive footage",
-#                 "likes": "—",
-#                 "comments": "—",
-#                 "shares": "—",
-#                 "hashtags": ["Archive", "History"]
+#                 "video_url": f"https://www.youtube.com/embed/{video['id']}?rel=0",
 #             })
 
-#         context = {"reels": reels}
-#     return render(request, "reels.html", context)
+#     return render(request, "reels.html", {"reels": reels})
     
 
 
@@ -434,17 +525,37 @@ def chatbot_response(request):
 
 #     return JsonResponse({"reels": reels})
 
+import random
+PEXELS_URL = "https://api.pexels.com/videos/search"
+
+HISTORICAL_QUERIES = [
+    "Kenyan heritage documentary style",
+    "Maasai traditional ceremony",
+    "African independence celebration",
+    "African museum artifacts",
+    "vintage Africa black and white",
+    "Swahili culture Lamu",
+    "African traditional storytelling",
+]
 
 
 def reels(request):
+    query = random.choice(HISTORICAL_QUERIES)
+
     headers = {
         "Authorization": PEXEL_API_KEY
     }
 
-    response = requests.get(
-        "https://api.pexels.com/videos/search?query=Kenyan heritage/&per_page=10",
-        headers=headers
-    )
+    params = {
+        "query": query,
+        "per_page": 20
+    }
+
+    response = requests.get(PEXELS_URL, headers=headers, params=params)
+
+    if response.status_code != 200:
+        return render(request, "reels.html", {"reels": []})
+
 
     data = response.json()
 
@@ -474,7 +585,7 @@ def reels(request):
 #         "part": "snippet",
 #         "q": "history documentary",
 #         "type": "video",
-#         "maxResults": 5,
+#         "maxResults": 1,
 #         "videoDuration": "short",
 #         "key": YOUTUBE_API_KEY
 #     }

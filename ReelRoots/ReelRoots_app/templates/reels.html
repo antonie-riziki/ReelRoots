@@ -86,19 +86,35 @@
             <!-- Each Reel = Full Screen -->
             <div class="relative h-screen w-full snap-start bg-slate-900 flex items-center justify-center">
 
-                <iframe
-                    class="absolute inset-0 w-full h-full"
-                    src="{{ reel.video_url }}"
-                    frameborder="0"
-                    allow="autoplay; encrypted-media"
-                    allowfullscreen>
-                </iframe>
+                <!-- <div class="relative w-full aspect-[9/16] mb-6">
+                    <iframe
+                        loading="lazy"
+                        class="absolute inset-0 w-full h-full"
+                        src="{{ reel.video_url }}"
+                        frameborder="0"
+                        allowfullscreen>
+                    </iframe>
+                </div>-->
 
                 <!-- Video -->
-                <!-- <video autoplay muted loop playsinline
-                    class="absolute inset-0 w-full h-full object-cover">
-                    <source src="{{ reel.video_url }}" type="video/mp4">
-                </video> -->
+               
+                <div class="relative w-full aspect-[9/16] mb-6 rounded-xl overflow-hidden">
+
+                    <video
+                        class="w-full h-full object-cover"
+                        src="{{ reel.video_url }}"
+                        autoplay
+                        muted
+                        loop
+                        playsinline>
+                    </video>
+
+                    <div class="absolute bottom-0 p-4 text-white bg-gradient-to-t from-black/60 to-transparent w-full">
+                        <p class="text-sm font-semibold">{{ reel.creator }}</p>
+                        <p class="text-xs opacity-80">Duration: {{ reel.duration }}s</p>
+                    </div>
+
+                </div>
 
                 <!-- Right Sidebar -->
                 <div class="absolute right-4 bottom-32 z-10 flex flex-col items-center gap-6">

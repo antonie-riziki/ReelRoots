@@ -132,3 +132,10 @@ class Media(models.Model):
 
     def __str__(self):
         return f"{self.media_type} - {self.archive.title}"
+
+
+
+
+# class Profile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     institution = models.CharField(max_length=255, blank=True)
