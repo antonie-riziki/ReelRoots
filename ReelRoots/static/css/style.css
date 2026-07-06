@@ -5,7 +5,7 @@ html {
 
 /* Custom Selection Color */
 ::selection {
-    background-color: #1111d4;
+    background-color: #1F5E4A;
     color: white;
 }
 
@@ -20,12 +20,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #1111d4;
+    background: #1F5E4A;
     border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #0c0ca3;
+    background: #043f2d;
 }
 
 .dark ::-webkit-scrollbar-track {
@@ -42,7 +42,7 @@ html {
 
 /* Focus Styles for Accessibility */
 *:focus-visible {
-    outline: 2px solid #1111d4;
+    outline: 2px solid #1F5E4A;
     outline-offset: 2px;
 }
 
@@ -52,6 +52,7 @@ html {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -94,7 +95,8 @@ html {
 }
 
 /* Smooth transitions for all interactive elements */
-a, button {
+a,
+button {
     transition: all 0.2s ease-in-out;
 }
 

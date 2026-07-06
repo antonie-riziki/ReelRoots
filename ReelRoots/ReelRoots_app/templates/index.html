@@ -26,7 +26,7 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1111d4",
+                        "primary": "#1F5E4A",
                         "accent-gold": "#d4af37",
                         "background-light": "#f9f9fb",
                         "background-dark": "#101022",
@@ -60,7 +60,7 @@
             min-height: max(884px, 100dvh);
         }
     </style>
-    
+
 </head>
 
 <body
@@ -95,7 +95,7 @@
                         Heritage</span>
                 </div>
                 <h2 class="text-4xl font-800 leading-[1.1] tracking-tight text-slate-900 dark:text-white"><strong>
-                    Where History <span class="text-primary"><br>Lives Again</strong></span>
+                        Where History <span class="text-primary"><br>Lives Again</strong></span>
                 </h2>
                 <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
                     Preserving community stories through immersive social archives. Explore the roots that shape our
@@ -122,9 +122,9 @@
                 <a class="text-sm font-semibold text-primary" href="#">See all</a>
             </div>
 
-            
+
             <div class="flex gap-4 overflow-x-auto px-4 no-scrollbar pb-2">
-                
+
                 {% for reel in reels %}
                 <!-- Reel 1 -->
                 <div class="flex-none w-40 space-y-2">
@@ -154,8 +154,8 @@
                 {% endfor %}
 
             </div>
-            
-            
+
+
 
         </section>
         <!-- On This Day Section -->
@@ -220,30 +220,30 @@
                     <span class="text-xs text-slate-500">3.1k reels</span>
                 </div>
             </div>
-            
+
         </section>
-        
+
         {% include 'chatbox.html' %}
 
     </main>
-    
-    
+
+
     {% include 'navbar.html' %}
 
 
-<script>
+    <script>
 
-    if ( parent && parent !== parent.top ) {
-        // IE11 does not have attachEvent, so all must suffer
-        if ( parent.addEventListener ) {
-            parent.addEventListener( "unload", unloadHandler, false );
-        } else if ( parent.attachEvent ) {
-            parent.attachEvent( "onunload", unloadHandler );
+        if (parent && parent !== parent.top) {
+            // IE11 does not have attachEvent, so all must suffer
+            if (parent.addEventListener) {
+                parent.addEventListener("unload", unloadHandler, false);
+            } else if (parent.attachEvent) {
+                parent.attachEvent("onunload", unloadHandler);
+            }
         }
-    }
 
 
-</script>
+    </script>
 
 </body>
 
