@@ -223,7 +223,7 @@
     </main>
 
     <!-- Floating Action Button -->
-    <button
+    <button onclick="openAddModal()"
         class="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center z-50">
         <span class="material-symbols-outlined scale-125">add</span>
     </button>
@@ -235,6 +235,87 @@
     <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60]">
     </div>
 
+    <!-- Add Archive Modal -->
+    <div id="addModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeAddModal()"></div>
+
+        <!-- Modal Panel -->
+        <div class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Add New Archive</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-500 rounded-full p-1 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-6 overflow-y-auto hide-scrollbar">
+                <form id="addArchiveForm" class="space-y-4">
+                    <!-- Title -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title *</label>
+                        <input type="text" id="title" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 shadow-sm focus:ring-2 focus:ring-primary/20 text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Event Date *</label>
+                            <input type="date" id="event_date" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 shadow-sm focus:ring-2 focus:ring-primary/20 text-sm">
+                        </div>
+                        <!-- Category -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category *</label>
+                            <input type="text" id="category" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 shadow-sm focus:ring-2 focus:ring-primary/20 text-sm" placeholder="e.g. Culture">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Country -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Country *</label>
+                            <input type="text" id="country" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 shadow-sm focus:ring-2 focus:ring-primary/20 text-sm" placeholder="e.g. Kenya">
+                        </div>
+                        <!-- Region -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Region *</label>
+                            <input type="text" id="region" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 shadow-sm focus:ring-2 focus:ring-primary/20 text-sm" placeholder="e.g. Nairobi">
+                        </div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Summary *</label>
+                        <textarea id="summary" rows="2" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 shadow-sm focus:ring-2 focus:ring-primary/20 text-sm" placeholder="Short summary"></textarea>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description *</label>
+                        <textarea id="description" rows="3" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 shadow-sm focus:ring-2 focus:ring-primary/20 text-sm" placeholder="Detailed description"></textarea>
+                    </div>
+
+                    <!-- Full Story -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Story *</label>
+                        <textarea id="full_story" rows="4" required class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl py-3 px-4 shadow-sm focus:ring-2 focus:ring-primary/20 text-sm" placeholder="The complete historical record..."></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3 bg-slate-50 dark:bg-slate-800/50">
+                <button type="button" onclick="closeAddModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors">
+                    Cancel
+                </button>
+                <button type="button" onclick="submitArchive()" class="px-6 py-2 text-sm font-semibold text-white bg-primary hover:bg-primary/90 rounded-xl transition-colors shadow-sm">
+                    Create Record
+                </button>
+            </div>
+        </div>
+    </div>
 
 
     <script>
@@ -263,15 +344,55 @@
     </script>
 
     <script>
-
-        window.toggleDropdown = function (id) {
-            document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
-                if (el.id !== id) el.classList.add('hidden');
-            });
-            document.getElementById(id).classList.toggle('hidden');
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
         }
 
+        function openAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+        }
 
+        async function submitArchive() {
+            const form = document.getElementById('addArchiveForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const payload = {
+                title: document.getElementById('title').value,
+                event_date: document.getElementById('event_date').value,
+                category: document.getElementById('category').value,
+                country: document.getElementById('country').value,
+                region: document.getElementById('region').value,
+                summary: document.getElementById('summary').value,
+                description: document.getElementById('description').value,
+                full_story: document.getElementById('full_story').value,
+            };
+
+            try {
+                const response = await fetch('/api/archives/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    closeAddModal();
+                    form.reset();
+                    window.location.reload(); // Reload to show the new record in the grid
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('A network error occurred.');
+            }
+        }
     </script>
 
 </body>

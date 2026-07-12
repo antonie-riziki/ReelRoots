@@ -15,6 +15,7 @@ urlpatterns = [
     path("archive/<slug:slug>/", views.archive_details, name="archive-details"),
     path('chat/', views.chat, name='chat'),
     path('explore/', views.explore, name='explore'),
+    path('api/archives/create/', views.create_archive, name='create_archive'),
     path('upload/', views.new_upload, name='upload'),
     path('reels/', views.reels, name='reels'),
     # path("api/reels/", views.reels_api, name="reels_api"),

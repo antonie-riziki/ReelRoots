@@ -456,6 +456,56 @@ def explore(request):
     return render(request, 'explore.html', context)
 
 
+from django.utils.text import slugify
+import uuid
+
+@csrf_exempt
+def create_archive(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            title = data.get("title")
+            event_date = data.get("event_date")
+            country = data.get("country")
+            region = data.get("region")
+            category = data.get("category")
+            summary = data.get("summary")
+            description = data.get("description")
+            full_story = data.get("full_story")
+            
+            if not all([title, event_date, country, region, category, summary, description, full_story]):
+                return JsonResponse({"error": "All fields are required"}, status=400)
+                
+            # Create a unique slug
+            base_slug = slugify(title)
+            slug = f"{base_slug}-{str(uuid.uuid4())[:8]}"
+            
+            new_record = {
+                "title": title,
+                "slug": slug,
+                "event_date": event_date,
+                "country": country,
+                "region": region,
+                "category": category,
+                "summary": summary,
+                "description": description,
+                "full_story": full_story,
+                "visibility": "public",
+                "verification_status": "verified"
+            }
+            
+            response = supabase.table("archives").insert(new_record).execute()
+            if response.data:
+                return JsonResponse({"message": "Archive created successfully", "data": response.data[0]}, status=201)
+            else:
+                return JsonResponse({"error": "Failed to create archive"}, status=400)
+                
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+            
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+
 def new_upload(request):
     return render(request, 'new_upload.html')
 
