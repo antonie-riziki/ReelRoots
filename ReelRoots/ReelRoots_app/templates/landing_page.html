@@ -380,7 +380,7 @@
 
             <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p class="text-sm">
-                    © 2026 Reel Roots. All rights reserved.
+                    © {% now "Y" %} Reel Roots. All rights reserved.
                 </p>
                 <div class="flex gap-6 text-sm">
                     <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
@@ -389,7 +389,11 @@
                 </div>
             </div>
         </div>
+
     </footer>
+
+    <!-- Dynamic Island/Notch Spacer for iPhone 14/15 Pro style -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-8 bg-black rounded-b-3xl z-50"></div>
 
     <!-- Scripts -->
     <script src="{% static 'js/script.js' %}"></script>
