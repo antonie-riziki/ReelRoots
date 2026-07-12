@@ -463,18 +463,20 @@ import uuid
 def create_archive(request):
     if request.method == "POST":
         try:
-            data = json.loads(request.body)
-            title = data.get("title")
-            event_date = data.get("event_date")
-            country = data.get("country")
-            region = data.get("region")
-            category = data.get("category")
-            summary = data.get("summary")
-            description = data.get("description")
-            full_story = data.get("full_story")
+            title = request.POST.get("title")
+            event_date = request.POST.get("event_date")
+            country = request.POST.get("country")
+            region = request.POST.get("region")
+            category = request.POST.get("category")
+            summary = request.POST.get("summary")
+            full_story = request.POST.get("full_story")
+            description = ""  # Removed from UI but required by schema
             
-            if not all([title, event_date, country, region, category, summary, description, full_story]):
-                return JsonResponse({"error": "All fields are required"}, status=400)
+            media_file = request.FILES.get("media")
+            tags_json = request.POST.get("tags")
+            
+            if not all([title, event_date, country, region, category, summary, full_story, media_file]):
+                return JsonResponse({"error": "All fields including media are required"}, status=400)
                 
             # Create a unique slug
             base_slug = slugify(title)
@@ -494,13 +496,56 @@ def create_archive(request):
                 "verification_status": "verified"
             }
             
+            # 1. Insert Archive
             response = supabase.table("archives").insert(new_record).execute()
-            if response.data:
-                return JsonResponse({"message": "Archive created successfully", "data": response.data[0]}, status=201)
-            else:
+            if not response.data:
                 return JsonResponse({"error": "Failed to create archive"}, status=400)
                 
+            archive_id = response.data[0]["id"]
+            
+            # 2. Upload Media to Supabase Storage
+            file_extension = media_file.name.split('.')[-1]
+            file_name = f"{archive_id}_{uuid.uuid4().hex[:6]}.{file_extension}"
+            
+            file_content = media_file.read()
+            mime_type = media_file.content_type
+            
+            supabase.storage.from_("media").upload(
+                file_name,
+                file_content,
+                {"content-type": mime_type}
+            )
+            
+            public_url = supabase.storage.from_("media").get_public_url(file_name)
+            
+            media_type = "photo" if mime_type.startswith("image") else ("video" if mime_type.startswith("video") else "document")
+            supabase.table("media").insert({
+                "archive_id": archive_id,
+                "media_type": media_type,
+                "file_url": public_url
+            }).execute()
+            
+            # 3. Handle Tags
+            if tags_json:
+                tags = json.loads(tags_json)
+                for tag_name in tags:
+                    # Check if tag exists
+                    tag_res = supabase.table("tags").select("id").eq("name", tag_name).execute()
+                    if tag_res.data:
+                        tag_id = tag_res.data[0]["id"]
+                    else:
+                        new_tag_res = supabase.table("tags").insert({"name": tag_name}).execute()
+                        tag_id = new_tag_res.data[0]["id"]
+                    
+                    supabase.table("archive_tags").insert({
+                        "archive_id": archive_id,
+                        "tag_id": tag_id
+                    }).execute()
+            
+            return JsonResponse({"message": "Archive created successfully", "data": response.data[0]}, status=201)
+                
         except Exception as e:
+            print(f"Error in create_archive: {e}")
             return JsonResponse({"error": str(e)}, status=500)
             
     return JsonResponse({"error": "Invalid request method"}, status=405)
