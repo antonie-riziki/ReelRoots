@@ -23,6 +23,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from .supabase_client import supabase
+
 
 YOUTUBE_API_KEY=os.getenv("YOUTUBE_API_KEY")
 PEXEL_API_KEY=os.getenv("PEXEL_API_KEY")
@@ -307,16 +309,21 @@ def auth(request):
             # login_message(sign_in_phone)
 
             try:
-                user_obj = User.objects.get(email=email)
-                user = authenticate(request, username=user_obj.username, password=password)
-            except User.DoesNotExist:
-                user = None
+                response = supabase.auth.sign_in_with_password({
+                    "email": email,
+                    "password": password
+                })
+                if response.user and response.session:
+                    request.session["supabase_access_token"] = response.session.access_token
+                    request.session["supabase_refresh_token"] = response.session.refresh_token
+                    request.session["user_id"] = response.user.id
+                    return redirect("home")
+                else:
+                    messages.error(request, "Invalid email or password")
+            except Exception as e:
+                # The exception message usually contains the API error from Supabase
+                messages.error(request, f"Invalid email or password")
 
-            if user is not None:
-                login(request, user)
-                return redirect("home")
-            else:
-                messages.error(request, "Invalid email or password")
 
         # ==========================
         # SIGN UP
@@ -334,22 +341,40 @@ def auth(request):
                 messages.error(request, "Passwords do not match")
                 return redirect("auth")
 
-            if User.objects.filter(email=email).exists():
-                messages.error(request, "Email already registered")
+            try:
+                # 1. Sign up user in Supabase Auth
+                response = supabase.auth.sign_up({
+                    "email": email,
+                    "password": password
+                })
+                
+                if response.user:
+                    # 2. Store extra data in custom profiles table
+                    try:
+                        supabase.table("profiles").insert({
+                            "id": response.user.id,
+                            "name": name,
+                            "phone_number": phone,
+                            "institution": institution
+                        }).execute()
+                    except Exception as e:
+                        print(f"Failed to create profile: {e}")
+                    
+                    # 3. Store session data to keep them logged in
+                    if response.session:
+                        request.session["supabase_access_token"] = response.session.access_token
+                        request.session["supabase_refresh_token"] = response.session.refresh_token
+                    
+                    request.session["user_id"] = response.user.id
+
+                    login_message(phone)
+                    return redirect("home")
+                else:
+                    messages.error(request, "Sign up failed. Please try again.")
+            except Exception as e:
+                messages.error(request, f"Error during sign up: {str(e)}")
                 return redirect("auth")
-
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=password,
-                first_name=name,
-                phone_number=phone
-            )
-
-            login_message(phone)
-            login(request, user)
-            
-            return redirect("home")
+                
     return render(request, 'auth.html')
 
 
@@ -408,10 +433,22 @@ def chat(request):
 
 
 def explore(request):
-    archives = Archive.objects.filter(
-        visibility="public",
-        verification_status="verified"
-    ).order_by("-event_date")
+    try:
+        response = supabase.table("archives") \
+            .select("*, media(file_url)") \
+            .eq("visibility", "public") \
+            .eq("verification_status", "verified") \
+            .order("event_date", desc=True) \
+            .execute()
+        
+        archives = response.data
+        
+        for arch in archives:
+            arch["media_url"] = arch["media"][0]["file_url"] if arch.get("media") and len(arch["media"]) > 0 else None
+
+    except Exception as e:
+        print(f"Error fetching from Supabase: {e}")
+        archives = []
 
     context = {
         "archives": archives
@@ -488,7 +525,19 @@ def story_mode(request):
 
 
 def user_profile(request):
-    return render(request, 'user_profile.html')
+    user_id = request.session.get("user_id")
+    context = {}
+    if user_id:
+        try:
+            response = supabase.table("profiles").select("*").eq("id", user_id).execute()
+            if response.data:
+                context["profile"] = response.data[0]
+        except Exception as e:
+            print(f"Error fetching profile: {e}")
+    else:
+        return redirect("auth")
+
+    return render(request, 'user_profile.html', context)
 
 
 def animation(request):

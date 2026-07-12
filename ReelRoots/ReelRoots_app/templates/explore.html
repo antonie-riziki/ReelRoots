@@ -24,7 +24,7 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1111d4",
+                        "primary": "#1F5E4A",
                         "accent-gold": "#D4AF37",
                         "background-light": "#f6f6f8",
                         "background-dark": "#101022",
@@ -68,10 +68,10 @@
 </head>
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
-    
+
     <!-- iOS Status Bar Spacer -->
     <div class="h-12 w-full bg-background-light dark:bg-background-dark sticky top-0 z-50"></div>
-    
+
     <!-- Header & Search Section -->
     <header
         class="sticky top-12 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 pb-4 space-y-4">
@@ -130,7 +130,7 @@
                     <span class="material-symbols-outlined text-sm">expand_more</span>
                 </button>
 
-                <div id="locationDropdown" 
+                <div id="locationDropdown"
                     class="hidden absolute mt-2 w-64 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-3 z-50 text-sm">
 
                     <!-- Kenya (Exact Locations) -->
@@ -196,13 +196,11 @@
                 <div class="group relative flex flex-col gap-2">
                     <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
 
-                        {% with archive.media.all|first as first_media %}
-                            {% if first_media %}
-                                <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                    src="{{ first_media.file.url }}"
-                                    alt="{{ archive.title }}">
-                            {% endif %}
-                        {% endwith %}
+                        {% if archive.media_url %}
+                            <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                src="{{ archive.media_url }}"
+                                alt="{{ archive.title }}">
+                        {% endif %}
 
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     </div>
@@ -212,111 +210,12 @@
                             {{ archive.title }}
                         </h3>
                         <p class="text-xs text-slate-500 flex items-center gap-1">
-                            {{ archive.event_date|date:"Y" }} • {{ archive.city }}, {{ archive.country }}
+                            {{ archive.event_date }} • {{ archive.city }}, {{ archive.country }}
                         </p>
                     </div>
                 </div>
             </a>
             {% endfor %}
-            <!-- Card 2 -->
-            <!-- <div class="group relative flex flex-col gap-2">
-                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
-                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        data-alt="Black and white photo of a jazz saxophonist"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoywq1CKRPQVZ6GV4dhuw6kHPTm2ajlsg-SyDET6cgdvfvMk4prBaQOBWhbIqKAPAQXJDaZD9VqGgFyoo0H6adiO0WVkqzF6Rj1r8twGxz4ABOga2QPXQ4cXRxLh4exDV02-uzQXYozuAV0nS0SBDJa7hljppt2rbZ32O-zZ4gLOE92tBD9rRFDK2Nt-wYIvcdIMBBv7o-qfmXR70XKA4DRCxak_8DfIKW6rpE2LbcrCin2jZMP2DQ0OlGU7WZVjuHjPksNnLUqPxi" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                    <button
-                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
-                        <span class="material-symbols-outlined text-sm">bookmark</span>
-                    </button>
-                    <div class="absolute bottom-2 left-2 flex items-center gap-1">
-                        <span
-                            class="px-2 py-0.5 rounded bg-primary text-[10px] font-bold text-white uppercase tracking-tighter">Audio</span>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="font-bold text-sm leading-tight line-clamp-1">The Jazz Era Sessions</h3>
-                    <p class="text-xs text-slate-500 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1962 • Chicago
-                    </p>
-                </div>
-            </div> -->
-            <!-- Card 3 -->
-            <!-- <div class="group relative flex flex-col gap-2">
-                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
-                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        data-alt="People at a community garden in the city"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeVP4lCnvpeD14SMmV9tskE0JaDnnooHaDpy0OibFuFf46Y01RsUotnV4RmmgkCNnpspgLBNfu6wMxEM9b5xUbUfXlFAQFnmKplkiW3GdDrFti_UR3OAjTW9B4ICPWdyDC6fadP5Og5CUvgZN2g2KJeEFq76SJbVFbyIe2y65_7XQ5lbx6ZTFzdAcbx3gu0Oz1kj2jkhlHdCBemBE4mn8J0TEY2SEgdvig91ZFvhww9CSa6yAM0k7TmQk-cYEv28l5B3oPMcoE0Y6e" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                    <button
-                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
-                        <span class="material-symbols-outlined text-sm">bookmark</span>
-                    </button>
-                </div>
-                <div>
-                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Brixton Roots Garden</h3>
-                    <p class="text-xs text-slate-500 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1981 • London
-                    </p>
-                </div>
-            </div> -->
-            <!-- Card 4 -->
-            <!-- <div class="group relative flex flex-col gap-2">
-                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
-                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        data-alt="Old street fair with vibrant banners"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4oBezxJ75Q3QRehhQuGMEZwvZzDcMX589rW_rdDNBrHJW1GQ9zQrB6I2hRKFx-hjB51KbX2hziRHBnOenYDyYEZ5o24IU_yECUnjpoWFHivYviHBh5gLx7Wi8E_ASsw9aIds2xpwGquFy4LGio1SN8PHEKjpB1hJwELgSV_Z0O6olrndFDjaxSSFmRQbNHABAQv2g1eoe9DP9Z1LAQ_lKWOfoks36gPq7cw9s5AZLRfPt1s3nUtMQ7_u5CP8Z5G5p-xz7OaxYZRpw" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                    <button
-                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
-                        <span class="material-symbols-outlined text-sm">bookmark</span>
-                    </button>
-                </div>
-                <div>
-                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Annual Block Party</h3>
-                    <p class="text-xs text-slate-500 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1978 • Oakland
-                    </p>
-                </div>
-            </div> -->
-            <!-- Card 5 -->
-            <!-- <div class="group relative flex flex-col gap-2">
-                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
-                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        data-alt="Vintage cassette player and microphone"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSmfHo_AHeWr2s9I4K-6yO3Cs-LvP2UXPPpvPFAW4gcRgVqYG0btSzvOJs5HmBoTnwmd5R0tDAKPcQ_qQ0nLdRSEN4N1sqbZTJ-X8NqXOlyBOweh91oA_3zHKBTnB2LHC50tJCbQgN_zKeVW8wPakCY1c1c_5eepaSC43dmEtnHQ074055UHHoxzbrKVFeZu-wbotEBE7rtBaXTewJJBCxy1R1bwsvolFKYJNTWiPoePU12_GRYKabqckHmd4eusnN4sUagI9SZoHd" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                    <button
-                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
-                        <span class="material-symbols-outlined text-sm">bookmark</span>
-                    </button>
-                </div>
-                <div>
-                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Voices of the Elders</h3>
-                    <p class="text-xs text-slate-500 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1965 • Memphis
-                    </p>
-                </div>
-            </div> -->
-            <!-- Card 6 -->
-            <!-- <div class="group relative flex flex-col gap-2">
-                <div class="aspect-[4/5] rounded-xl overflow-hidden bg-slate-200 relative shadow-md">
-                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        data-alt="A handshake between two community leaders"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuClConqOwfzbm7u7oKUSNhVpq0vPrLbpLls4gVu4cBbyj0hBPkQfl2eDfAJP2TsJpdcQ-8RgNktB0JKN7YgDouk1S7qW7cZWUpr0bGd0D40l3zjrkCxI6QmdE1BaoANqxOyMPBAJ9sD8hVlf_VQQKt1__4G4l3eYexbeLiwGtEqZA1nld4MJCJUdBO3hDHalyEJIil0yG9ITaiIj-iZjEfvSCKYO5T0CAtRlvYyMwtX7LatYYVK-yRZrA4VsSyLpZwE7m0DxXK6qZIu" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                    <button
-                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center">
-                        <span class="material-symbols-outlined text-sm">bookmark</span>
-                    </button>
-                </div>
-                <div>
-                    <h3 class="font-bold text-sm leading-tight line-clamp-1">Labor Union March</h3>
-                    <p class="text-xs text-slate-500 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[10px]">schedule</span> 1971 • Detroit
-                    </p>
-                </div>
-            </div> -->
         </div>
 
         <!-- Pagination Spacer -->
@@ -338,42 +237,42 @@
 
 
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
-        window.toggleDropdown = function(id) {
+            window.toggleDropdown = function (id) {
+                document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+                    if (el.id !== id) el.classList.add('hidden');
+                });
+
+                const target = document.getElementById(id);
+                if (target) {
+                    target.classList.toggle('hidden');
+                }
+            };
+
+            document.addEventListener('click', function (event) {
+                if (!event.target.closest('.relative')) {
+                    document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
+                        el.classList.add('hidden');
+                    });
+                }
+            });
+
+        });
+    </script>
+
+    <script>
+
+        window.toggleDropdown = function (id) {
             document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
                 if (el.id !== id) el.classList.add('hidden');
             });
-
-            const target = document.getElementById(id);
-            if (target) {
-                target.classList.toggle('hidden');
-            }
-        };
-
-        document.addEventListener('click', function (event) {
-            if (!event.target.closest('.relative')) {
-                document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
-                    el.classList.add('hidden');
-                });
-            }
-        });
-
-    });
-</script>
-
-<script>
-
-    window.toggleDropdown = function(id) {
-        document.querySelectorAll('[id$="Dropdown"]').forEach(el => {
-            if (el.id !== id) el.classList.add('hidden');
-        });
-        document.getElementById(id).classList.toggle('hidden');
-    }
+            document.getElementById(id).classList.toggle('hidden');
+        }
 
 
-</script>
+    </script>
 
 </body>
 

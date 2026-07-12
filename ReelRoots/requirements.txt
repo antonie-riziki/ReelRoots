@@ -5,6 +5,7 @@ google-generativeai
 africastalking
 Flask
 google-genai
+supabase
 # langchain-classic
 # langchain-text-splitters
 # langchain

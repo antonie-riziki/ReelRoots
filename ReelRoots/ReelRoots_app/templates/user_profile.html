@@ -20,7 +20,7 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1111d4",
+                        "primary": "#1F5E4A",
                         "background-light": "#f6f6f8",
                         "background-dark": "#101022",
                     },
@@ -65,7 +65,7 @@
             </div>
             <h2
                 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">
-                alex_roots</h2>
+                {{ profile.name|default:"ReelRoots User"|slugify }}_roots</h2>
             <div class="flex w-10 items-center justify-end">
                 <button
                     class="flex items-center justify-center rounded-lg h-10 w-10 bg-transparent text-slate-900 dark:text-slate-100">
@@ -87,8 +87,10 @@
                     </div>
                 </div>
                 <div class="flex flex-col items-center justify-center text-center">
-                    <p class="text-slate-900 dark:text-slate-100 text-2xl font-extrabold leading-tight">Alex Chen</p>
-                    <p class="text-primary font-semibold text-sm mb-2">AI Heritage Curator</p>
+                    <p class="text-slate-900 dark:text-slate-100 text-2xl font-extrabold leading-tight">
+                        {{ profile.name|default:"ReelRoots User" }}</p>
+                    <p class="text-primary font-semibold text-sm mb-2">
+                        {{ profile.institution|default:"AI Heritage Curator" }}</p>
                     <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed max-w-[280px]">
                         Preserving community stories through AI. <span class="text-primary">#HistoryKeeper</span>
                         #Roots2024
