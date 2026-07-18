@@ -34,15 +34,24 @@ sys.path.insert(1, './ReelRoots_app')
 
 
 
-# genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+# Keep optional integrations lazy so routes such as landing, upload, and auth can
+# render even if an external provider is temporarily unavailable.
+_genai_client = None
 
-africastalking.initialize(
-    username="EMID",
-    api_key=os.getenv("AT_API_KEY")
-)
 
-sms = africastalking.SMS
+def get_genai_client():
+    global _genai_client
+    if _genai_client is None:
+        _genai_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    return _genai_client
+
+def get_sms_service():
+    """Initialize the SMS provider only when a message is actually being sent."""
+    africastalking.initialize(
+        username="EMID",
+        api_key=os.getenv("AT_API_KEY")
+    )
+    return africastalking.SMS
 
 headers = {
         "Authorization": PEXEL_API_KEY
@@ -51,7 +60,7 @@ headers = {
 todays_date = datetime.today()
 
 def history_highlights(prompt):
-    response = client.models.generate_content(
+    response = get_genai_client().models.generate_content(
         model='gemini-2.0-flash',
         contents=prompt,
         config=types.GenerateContentConfig(
@@ -85,7 +94,7 @@ def history_highlights(prompt):
 
 def get_gemini_response(prompt):
 
-    response = client.models.generate_content(
+    response = get_genai_client().models.generate_content(
         model='gemini-2.0-flash',
         contents=prompt,
         config=types.GenerateContentConfig(
@@ -279,7 +288,7 @@ def login_message(phone_number):
     sender = "AFTKNG"
  
     try:
-        response = sms.send(message, recipients, sender)
+        response = get_sms_service().send(message, recipients, sender)
 
         print(response)
 

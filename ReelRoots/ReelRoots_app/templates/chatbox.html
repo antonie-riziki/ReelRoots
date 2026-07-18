@@ -324,7 +324,7 @@
             <div class="chatbot-header">
                 <div class="chatbot-info">
                     <!-- <i class="fas fa-leaf"></i> -->
-                    <img src="https://monkedo-static.s3.eu-central-1.amazonaws.com/component-icons/supabase.png" alt="EcoVerse Avatar"  class="chatbot-avatar">
+                    <img src="{% static 'img/archives/media/logo1.png' %}" alt="ReelRoots assistant" class="chatbot-avatar">
                     <div class="chatbot-text">
                         <div class="chatbot-nam">ReelRoots</div>
                         <div class="chatbot-subtitle">Where History Lives Again</div>
@@ -338,7 +338,7 @@
                 <div class="chat-message">
                     <div class="message-avatar bot-avatar">
                         <!-- <i class="fas fa-leaf-alt"></i> -->
-                        <img src="https://monkedo-static.s3.eu-central-1.amazonaws.com/component-icons/supabase.png" alt="EcoVerse Logo"  
+                        <img src="{% static 'img/archives/media/logo1.png' %}" alt="ReelRoots assistant"
                     style="height: 30px;">
                     </div>
                     <div class="message-content">
@@ -394,7 +394,7 @@
             loadingMessage.className = 'chat-message bot typing';
             loadingMessage.innerHTML = `
                 <div class="message-avatar bot-avatar">
-                    <img src="https://monkedo-static.s3.eu-central-1.amazonaws.com/component-icons/supabase.png" alt="EcoVerse Logo" 
+                    <img src="{% static 'img/archives/media/logo1.png' %}" alt="ReelRoots assistant"
                     style="height: 30px;">
                 </div>
                 <div class="message-content">...</div>
@@ -419,7 +419,7 @@
                 botMessage.className = 'chat-message';
                 botMessage.innerHTML = `
                     <div class="message-avatar bot-avatar">
-                        <img src="https://monkedo-static.s3.eu-central-1.amazonaws.com/component-icons/supabase.png" alt="EcoVerse Logo"  
+                        <img src="{% static 'img/archives/media/logo1.png' %}" alt="ReelRoots assistant"
                     style="height: 30px;">
                     </div>
                     <div class="message-content">${data.response}</div>

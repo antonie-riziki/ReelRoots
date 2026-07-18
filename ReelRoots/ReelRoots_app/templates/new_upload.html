@@ -50,36 +50,49 @@
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col lg:pb-0">
     <!-- Top Navigation Bar -->
     <header
-        class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10 px-4 py-3 flex items-center justify-between">
+        class="sticky top-0 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10 px-4 py-3 flex items-center justify-between lg:px-8">
         <button class="p-2 hover:bg-primary/10 rounded-full transition-colors">
-            <span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back_ios_new</span>
+            <span class="text-2xl leading-none text-slate-900 dark:text-slate-100" aria-hidden="true">←</span>
         </button>
         <h1 class="text-lg font-bold tracking-tight">Upload Archive</h1>
         <button class="p-2 hover:bg-primary/10 rounded-full transition-colors">
-            <span class="material-symbols-outlined text-primary">info</span>
+            <span class="text-xl font-bold text-primary" aria-hidden="true">ⓘ</span>
         </button>
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-1 overflow-y-auto px-4 py-4 space-y-6">
-        <form id="addArchiveForm" class="space-y-6">
+    <main class="mx-auto w-full max-w-6xl flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-10">
+        <div class="mb-8 hidden lg:block">
+            <p class="text-sm font-bold uppercase tracking-[0.18em] text-primary">Contribute to the archive</p>
+            <h2 class="mt-2 text-3xl font-bold tracking-tight">Create a well-documented record</h2>
+            <p class="mt-2 max-w-2xl text-slate-600 dark:text-slate-400">Add context alongside your media so future researchers can discover, understand, and verify the story.</p>
+        </div>
+        <form id="addArchiveForm" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-8">
             <!-- Upload Section -->
-            <section class="space-y-3">
-                <h2 class="text-xl font-bold px-1">Add Metadata</h2>
+            <section class="space-y-3 rounded-2xl border border-primary/10 bg-white p-5 shadow-sm dark:bg-slate-900 lg:col-span-2 lg:p-6">
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-wider text-primary">Step 1</p>
+                    <h2 class="mt-1 text-xl font-bold">Add source material</h2>
+                </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 ml-1">Media Evidence
                         *</label>
                     <input type="file" id="media" name="media" accept="image/*,video/*,application/pdf" required
-                        class="w-full bg-white dark:bg-slate-900 border border-primary/10 rounded-xl px-4 py-3 shadow-sm focus:ring-2 focus:ring-primary/50 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90">
+                        class="w-full cursor-pointer bg-background-light dark:bg-slate-950 border border-dashed border-primary/30 rounded-xl px-4 py-5 shadow-sm focus:ring-2 focus:ring-primary/50 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/90">
+                    <p class="mt-2 text-xs text-slate-500">Images, video, or PDF. Include the clearest available source file.</p>
                 </div>
             </section>
 
             <!-- Metadata Form -->
-            <section class="space-y-5">
+            <section class="space-y-5 rounded-2xl border border-primary/10 bg-white p-5 shadow-sm dark:bg-slate-900 lg:p-6">
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-wider text-primary">Step 2</p>
+                    <h2 class="mt-1 text-xl font-bold">Describe the record</h2>
+                </div>
                 <div class="space-y-1.5">
                     <label class="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Archive Title *</label>
                     <input id="title" required
@@ -87,7 +100,7 @@
                         placeholder="e.g., Grandma's 1954 Migration Journal" type="text" />
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div class="space-y-1.5">
                         <label class="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Estimated Date
                             *</label>
@@ -113,7 +126,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div class="space-y-1.5">
                         <label class="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Country *</label>
                         <div class="relative">
@@ -162,11 +175,14 @@
             </section>
 
             <!-- Tag Suggestions -->
-            <section class="space-y-3">
-                <label class="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Tags (Hold Ctrl/Cmd to select
-                    multiple) *</label>
+            <section class="space-y-4 rounded-2xl border border-primary/10 bg-white p-5 shadow-sm dark:bg-slate-900 lg:sticky lg:top-24 lg:p-6">
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-wider text-primary">Step 3</p>
+                    <h2 class="mt-1 text-xl font-bold">Make it discoverable</h2>
+                </div>
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300">Tags (hold Ctrl/Cmd to select multiple) *</label>
                 <select id="tags" name="tags" multiple required
-                    class="w-full bg-white dark:bg-slate-900 border border-primary/10 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-slate-100 h-24 shadow-sm">
+                    class="h-40 w-full bg-background-light dark:bg-slate-950 border border-primary/10 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-slate-100 shadow-sm">
                     <option value="Colonial Era">Colonial Era</option>
                     <option value="Independence">Independence</option>
                     <option value="Artifact">Artifact</option>
@@ -174,6 +190,7 @@
                     <option value="Art">Art</option>
                     <option value="Folklore">Folklore</option>
                 </select>
+                <p class="text-xs leading-relaxed text-slate-500">Choose terms someone would use to find this record later. You can select more than one.</p>
             </section>
         </form>
         <div class="h-20"></div> <!-- Spacer for fixed footer -->
@@ -181,8 +198,9 @@
 
     <!-- Bottom Navigation Bar / Action Bar -->
     <div
-        class="fixed bottom-[4.5rem] md:bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-4 py-4 z-50">
-        <div class="flex items-center gap-4 max-w-md mx-auto">
+        class="fixed bottom-[4.5rem] left-0 right-0 z-50 border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/90 lg:bottom-0 lg:px-8">
+        <div class="mx-auto flex max-w-6xl items-center gap-4">
+            <p class="mr-auto hidden text-sm text-slate-500 lg:block">Your record will be sent for review before it is published.</p>
             <button type="button" onclick="window.history.back()"
                 class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 py-4 rounded-xl font-bold transition-transform active:scale-95">
                 Cancel
@@ -190,13 +208,12 @@
             <button id="uploadBtn" type="button" onclick="submitArchive()"
                 class="flex-[2] bg-primary text-white py-4 rounded-xl font-bold shadow-xl shadow-primary/30 transition-transform active:scale-95 flex items-center justify-center gap-2">
                 Upload Record
-                <span class="material-symbols-outlined">cloud_upload</span>
             </button>
         </div>
     </div>
 
     <!-- iOS style Home Indicator -->
-    <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60]">
+    <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60] lg:hidden">
     </div>
 
     {% include 'navbar.html' %}
@@ -211,7 +228,7 @@
 
             const submitBtn = document.getElementById('uploadBtn');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = 'Uploading... <span class="material-symbols-outlined">sync</span>';
+            submitBtn.textContent = 'Uploading…';
             submitBtn.disabled = true;
 
             const formData = new FormData();
