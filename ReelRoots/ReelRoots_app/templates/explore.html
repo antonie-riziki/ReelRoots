@@ -70,11 +70,11 @@
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 
     <!-- iOS Status Bar Spacer -->
-    <div class="h-12 w-full bg-background-light dark:bg-background-dark sticky top-0 z-50"></div>
+    <div class="h-12 w-full bg-background-light dark:bg-background-dark sticky top-0 z-50 lg:hidden"></div>
 
     <!-- Header & Search Section -->
     <header
-        class="sticky top-12 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 pb-4 space-y-4">
+        class="sticky top-12 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 pb-4 space-y-4 lg:top-[57px] lg:px-8">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-primary">Explore</h1>
             <button class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -182,7 +182,7 @@
         </div>
     </header>
     <!-- Main Content Area: Grid View -->
-    <main class="flex-1 px-4 py-2">
+    <main class="mx-auto flex w-full max-w-6xl flex-1 px-4 py-6 lg:px-8">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500">Recent Discoveries</h2>
             <button class="text-primary text-xs font-bold flex items-center gap-1">
@@ -190,7 +190,7 @@
             </button>
         </div>
         <!-- Archive Grid -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {% for archive in archives %}
             <a href="{% url 'archive-details' archive.slug %}">
                 <div class="group relative flex flex-col gap-2">
@@ -226,7 +226,7 @@
     {% include 'navbar.html' %}
 
     <!-- iOS Home Indicator -->
-    <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60]">
+    <div class="fixed bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-300 dark:bg-slate-700 rounded-full z-[60] lg:hidden">
     </div>
 
 
