@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 
+{% load static %}
+
 <html class="light" lang="en">
 
 <head>
@@ -61,8 +63,7 @@
         class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between px-4 py-3">
             <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-3xl font-bold">history_edu</span>
-                <h1 class="text-xl font-bold tracking-tight">ReelRoots</h1>
+                <img src="{% static 'img/archives/media/logo1.png' %}" alt="ReelRoots" class="h-10 w-auto object-contain" />
             </div>
             <div class="flex items-center gap-3">
                 <button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
