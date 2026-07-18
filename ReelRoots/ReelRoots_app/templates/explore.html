@@ -6,6 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Explore Archives Grid - ReelRoots</title>
+    <link rel="stylesheet" href="/static/css/reelroots.css" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
@@ -67,7 +68,7 @@
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<body class="rr-page bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 
     <!-- iOS Status Bar Spacer -->
     <div class="h-12 w-full bg-background-light dark:bg-background-dark sticky top-0 z-50 lg:hidden"></div>
@@ -182,7 +183,7 @@
         </div>
     </header>
     <!-- Main Content Area: Grid View -->
-    <main class="mx-auto flex w-full max-w-6xl flex-1 px-4 py-6 lg:px-8">
+    <main class="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 lg:px-8">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-sm font-bold uppercase tracking-widest text-slate-500">Recent Discoveries</h2>
             <button class="text-primary text-xs font-bold flex items-center gap-1">
@@ -217,6 +218,17 @@
             </a>
             {% endfor %}
         </div>
+
+        {% if not archives %}
+        <section class="rr-card rr-empty mt-4">
+            <div>
+                <p class="rr-eyebrow">The archive is growing</p>
+                <h3 class="mt-2">No public records match this view yet.</h3>
+                <p>Try a broader search, or contribute a carefully documented story from your community.</p>
+                <a class="rr-primary-action mt-5" href="/upload/">Contribute a record</a>
+            </div>
+        </section>
+        {% endif %}
 
         <!-- Pagination Spacer -->
         <div class="h-24"></div>

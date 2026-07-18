@@ -8,6 +8,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>ReelRoots</title>
+    <link rel="stylesheet" href="/static/css/reelroots.css" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
         rel="stylesheet" />
@@ -64,10 +65,10 @@
 </head>
 
 <body
-    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen pb-20">
+    class="rr-page bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
     <!-- Header -->
     <header
-        class="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 lg:px-8">
+        class="sticky top-0 z-50 flex items-center justify-between px-4 py-3 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 lg:hidden">
         <div class="flex items-center gap-2">
             <img src="{% static 'img/archives/media/logo1.png' %}" alt="ReelRoots" class="h-10 w-auto object-contain" />
         </div>
@@ -84,7 +85,8 @@
         <!-- Hero Section -->
         <section class="relative overflow-hidden px-4 pt-8 pb-6 lg:px-8 lg:pt-16 lg:pb-12">
             <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
-            <div class="relative z-10 space-y-4">
+            <div class="relative z-10 grid items-center gap-10 lg:grid-cols-[1.25fr_.75fr]">
+            <div class="space-y-4">
                 <div
                     class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-gold/10 border border-accent-gold/20">
                     <span class="material-symbols-outlined text-accent-gold text-xs">auto_awesome</span>
@@ -109,7 +111,23 @@
                         Watch Reels
                         <span class="material-symbols-outlined text-lg">play_circle</span>
                     </a>
+                    <a href="/upload/"
+                        class="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                        Preserve a story
+                    </a>
                 </div>
+            </div>
+            <aside class="rr-card hidden overflow-hidden p-6 lg:block">
+                <p class="rr-eyebrow">Start with a story</p>
+                <h3 class="mt-2 text-2xl font-bold tracking-tight">Every record carries a community memory.</h3>
+                <p class="mt-3 text-sm text-slate-600">Explore context through guided collections, archive reels, and an AI assistant grounded in source material.</p>
+                <div class="mt-6 grid grid-cols-3 gap-3 border-t border-slate-100 pt-5 text-center">
+                    <div><p class="text-xl font-extrabold text-primary">3</p><p class="text-xs text-slate-500">ways to explore</p></div>
+                    <div><p class="text-xl font-extrabold text-primary">AI</p><p class="text-xs text-slate-500">guided context</p></div>
+                    <div><p class="text-xl font-extrabold text-primary">1</p><p class="text-xs text-slate-500">shared archive</p></div>
+                </div>
+            </aside>
+            </div>
             </div>
         </section>
         <!-- Featured Archive Reels Carousel -->
@@ -149,7 +167,12 @@
                     </div>
                 </div>
                 {% endfor %}
-
+                {% if not reels %}
+                <div class="rr-card w-full p-6 text-center">
+                    <p class="font-bold">Fresh stories are being prepared.</p>
+                    <p class="mt-1 text-sm text-slate-500">Explore the archive or add a community memory to start a collection.</p>
+                </div>
+                {% endif %}
             </div>
 
 

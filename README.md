@@ -72,13 +72,13 @@ ReelRoots reimagines how communities interact with historical records by making 
 ## 🧱 Tech Stack
 
 **Frontend**
-- React / Next.js
-- TailwindCSS
-- Timeline visualization library
+- Django templates with Tailwind CSS
+- Responsive archive, story, reel, chat, and curator workspaces
 
 **Backend**
-- Node.js / Python
-- REST APIs
+- Django / Python
+- Supabase for authentication, profiles, archive data, and media storage
+- REST APIs for AI assistance and external media providers
 
 **AI Layer**
 - Embeddings for semantic search
@@ -102,6 +102,19 @@ ReelRoots reimagines how communities interact with historical records by making 
 ReelRoots transforms archives from static storage systems into living, interactive cultural experiences.
 
 By merging AI, storytelling, and social engagement, we empower communities to rediscover and preserve their heritage in a format that resonates with modern audiences.
+
+---
+
+## 🧭 Product journeys
+
+- **Discover:** Search and filter public records, move into a story, timeline, or reel, then save a source for later.
+- **Understand:** Use the AI archive assistant to simplify, translate, narrate, and connect records to their original sources.
+- **Contribute:** Submit a community memory with source media, structured metadata, and discoverability tags.
+- **Steward:** Review submissions, enrich metadata, verify sources, and monitor the health of the archive.
+
+## 🚢 Deployment checklist
+
+Before publishing, set `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=False`, `DJANGO_ALLOWED_HOSTS`, and `DJANGO_CSRF_TRUSTED_ORIGINS` in the hosting environment. Run `python manage.py collectstatic` and `python manage.py migrate`, use a managed PostgreSQL database for production, and configure Supabase RLS policies for every public-facing table and storage bucket. Never commit `.env` or expose a Supabase secret key to the browser.
 
 ---
 

@@ -6,6 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Archivist Admin Dashboard - ReelRoots</title>
+    <link rel="stylesheet" href="/static/css/reelroots.css" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
@@ -59,10 +60,10 @@
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen pb-24">
+<body class="rr-page bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
     <!-- Header Section -->
     <header
-        class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10 px-4 pt-6 pb-4">
+        class="sticky top-0 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10 px-4 pt-6 pb-4 lg:px-8">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3">
                 <div
@@ -92,7 +93,7 @@
                 placeholder="Search archives, OCR logs, or metadata..." type="text" />
         </div>
     </header>
-    <main class="px-4 py-6 space-y-8">
+    <main class="mx-auto max-w-6xl px-4 py-8 space-y-10 lg:px-8">
         <!-- Live Status Metrics -->
         <section>
             <div class="flex items-center justify-between mb-4">
@@ -102,21 +103,21 @@
                     <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Systems Nominal
                 </span>
             </div>
-            <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div
-                    class="flex-none w-40 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    class="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                     <span class="material-symbols-outlined text-primary mb-2">cloud_upload</span>
                     <p class="text-2xl font-bold tracking-tight">14</p>
                     <p class="text-xs text-slate-500 font-medium">Active Uploads</p>
                 </div>
                 <div
-                    class="flex-none w-40 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    class="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                     <span class="material-symbols-outlined text-amber-500 mb-2">neurology</span>
                     <p class="text-2xl font-bold tracking-tight">89</p>
                     <p class="text-xs text-slate-500 font-medium">AI Tasks Pending</p>
                 </div>
                 <div
-                    class="flex-none w-40 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    class="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                     <span class="material-symbols-outlined text-emerald-500 mb-2">verified</span>
                     <p class="text-2xl font-bold tracking-tight">1,284</p>
                     <p class="text-xs text-slate-500 font-medium">Verified Records</p>
@@ -126,7 +127,7 @@
         <!-- Quick Actions Grid -->
         <section>
             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Tools &amp; Workflow</h2>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
                 <button
                     class="flex flex-col items-center justify-center p-6 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20 space-y-2">
                     <span class="material-symbols-outlined text-3xl">document_scanner</span>
