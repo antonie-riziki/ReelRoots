@@ -29,8 +29,26 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-local-development-o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes"}
 
-ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if host.strip()]
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
+def _csv_env(name):
+    return [item.strip() for item in os.getenv(name, "").split(",") if item.strip()]
+
+
+ALLOWED_HOSTS = _csv_env("DJANGO_ALLOWED_HOSTS") or ["localhost", "127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = _csv_env("DJANGO_CSRF_TRUSTED_ORIGINS")
+
+# Vercel exposes the active deployment URL and (when configured) the
+# production URL as system environment variables. Include them automatically
+# so preview deployments do not fail Django's host or CSRF validation.
+for vercel_host in (
+    os.getenv("VERCEL_URL", ""),
+    os.getenv("VERCEL_PROJECT_PRODUCTION_URL", ""),
+):
+    if vercel_host and vercel_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(vercel_host)
+    if vercel_host:
+        vercel_origin = f"https://{vercel_host}"
+        if vercel_origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(vercel_origin)
 DJANGO_ENCRYPTION_KEY = os.getenv("DJANGO_ENCRYPTION_KEY", "")
 PHONE_DEFAULT_COUNTRY_CODE = os.getenv("PHONE_DEFAULT_COUNTRY_CODE", "+254")
 SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", str(60 * 60 * 24 * 14)))
