@@ -72,6 +72,7 @@
             <p class="mt-2 max-w-2xl text-slate-600 dark:text-slate-400">Add context alongside your media so future researchers can discover, understand, and verify the story.</p>
         </div>
         <form id="addArchiveForm" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-8">
+            {% csrf_token %}
             <!-- Upload Section -->
             <section class="space-y-3 rounded-2xl border border-primary/10 bg-white p-5 shadow-sm dark:bg-slate-900 lg:col-span-2 lg:p-6">
                 <div>
@@ -253,6 +254,7 @@
             try {
                 const response = await fetch('/api/archives/create/', {
                     method: 'POST',
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') },
                     body: formData
                 });
 
@@ -271,6 +273,12 @@
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
+        }
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            return parts.length === 2 ? parts.pop().split(';').shift() : '';
         }
     </script>
 </body>

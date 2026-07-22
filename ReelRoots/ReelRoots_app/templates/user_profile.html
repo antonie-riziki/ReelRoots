@@ -68,10 +68,10 @@
                 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">
                 {{ profile.name|default:"ReelRoots User"|slugify }}_roots</h2>
             <div class="flex w-10 items-center justify-end">
-                <button
+                <a href="{% url 'profile-settings' %}"
                     class="flex items-center justify-center rounded-lg h-10 w-10 bg-transparent text-slate-900 dark:text-slate-100">
                     <span class="material-symbols-outlined">settings</span>
-                </button>
+                </a>
             </div>
         </div>
         <!-- Profile Header Section -->
@@ -91,7 +91,7 @@
                     <p class="text-slate-900 dark:text-slate-100 text-2xl font-extrabold leading-tight">
                         {{ profile.name|default:"ReelRoots User" }}</p>
                     <p class="text-primary font-semibold text-sm mb-2">
-                        {{ profile.institution|default:"AI Heritage Curator" }}</p>
+                        {{ profile.institution|default:"Heritage explorer" }}</p>
                     <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed max-w-[280px]">
                         Preserving community stories through AI. <span class="text-primary">#HistoryKeeper</span>
                         #Roots2024
@@ -107,20 +107,24 @@
                         <span>Message</span>
                     </button>
                 </div>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="text-sm font-bold text-red-700" type="submit">Sign out</button>
+                </form>
             </div>
         </div>
         <!-- Contribution Stats Grid -->
         <div class="flex flex-wrap gap-3 px-6 py-2">
             <div
                 class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-slate-800 p-3 items-center text-center bg-slate-50/50 dark:bg-slate-900/50">
-                <p class="text-slate-900 dark:text-slate-100 text-xl font-bold">124</p>
+                <p class="text-slate-900 dark:text-slate-100 text-xl font-bold">{{ interest_profile|length }}</p>
                 <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider font-bold">Archives
                 </p>
             </div>
             <div
                 class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-slate-800 p-3 items-center text-center bg-slate-50/50 dark:bg-slate-900/50">
                 <p class="text-slate-900 dark:text-slate-100 text-xl font-bold">12.8k</p>
-                <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider font-bold">Impact</p>
+                <p class="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider font-bold">Interests</p>
             </div>
             <div
                 class="flex min-w-[100px] flex-1 basis-[fit-content] flex-col gap-1 rounded-xl border border-slate-200 dark:border-slate-800 p-3 items-center text-center bg-slate-50/50 dark:bg-slate-900/50">

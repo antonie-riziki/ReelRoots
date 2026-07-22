@@ -1,37 +1,23 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from google import genai
 from google.genai import types
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
-from .models import *
-import africastalking
+from .models import Archive
+from .decorators import onboarding_required, reelroots_login_required
+from .personalization import profile_preferences, ranked_interests
 import requests
 import os
 import json
-import sys
 
 
-
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.contrib import messages
-
-
-from dotenv import load_dotenv
-
-load_dotenv()
 
 from .supabase_client import supabase
 
 
 YOUTUBE_API_KEY=os.getenv("YOUTUBE_API_KEY")
 PEXEL_API_KEY=os.getenv("PEXEL_API_KEY")
-
-
-sys.path.insert(1, './ReelRoots_app')
-
 
 
 # Keep optional integrations lazy so routes such as landing, upload, and auth can
@@ -44,14 +30,6 @@ def get_genai_client():
     if _genai_client is None:
         _genai_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
     return _genai_client
-
-def get_sms_service():
-    """Initialize the SMS provider only when a message is actually being sent."""
-    africastalking.initialize(
-        username="EMID",
-        api_key=os.getenv("AT_API_KEY")
-    )
-    return africastalking.SMS
 
 headers = {
         "Authorization": PEXEL_API_KEY
@@ -277,116 +255,13 @@ def get_gemini_response(prompt):
 
 
 
-def login_message(phone_number):
-
-    recipients = [f"+254{str(phone_number)}"]
-
-    # Set your message
-    message = f"Welcome back to ReelRoots, a living gateway into the stories, cultures, and defining moments of our past!"
-
-    # Set your shortCode or senderId
-    sender = "AFTKNG"
- 
-    try:
-        response = get_sms_service().send(message, recipients, sender)
-
-        print(response)
-
-    except Exception as e:
-        print(f'Houston, we have a problem: {e}')
-
-
-
 # Create your views here.
 
 def landing_page(request):
     return render(request, 'landing_page.html')
 
 
-def auth(request):
-    if request.method == "POST":
-        form_type = request.POST.get("form_type")
-
-        # ==========================
-        # SIGN IN
-        # ==========================
-        if form_type == "signin":
-            sign_in_phone = request.POST.get("sigin-phone-number")
-            email = request.POST.get("email")
-            password = request.POST.get("password")
-
-            # login_message(sign_in_phone)
-
-            try:
-                response = supabase.auth.sign_in_with_password({
-                    "email": email,
-                    "password": password
-                })
-                if response.user and response.session:
-                    request.session["supabase_access_token"] = response.session.access_token
-                    request.session["supabase_refresh_token"] = response.session.refresh_token
-                    request.session["user_id"] = response.user.id
-                    return redirect("home")
-                else:
-                    messages.error(request, "Invalid email or password")
-            except Exception as e:
-                # The exception message usually contains the API error from Supabase
-                messages.error(request, f"Invalid email or password")
-
-
-        # ==========================
-        # SIGN UP
-        # ==========================
-        elif form_type == "signup":
-            name = request.POST.get("name")
-            email = request.POST.get("email")
-            phone = request.POST.get("phone-number")
-            institution = request.POST.get("institution")
-            password = request.POST.get("password")
-            confirm_password = request.POST.get("confirm-password")
-
-
-            if password != confirm_password:
-                messages.error(request, "Passwords do not match")
-                return redirect("auth")
-
-            try:
-                # 1. Sign up user in Supabase Auth
-                response = supabase.auth.sign_up({
-                    "email": email,
-                    "password": password
-                })
-                
-                if response.user:
-                    # 2. Store extra data in custom profiles table
-                    try:
-                        supabase.table("profiles").insert({
-                            "id": response.user.id,
-                            "name": name,
-                            "phone_number": phone,
-                            "institution": institution
-                        }).execute()
-                    except Exception as e:
-                        print(f"Failed to create profile: {e}")
-                    
-                    # 3. Store session data to keep them logged in
-                    if response.session:
-                        request.session["supabase_access_token"] = response.session.access_token
-                        request.session["supabase_refresh_token"] = response.session.refresh_token
-                    
-                    request.session["user_id"] = response.user.id
-
-                    login_message(phone)
-                    return redirect("home")
-                else:
-                    messages.error(request, "Sign up failed. Please try again.")
-            except Exception as e:
-                messages.error(request, f"Error during sign up: {str(e)}")
-                return redirect("auth")
-                
-    return render(request, 'auth.html')
-
-
+@onboarding_required
 def home(request):
 
     # on_this_day = history_highlights("provide any archive in history that happend on this day " + str(todays_date))
@@ -414,6 +289,7 @@ def home(request):
 
     context = {
         "reels": reels[::-1],
+        "interest_profile": ranked_interests(request.reelroots_profile),
         # "highlight": on_this_day
                }
     
@@ -422,6 +298,7 @@ def home(request):
     return render(request, 'index.html', context)
 
 
+@reelroots_login_required
 def admin_dashboard(request):
     return render(request, 'admin_dashboard.html')
 
@@ -437,6 +314,7 @@ def archive_details(request, slug):
     return render(request, 'archive_details.html', context)
 
 
+@onboarding_required
 def chat(request):
     return render(request, 'chat.html')
 
@@ -468,98 +346,96 @@ def explore(request):
 from django.utils.text import slugify
 import uuid
 
-@csrf_exempt
+@require_POST
+@reelroots_login_required
 def create_archive(request):
-    if request.method == "POST":
-        try:
-            title = request.POST.get("title")
-            event_date = request.POST.get("event_date")
-            country = request.POST.get("country")
-            region = request.POST.get("region")
-            category = request.POST.get("category")
-            summary = request.POST.get("summary")
-            full_story = request.POST.get("full_story")
-            description = ""  # Removed from UI but required by schema
-            
-            media_file = request.FILES.get("media")
-            tags_json = request.POST.get("tags")
-            
-            if not all([title, event_date, country, region, category, summary, full_story, media_file]):
-                return JsonResponse({"error": "All fields including media are required"}, status=400)
-                
-            # Create a unique slug
-            base_slug = slugify(title)
-            slug = f"{base_slug}-{str(uuid.uuid4())[:8]}"
-            
-            new_record = {
-                "title": title,
-                "slug": slug,
-                "event_date": event_date,
-                "country": country,
-                "region": region,
-                "category": category,
-                "summary": summary,
-                "description": description,
-                "full_story": full_story,
-                "visibility": "public",
-                "verification_status": "verified"
-            }
-            
-            # 1. Insert Archive
-            response = supabase.table("archives").insert(new_record).execute()
-            if not response.data:
-                return JsonResponse({"error": "Failed to create archive"}, status=400)
-                
-            archive_id = response.data[0]["id"]
-            
-            # 2. Upload Media to Supabase Storage
-            file_extension = media_file.name.split('.')[-1]
-            file_name = f"{archive_id}_{uuid.uuid4().hex[:6]}.{file_extension}"
-            
-            file_content = media_file.read()
-            mime_type = media_file.content_type
-            
-            supabase.storage.from_("media").upload(
-                file_name,
-                file_content,
-                {"content-type": mime_type}
-            )
-            
-            public_url = supabase.storage.from_("media").get_public_url(file_name)
-            
-            media_type = "photo" if mime_type.startswith("image") else ("video" if mime_type.startswith("video") else "document")
-            supabase.table("media").insert({
-                "archive_id": archive_id,
-                "media_type": media_type,
-                "file_url": public_url
-            }).execute()
-            
-            # 3. Handle Tags
-            if tags_json:
-                tags = json.loads(tags_json)
-                for tag_name in tags:
-                    # Check if tag exists
-                    tag_res = supabase.table("tags").select("id").eq("name", tag_name).execute()
-                    if tag_res.data:
-                        tag_id = tag_res.data[0]["id"]
-                    else:
-                        new_tag_res = supabase.table("tags").insert({"name": tag_name}).execute()
-                        tag_id = new_tag_res.data[0]["id"]
-                    
-                    supabase.table("archive_tags").insert({
-                        "archive_id": archive_id,
-                        "tag_id": tag_id
-                    }).execute()
-            
-            return JsonResponse({"message": "Archive created successfully", "data": response.data[0]}, status=201)
-                
-        except Exception as e:
-            print(f"Error in create_archive: {e}")
-            return JsonResponse({"error": str(e)}, status=500)
-            
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+    try:
+        title = request.POST.get("title")
+        event_date = request.POST.get("event_date")
+        country = request.POST.get("country")
+        region = request.POST.get("region")
+        category = request.POST.get("category")
+        summary = request.POST.get("summary")
+        full_story = request.POST.get("full_story")
+        description = ""  # Removed from UI but required by schema
 
+        media_file = request.FILES.get("media")
+        tags_json = request.POST.get("tags")
 
+        if not all([title, event_date, country, region, category, summary, full_story, media_file]):
+            return JsonResponse({"error": "All fields including media are required"}, status=400)
+
+        # Create a unique slug
+        base_slug = slugify(title)
+        slug = f"{base_slug}-{str(uuid.uuid4())[:8]}"
+
+        new_record = {
+            "title": title,
+            "slug": slug,
+            "event_date": event_date,
+            "country": country,
+            "region": region,
+            "category": category,
+            "summary": summary,
+            "description": description,
+            "full_story": full_story,
+            "visibility": "private",
+            "verification_status": "draft"
+        }
+
+        # 1. Insert Archive
+        response = supabase.table("archives").insert(new_record).execute()
+        if not response.data:
+            return JsonResponse({"error": "Failed to create archive"}, status=400)
+
+        archive_id = response.data[0]["id"]
+
+        # 2. Upload Media to Supabase Storage
+        file_extension = media_file.name.split('.')[-1]
+        file_name = f"{archive_id}_{uuid.uuid4().hex[:6]}.{file_extension}"
+
+        file_content = media_file.read()
+        mime_type = media_file.content_type
+
+        supabase.storage.from_("media").upload(
+            file_name,
+            file_content,
+            {"content-type": mime_type}
+        )
+
+        public_url = supabase.storage.from_("media").get_public_url(file_name)
+
+        media_type = "photo" if mime_type.startswith("image") else ("video" if mime_type.startswith("video") else "document")
+        supabase.table("media").insert({
+            "archive_id": archive_id,
+            "media_type": media_type,
+            "file_url": public_url
+        }).execute()
+
+        # 3. Handle Tags
+        if tags_json:
+            tags = json.loads(tags_json)
+            for tag_name in tags:
+                # Check if tag exists
+                tag_res = supabase.table("tags").select("id").eq("name", tag_name).execute()
+                if tag_res.data:
+                    tag_id = tag_res.data[0]["id"]
+                else:
+                    new_tag_res = supabase.table("tags").insert({"name": tag_name}).execute()
+                    tag_id = new_tag_res.data[0]["id"]
+
+                supabase.table("archive_tags").insert({
+                    "archive_id": archive_id,
+                    "tag_id": tag_id
+                }).execute()
+
+        return JsonResponse({"message": "Archive created successfully", "data": response.data[0]}, status=201)
+
+    except Exception as e:
+        print(f"Error in create_archive: {e}")
+        return JsonResponse({"error": "Unable to create archive"}, status=500)
+
+@reelroots_login_required
 def new_upload(request):
     return render(request, 'new_upload.html')
 
@@ -628,37 +504,32 @@ def story_mode(request):
     return render(request, 'story_mode.html')
 
 
+@reelroots_login_required
 def user_profile(request):
-    user_id = request.session.get("user_id")
-    context = {}
-    if user_id:
-        try:
-            response = supabase.table("profiles").select("*").eq("id", user_id).execute()
-            if response.data:
-                context["profile"] = response.data[0]
-        except Exception as e:
-            print(f"Error fetching profile: {e}")
-    else:
-        return redirect("auth")
-
-    return render(request, 'user_profile.html', context)
+    profile = request.reelroots_profile
+    return render(request, 'user_profile.html', {
+        "profile": profile,
+        "interest_profile": ranked_interests(profile),
+        "preferences": profile_preferences(profile),
+    })
 
 
 def animation(request):
     return render(request, 'animation.html')
 
 
-@csrf_exempt
+@require_POST
+@reelroots_login_required
 def chatbot_response(request):
-    if request.method == 'POST':
+    try:
         data = json.loads(request.body)
-        user_message = data.get('message', '')
-
-        if user_message:
-            bot_reply = get_gemini_response(user_message)
-            return JsonResponse({'response': bot_reply})
-        else:
-            return JsonResponse({'response': "Sorry, I didn't catch that."}, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({'response': "Invalid request."}, status=400)
+    user_message = data.get('message', '')
+    if user_message:
+        bot_reply = get_gemini_response(user_message[:4000])
+        return JsonResponse({'response': bot_reply})
+    return JsonResponse({'response': "Sorry, I didn't catch that."}, status=400)
 
 
 
