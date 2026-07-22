@@ -1,13 +1,27 @@
 {
-    "builds": [{
-      "src": "ReelRoots/wsgi.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.12" }
-    }],
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "builds": [
+        {
+            "src": "static/**",
+            "use": "@vercel/static"
+        },
+        {
+            "src": "ReelRoots/wsgi.py",
+            "use": "@vercel/python",
+            "config": { "maxLambdaSize": "15mb", "runtime": "python3.12" }
+        }
+    ],
     "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "ReelRoots/wsgi.py"
-      }
+        {
+            "src": "/static/(.*)",
+            "dest": "/static/$1",
+            "headers": {
+                "cache-control": "public, max-age=31536000, immutable"
+            }
+        },
+        {
+            "src": "/(.*)",
+            "dest": "ReelRoots/wsgi.py"
+        }
     ]
 }

@@ -42,7 +42,8 @@
     </script>
 
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"
+        onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/lucide@latest';"></script>
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -58,7 +59,7 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer">
-                    <img src="{% static 'img/archives/media/logo1.png' %}" alt="ReelRoots" class="h-14 w-auto object-contain" />
+                    <img src="{% static 'media/logo1.png' %}" alt="ReelRoots" class="h-14 w-auto object-contain" />
                 </div>
 
                 <!-- Desktop Navigation -->
@@ -82,11 +83,11 @@
                     </button>
 
                     <!-- Auth Buttons -->
-                    <a href="/auth"
+                    <a href="/auth?tab=signin"
                         class="px-6 py-2.5 border-2 border-primary text-primary font-semibold rounded-xl hover:bg-primary hover:text-white transition-all duration-200">
                         Sign In
                     </a>
-                    <a href="/auth"
+                    <a href="/auth?tab=signup"
                         class="px-6 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/25 transition-all duration-200">
                         Sign Up
                     </a>
@@ -118,11 +119,11 @@
                 <a href="#about"
                     class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">About</a>
                 <div class="pt-4 space-y-3">
-                    <a href="/auth"
+                    <a href="/auth?tab=signin"
                         class="block w-full px-4 py-3 text-center border-2 border-primary text-primary font-semibold rounded-xl hover:bg-primary hover:text-white transition-all">
                         Sign In
                     </a>
-                    <a href="/auth"
+                    <a href="/auth?tab=signup"
                         class="block w-full px-4 py-3 text-center bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-all">
                         Sign Up
                     </a>
@@ -168,12 +169,12 @@
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                        <a href="/auth"
+                        <a href="/auth?tab=signup"
                             class="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-semibold rounded-2xl hover:bg-primary/90 shadow-xl shadow-primary/20 hover:shadow-primary/30 transform hover:-translate-y-0.5 transition-all duration-200">
                             Create Account
                             <i data-lucide="arrow-right" class="ml-2 w-5 h-5"></i>
                         </a>
-                        <a href="/auth"
+                        <a href="/auth?tab=signin"
                             class="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-semibold rounded-2xl hover:border-primary hover:text-primary dark:hover:border-blue-400 dark:hover:text-blue-400 transition-all duration-200">
                             Sign In
                         </a>

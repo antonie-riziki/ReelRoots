@@ -14,7 +14,7 @@ from django.views.decorators.http import require_POST
 
 from .decorators import reelroots_login_required
 from .forms import OnboardingForm, ProfileForm, SignInForm, SignUpForm, VerifyPhoneForm
-from .integrations import AfricaTalkingSMS, SupabaseAuth
+from .integrations import AfricaTalkingSMS, SMSConfigurationError, SupabaseAuth
 from .models import PendingSignup, PhoneVerification, UserProfile
 from .personalization import profile_preferences, set_explicit_interests, set_preferences
 from .security import decrypt_secret, encrypt_secret, normalize_phone
@@ -71,6 +71,7 @@ def _form_error(form, fallback):
 
 
 def auth_page(request):
+    active_tab = request.GET.get("tab", "signin")
     if request.method == "POST":
         form_type = request.POST.get("form_type")
         if form_type == "signin":
@@ -92,6 +93,7 @@ def auth_page(request):
             else:
                 messages.error(request, _form_error(form, "Enter a valid email and password."))
         elif form_type == "signup":
+            active_tab = "signup"
             form = SignUpForm(_signup_data(request))
             if form.is_valid():
                 try:
@@ -100,13 +102,20 @@ def auth_page(request):
                     return redirect("verify-phone")
                 except (ValueError, IntegrityError):
                     messages.error(request, "That phone number or email is already in use.")
+                except SMSConfigurationError:
+                    messages.error(
+                        request,
+                        "Phone verification is not configured yet. Add AT_USERNAME and AT_API_KEY, then try again.",
+                    )
                 except Exception:
                     messages.error(request, "We could not start your account. Please try again.")
             else:
                 messages.error(request, _form_error(form, "Check the signup form."))
         else:
             messages.error(request, "Choose sign in or sign up.")
-    return render(request, "auth.html")
+    if active_tab not in {"signin", "signup"}:
+        active_tab = "signin"
+    return render(request, "auth.html", {"active_tab": active_tab})
 
 
 def _start_signup(request, cleaned):
@@ -120,6 +129,7 @@ def _start_signup(request, cleaned):
     if PendingSignup.objects.filter(expires_at__gt=now, phone_number=phone_number).exists():
         raise ValueError("pending signup exists")
 
+    sms = AfricaTalkingSMS()
     auth = SupabaseAuth()
     user = auth.create_staged_user(email=email, password=cleaned["password"], phone_number=phone_number, name=cleaned["name"])
     user_id = _user_id(user)
@@ -142,7 +152,7 @@ def _start_signup(request, cleaned):
                 expires_at=now + OTP_LIFETIME,
             )
         try:
-            AfricaTalkingSMS().send_otp(phone_number, code)
+            sms.send_otp(phone_number, code)
         except Exception:
             pending.delete()
             raise

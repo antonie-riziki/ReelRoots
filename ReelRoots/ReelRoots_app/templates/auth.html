@@ -42,7 +42,8 @@
     </script>
 
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"
+        onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/lucide@latest';"></script>
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -424,7 +425,7 @@
             }
 
             // Re-initialize icons
-            lucide.createIcons();
+            if (window.refreshIcons) window.refreshIcons();
         }
 
         // Password Visibility Toggle
@@ -440,7 +441,7 @@
                 eyeIcon.setAttribute('data-lucide', 'eye');
             }
 
-            lucide.createIcons();
+            if (window.refreshIcons) window.refreshIcons();
         }
 
         // Form Handlers
@@ -454,13 +455,13 @@
             const originalText = button.innerHTML;
             button.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mr-2"></i> Signing in...';
             button.disabled = true;
-            lucide.createIcons();
+            if (window.refreshIcons) window.refreshIcons();
 
             setTimeout(() => {
                 alert(`Welcome back! Signed in as ${email}`);
                 button.innerHTML = originalText;
                 button.disabled = false;
-                lucide.createIcons();
+                if (window.refreshIcons) window.refreshIcons();
             }, 1500);
         }
 
@@ -481,13 +482,13 @@
             const originalText = button.innerHTML;
             button.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mr-2"></i> Creating account...';
             button.disabled = true;
-            lucide.createIcons();
+            if (window.refreshIcons) window.refreshIcons();
 
             setTimeout(() => {
                 alert(`Account created successfully for ${name}!`);
                 button.innerHTML = originalText;
                 button.disabled = false;
-                lucide.createIcons();
+                if (window.refreshIcons) window.refreshIcons();
                 switchTab('signin');
             }, 1500);
         }
@@ -495,10 +496,7 @@
         // Check URL params for pre-selected tab
         document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
-            const tab = urlParams.get('tab');
-            if (tab === 'signup') {
-                switchTab('signup');
-            }
+            switchTab('{{ active_tab|default:"signin"|escapejs }}');
         });
     </script>
 </body>

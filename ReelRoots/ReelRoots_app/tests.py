@@ -1,4 +1,5 @@
 from datetime import timedelta
+import os
 from types import SimpleNamespace
 from unittest.mock import patch
 from uuid import uuid4
@@ -118,6 +119,14 @@ class AuthFlowTests(TestCase):
         response = self.client.post(reverse("auth"), self.signup_payload(), HTTP_HOST="localhost")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "already in use")
+
+    def test_signup_explains_missing_sms_configuration(self):
+        with patch.dict(os.environ, {"AT_USERNAME": "", "AT_API_KEY": "configured"}, clear=False):
+            response = self.client.post(reverse("auth"), self.signup_payload(), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Phone verification is not configured yet")
+        self.assertContains(response, "switchTab('signup')")
+        self.assertFalse(PendingSignup.objects.exists())
 
     def test_login_logout_and_session_handling(self):
         profile = self.create_profile(onboarding_completed=True)

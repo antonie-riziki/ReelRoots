@@ -6,6 +6,10 @@ from django.core.exceptions import ImproperlyConfigured
 from .supabase_client import supabase
 
 
+class SMSConfigurationError(ImproperlyConfigured):
+    """Raised when the SMS provider cannot be used for phone verification."""
+
+
 class AfricaTalkingSMS:
     """Small provider adapter so OTP logic remains testable and provider-agnostic."""
 
@@ -14,7 +18,7 @@ class AfricaTalkingSMS:
         self.api_key = os.getenv("AT_API_KEY", "").strip()
         self.sender_id = os.getenv("AT_SENDER_ID", "").strip() or None
         if not self.username or not self.api_key:
-            raise ImproperlyConfigured("AT_USERNAME and AT_API_KEY are required to send SMS.")
+            raise SMSConfigurationError("AT_USERNAME and AT_API_KEY are required to send SMS.")
 
     def send_otp(self, phone_number, code):
         africastalking.initialize(username=self.username, api_key=self.api_key)

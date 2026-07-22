@@ -1,6 +1,14 @@
-// Initialize Lucide Icons
+// Initialize Lucide Icons when the optional CDN library is available.
+function refreshIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+}
+
+window.refreshIcons = refreshIcons;
+
 document.addEventListener('DOMContentLoaded', function() {
-    lucide.createIcons();
+    refreshIcons();
     
     // Initialize Dark Mode
     initDarkMode();
@@ -36,7 +44,7 @@ function initDarkMode() {
         }
         
         // Re-initialize icons to show correct sun/moon
-        lucide.createIcons();
+        refreshIcons();
     }
     
     // Event listeners
@@ -53,7 +61,7 @@ function initDarkMode() {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             html.classList.add('dark');
             localStorage.setItem('theme', 'dark');
-            lucide.createIcons();
+            refreshIcons();
         }
     }
     
@@ -65,7 +73,7 @@ function initDarkMode() {
             } else {
                 html.classList.remove('dark');
             }
-            lucide.createIcons();
+            refreshIcons();
         }
     });
 }
@@ -91,7 +99,7 @@ function initMobileMenu() {
                 const icon = mobileMenuBtn.querySelector('i');
                 if (icon) {
                     icon.setAttribute('data-lucide', 'x');
-                    lucide.createIcons();
+                    refreshIcons();
                 }
             } else {
                 mobileMenu.classList.remove('active');
@@ -103,7 +111,7 @@ function initMobileMenu() {
                 const icon = mobileMenuBtn.querySelector('i');
                 if (icon) {
                     icon.setAttribute('data-lucide', 'menu');
-                    lucide.createIcons();
+                    refreshIcons();
                 }
             }
         });
@@ -121,7 +129,7 @@ function initMobileMenu() {
                 const icon = mobileMenuBtn.querySelector('i');
                 if (icon) {
                     icon.setAttribute('data-lucide', 'menu');
-                    lucide.createIcons();
+                    refreshIcons();
                 }
             });
         });
