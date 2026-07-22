@@ -1,9 +1,11 @@
 """Provider adapters and relevance classification for permitted media sources."""
 
 from dataclasses import dataclass
-from datetime import date
 from decimal import Decimal
+import html
 import os
+import re
+from urllib.parse import quote
 
 import requests
 from django.db import transaction
@@ -58,68 +60,113 @@ def classify_heritage_relevance(title, description=""):
     return score, tuple(matched)
 
 
-class PexelsVideoProvider:
-    """Uses the official Pexels API; it never scrapes third-party platforms."""
+class WikimediaCommonsVideoProvider:
+    """Discover open video files through the official Wikimedia Commons API."""
 
-    platform = "pexels"
+    platform = "wikimedia"
     queries = {
-        "for-you": "African heritage history culture documentary",
-        "trending": "African heritage culture history",
-        "recent": "African cultural preservation archive",
-        "history": "African historical documentary archive",
-        "culture": "African traditional culture ceremony",
-        "heritage": "African heritage museum tradition",
-        "oral-history": "African storytelling oral history",
+        "for-you": "African heritage filetype:video",
+        "trending": "African culture filetype:video",
+        "recent": "African preservation filetype:video",
+        "history": "African history filetype:video",
+        "culture": "African culture filetype:video",
+        "heritage": "African heritage filetype:video",
+        "oral-history": "African storytelling filetype:video",
     }
 
     def __init__(self):
-        self.api_key = os.getenv("PEXEL_API_KEY", "").strip()
+        self.user_agent = os.getenv(
+            "REELROOTS_HTTP_USER_AGENT",
+            "ReelRoots/0.1 (cultural heritage research platform)",
+        )
 
     def fetch(self, feed_type="for-you", page=1, per_page=18):
-        if not self.api_key:
-            return []
         query = self.queries.get(feed_type, self.queries["for-you"])
         response = requests.get(
-            "https://api.pexels.com/videos/search",
-            headers={"Authorization": self.api_key},
-            params={"query": query, "per_page": per_page, "page": page},
+            "https://commons.wikimedia.org/w/api.php",
+            headers={"User-Agent": self.user_agent},
+            params={
+                "action": "query",
+                "generator": "search",
+                "gsrsearch": query,
+                "gsrnamespace": 6,
+                "gsrlimit": per_page,
+                "gsroffset": max(page - 1, 0) * per_page,
+                "prop": "imageinfo",
+                "iiprop": "url|mime|size|duration|extmetadata",
+                "iiurlwidth": 720,
+                "format": "json",
+                "formatversion": 2,
+            },
             timeout=10,
         )
         response.raise_for_status()
         items = []
-        for video in response.json().get("videos", []):
-            files = [item for item in video.get("video_files", []) if item.get("link")]
-            if not files:
+        pages = response.json().get("query", {}).get("pages", [])
+        for page_data in pages:
+            info = (page_data.get("imageinfo") or [{}])[0]
+            if not str(info.get("mime", "")).startswith("video/") or not info.get("url"):
                 continue
-            file = sorted(files, key=lambda item: (item.get("width") or 0), reverse=True)[0]
-            title = f"{query.title()} — visual reference"
-            description = "A curated visual reference discovered through the official Pexels API."
+            metadata = info.get("extmetadata") or {}
+            title = str(page_data.get("title", "")).removeprefix("File:") or "Wikimedia Commons video"
+            description = _metadata_value(metadata, "ImageDescription") or title
+            creator = _metadata_value(metadata, "Artist") or _metadata_value(metadata, "Credit") or "Wikimedia Commons contributor"
+            usage_terms = _metadata_value(metadata, "LicenseShortName") or _metadata_value(metadata, "UsageTerms")
+            license_status = "public_domain" if "public domain" in usage_terms.lower() else "licensed"
+            source_url = f"https://commons.wikimedia.org/wiki/{quote(page_data.get('title', ''), safe='') }"
+            context_summary = (
+                "This is an open-licensed visual artifact from Wikimedia Commons. "
+                "The media itself is not historical evidence; factual context requires supporting sources."
+            )
             relevance, topic_slugs = classify_heritage_relevance(title, description)
             if relevance < Decimal("0.45"):
                 continue
-            creator = (video.get("user") or {}).get("name") or "Pexels creator"
-            source_url = video.get("url") or "https://www.pexels.com/videos/"
             items.append(ExternalContentItem(
-                external_id=str(video.get("id")),
+                external_id=str(page_data.get("pageid")),
                 source_platform=self.platform,
                 source_url=source_url,
-                video_url=file["link"],
-                thumbnail_url=video.get("image") or "",
+                video_url=info["url"],
+                thumbnail_url=info.get("thumburl") or (info.get("thumburls") or {}).get("2") or "",
                 creator_name=creator,
                 original_creator_name=creator,
                 title=title,
                 description=description,
-                duration_seconds=int(video.get("duration") or 0),
-                source_attribution=f"Video by {creator} via Pexels",
-                license_status="licensed",
+                duration_seconds=_duration_seconds(info.get("duration") or _metadata_value(metadata, "Duration")),
+                source_attribution=f"Video by {creator} via Wikimedia Commons · {usage_terms or 'license shown on source page'}",
+                license_status=license_status,
                 content_type="curated_external",
                 heritage_relevance=relevance,
                 geographic_relevance="Africa",
                 topic_slugs=topic_slugs,
-                context_summary="This is curated visual media related to cultural heritage. The footage is a visual reference and should not be treated as historical evidence without supporting sources.",
-                external_references=(("Pexels source", source_url),),
+                context_summary=context_summary,
+                external_references=(
+                    ("Wikimedia Commons source", source_url),
+                    ("Wikimedia reuse guidance", "https://commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia"),
+                ),
             ))
         return items
+
+
+def _metadata_value(metadata, key):
+    value = metadata.get(key) or {}
+    raw = value.get("value", "") if isinstance(value, dict) else value
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", str(raw)))).strip()
+
+
+def _duration_seconds(value):
+    if isinstance(value, (int, float)):
+        return int(value)
+    text = str(value or "").strip()
+    if not text:
+        return 0
+    parts = text.split(":")
+    try:
+        total = 0
+        for part in parts:
+            total = total * 60 + int(float(part))
+        return total
+    except ValueError:
+        return 0
 
 
 @transaction.atomic
@@ -160,4 +207,4 @@ def ingest_external_items(items):
 
 
 def seed_provider_feed(feed_type="for-you"):
-    return ingest_external_items(PexelsVideoProvider().fetch(feed_type=feed_type))
+    return ingest_external_items(WikimediaCommonsVideoProvider().fetch(feed_type=feed_type))

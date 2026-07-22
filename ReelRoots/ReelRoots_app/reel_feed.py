@@ -58,7 +58,9 @@ def _score(reel, profile, interests):
 
 
 def get_ranked_reels(profile=None, feed_type="for-you", limit=30):
-    queryset = Reel.objects.filter(status="published", heritage_relevance__gte=Decimal("0.45")).annotate(
+    queryset = Reel.objects.filter(status="published", heritage_relevance__gte=Decimal("0.45")).exclude(
+        source_platform="pexels"
+    ).annotate(
         likes_count=Count("likes", distinct=True),
         saves_count=Count("saves", distinct=True),
     ).prefetch_related("topics")

@@ -27,6 +27,7 @@ urlpatterns = [
     path('reels/', views.reels, name='reels'),
     path('api/v1/reels/<uuid:reel_id>/interaction/', reel_views.reel_interaction, name='reel-interaction'),
     path('api/v1/reels/<uuid:reel_id>/comments/', reel_views.reel_comments, name='reel-comments'),
+    path('api/v1/reels/<uuid:reel_id>/context/', reel_views.reel_context, name='reel-context'),
     # path("api/reels/", views.reels_api, name="reels_api"),
     path('story-mode/', views.story_mode, name='story-mode'),
     path('user-profile/', views.user_profile, name='user-profile'),

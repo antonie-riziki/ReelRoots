@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from datetime import datetime
 from .models import Archive
-from .content_providers import seed_provider_feed
+from .content_providers import WikimediaCommonsVideoProvider, seed_provider_feed
 from .decorators import get_session_profile, onboarding_required, reelroots_login_required
 from .personalization import profile_preferences, ranked_interests
 from .reel_feed import get_ranked_reels
@@ -19,7 +19,6 @@ from .supabase_client import supabase
 
 
 YOUTUBE_API_KEY=os.getenv("YOUTUBE_API_KEY")
-PEXEL_API_KEY=os.getenv("PEXEL_API_KEY")
 
 
 # Keep optional integrations lazy so routes such as landing, upload, and auth can
@@ -32,10 +31,6 @@ def get_genai_client():
     if _genai_client is None:
         _genai_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
     return _genai_client
-
-headers = {
-        "Authorization": PEXEL_API_KEY
-    }
 
 todays_date = datetime.today()
 
@@ -268,26 +263,21 @@ def home(request):
 
     # on_this_day = history_highlights("provide any archive in history that happend on this day " + str(todays_date))
 
-    response = requests.get(
-        "https://api.pexels.com/videos/search?query=kenya%20culture/&per_page=10",
-        headers=headers
-    )
-
-    data = response.json()
-
     reels = []
-
-    for video in data.get("videos", []):
-        reels.append({
-            "title": "Historical Visual Archive",
-            "summary": "Stock archival style footage",
-            "video_url": video["video_files"][0]["link"],
-            "creator": "Pexels",
-            "likes": "—",
-            "comments": "—",
-            "shares": "—",
-            "hashtags": ["Archive", "VisualHistory"]
-        })
+    try:
+        for item in WikimediaCommonsVideoProvider().fetch(feed_type="for-you", per_page=10):
+            reels.append({
+                "title": item.title,
+                "summary": item.description,
+                "video_url": item.video_url,
+                "creator": item.creator_name,
+                "likes": "—",
+                "comments": "—",
+                "shares": "—",
+                "hashtags": list(item.topic_slugs),
+            })
+    except requests.RequestException:
+        pass
 
     context = {
         "reels": reels[::-1],
@@ -550,20 +540,6 @@ def chatbot_response(request):
 #         })
 
 #     return JsonResponse({"reels": reels})
-
-import random
-PEXELS_URL = "https://api.pexels.com/videos/search"
-
-HISTORICAL_QUERIES = [
-    "Kenyan heritage documentary style",
-    "Maasai traditional ceremony",
-    "African independence celebration",
-    "African museum artifacts",
-    "vintage Africa black and white",
-    "Swahili culture Lamu",
-    "African traditional storytelling",
-]
-
 
 def reels(request):
     feed_type = request.GET.get("feed", "for-you")

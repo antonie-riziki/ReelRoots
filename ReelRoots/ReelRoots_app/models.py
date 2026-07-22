@@ -292,6 +292,7 @@ class Reel(models.Model):
     SOURCE_PLATFORMS = [
         ("native", "ReelRoots"),
         ("pexels", "Pexels"),
+        ("wikimedia", "Wikimedia Commons"),
         ("youtube", "YouTube"),
         ("vimeo", "Vimeo"),
         ("archive", "Archive"),
@@ -440,6 +441,142 @@ class ReelReport(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["reel", "profile"], name="unique_reel_report")]
+
+
+class ReelContext(models.Model):
+    """Cached, evidence-aware context document generated for a reel."""
+
+    GENERATION_STATUSES = [
+        ("pending", "Pending"),
+        ("generating", "Generating"),
+        ("complete", "Complete"),
+        ("failed", "Failed"),
+    ]
+    VERIFICATION_STATUSES = [
+        ("verified", "Verified"),
+        ("partially_supported", "Partially supported"),
+        ("disputed", "Disputed"),
+        ("insufficient_evidence", "Insufficient evidence"),
+        ("false_misleading", "False or misleading"),
+    ]
+
+    reel = models.OneToOneField(Reel, on_delete=models.CASCADE, related_name="context_document")
+    transcript = models.TextField(blank=True)
+    transcript_status = models.CharField(max_length=40, default="metadata_fallback")
+    summary = models.TextField(blank=True)
+    historical_context = models.TextField(blank=True)
+    key_facts = models.JSONField(default=list, blank=True)
+    related_topic_slugs = models.JSONField(default=list, blank=True)
+    external_links = models.JSONField(default=list, blank=True)
+    sources = models.ManyToManyField("KnowledgeSource", blank=True, related_name="contexts")
+    model_name = models.CharField(max_length=120, blank=True)
+    prompt_version = models.CharField(max_length=40, blank=True)
+    source_fingerprint = models.CharField(max_length=64, blank=True)
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    verification_status = models.CharField(max_length=32, choices=VERIFICATION_STATUSES, default="insufficient_evidence")
+    generation_status = models.CharField(max_length=20, choices=GENERATION_STATUSES, default="pending")
+    error_message = models.TextField(blank=True)
+    generated_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class ContextClaim(models.Model):
+    CLAIM_TYPES = [("historical", "Historical"), ("cultural", "Cultural"), ("media", "Media")]
+    VERIFICATION_STATUSES = ReelContext.VERIFICATION_STATUSES
+
+    context = models.ForeignKey(ReelContext, on_delete=models.CASCADE, related_name="claims")
+    claim_text = models.TextField()
+    claim_type = models.CharField(max_length=20, choices=CLAIM_TYPES, default="historical")
+    verification_status = models.CharField(max_length=32, choices=VERIFICATION_STATUSES, default="insufficient_evidence")
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    evidence_summary = models.TextField(blank=True)
+    ordinal = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["ordinal", "id"]
+        indexes = [models.Index(fields=["context", "verification_status"])]
+
+
+class ContextEntity(models.Model):
+    ENTITY_TYPES = [
+        ("person", "Person"),
+        ("place", "Place"),
+        ("date", "Date"),
+        ("event", "Event"),
+        ("organization", "Organization"),
+        ("cultural_group", "Cultural group"),
+    ]
+
+    context = models.ForeignKey(ReelContext, on_delete=models.CASCADE, related_name="entities")
+    name = models.CharField(max_length=255)
+    entity_type = models.CharField(max_length=30, choices=ENTITY_TYPES)
+    description = models.TextField(blank=True)
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    ordinal = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["entity_type", "ordinal", "name"]
+        constraints = [models.UniqueConstraint(fields=["context", "entity_type", "name"], name="unique_context_entity")]
+
+
+class ContextTimelineEntry(models.Model):
+    context = models.ForeignKey(ReelContext, on_delete=models.CASCADE, related_name="timeline")
+    date_label = models.CharField(max_length=120)
+    event = models.TextField()
+    location = models.CharField(max_length=255, blank=True)
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    ordinal = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["ordinal", "id"]
+
+
+class KnowledgeSource(models.Model):
+    SOURCE_TYPES = [
+        ("original_media", "Original media"),
+        ("academic", "Academic publication"),
+        ("archive", "Archive"),
+        ("museum", "Museum"),
+        ("university", "University"),
+        ("government", "Government archive"),
+        ("library", "Library"),
+        ("journalism", "Reputable journalism"),
+        ("cultural_institution", "Cultural institution"),
+        ("other", "Other"),
+    ]
+
+    url = models.URLField(unique=True)
+    title = models.CharField(max_length=500)
+    publisher = models.CharField(max_length=255, blank=True)
+    source_type = models.CharField(max_length=32, choices=SOURCE_TYPES, default="other")
+    authority_rank = models.PositiveSmallIntegerField(default=1)
+    license_name = models.CharField(max_length=255, blank=True)
+    excerpt = models.TextField(blank=True)
+    metadata = models.JSONField(default=dict, blank=True)
+    last_retrieved_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-authority_rank", "publisher", "title"]
+
+
+class ContextEvidence(models.Model):
+    RELATIONSHIPS = [
+        ("supports", "Supports"),
+        ("contradicts", "Contradicts"),
+        ("unclear", "Unclear"),
+    ]
+
+    claim = models.ForeignKey(ContextClaim, on_delete=models.CASCADE, related_name="evidence")
+    source = models.ForeignKey(KnowledgeSource, on_delete=models.CASCADE, related_name="evidence")
+    relationship = models.CharField(max_length=20, choices=RELATIONSHIPS, default="unclear")
+    excerpt = models.TextField(blank=True)
+    source_locator = models.CharField(max_length=255, blank=True)
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["claim", "source"], name="unique_claim_source_evidence")]
 
 
 

@@ -103,7 +103,7 @@
         <article class="reel-card" data-reel-id="{{ reel.id }}" data-source-url="{{ reel.source_url }}" data-context="{{ reel.context_json|escape }}">
             {% if reel.thumbnail_url %}<div class="reel-poster" style="background-image:url('{{ reel.thumbnail_url|escapejs }}'); background-size:cover; background-position:center"></div>{% else %}<div class="reel-poster"></div>{% endif %}
             <video class="reel-video" data-reel-video preload="metadata" playsinline muted {% if reel.thumbnail_url %}poster="{{ reel.thumbnail_url }}"{% endif %}>
-                <source src="{{ reel.video_url }}" type="video/mp4">
+                <source src="{{ reel.video_url }}">
             </video>
             <div class="reel-shade"></div>
             <button class="center-play" type="button" data-toggle-play aria-label="Play or pause reel"><span class="material-symbols-outlined">play_arrow</span></button>
@@ -144,13 +144,15 @@
     <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="context-title">
         <div class="sheet-handle"></div><div class="sheet-head"><div><h2 id="context-title">Reel context</h2><span class="status-chip" id="context-status"></span></div><button class="sheet-close" data-close-sheet aria-label="Close">×</button></div>
         <h3>What this reel is about</h3><p id="context-summary"></p>
+        <h3>Key facts</h3><ul id="context-facts"></ul>
         <h3>Key historical claims</h3><ul id="context-claims"></ul>
         <h3>Historical context</h3><p id="context-history"></p>
         <h3>People and locations</h3><ul id="context-people"></ul><ul id="context-locations"></ul>
         <h3>Timeline</h3><ul id="context-timeline"></ul>
         <h3>Related topics</h3><p id="context-topics"></p>
         <h3>Confidence indicator</h3><p id="context-confidence"></p><div class="confidence-track"><span id="context-confidence-bar"></span></div>
-        <h3>Sources and external references</h3><ul id="context-sources"></ul><a id="context-source-link" target="_blank" rel="noopener noreferrer">Open original source</a>
+        <h3>Sources</h3><ul id="context-sources"></ul>
+        <h3>External links</h3><ul id="context-external-links"></ul><a id="context-source-link" target="_blank" rel="noopener noreferrer">Open original source</a>
     </section>
 </div>
 
@@ -182,18 +184,43 @@
     const csrf = () => { const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/); return match ? decodeURIComponent(match[1]) : ''; };
     const authGuard = () => { if (authenticated) return true; window.location.href = "{% url 'auth' %}"; return false; };
     const setText = (id, value) => { document.getElementById(id).textContent = value || 'No editorial note yet.'; };
-    const setList = (id, items, prefix = '') => { const list = document.getElementById(id); list.replaceChildren(); (items || []).forEach(item => { const li = document.createElement('li'); li.textContent = prefix + (typeof item === 'string' ? item : (item.label || item.event || item.date || JSON.stringify(item))); list.appendChild(li); }); if (!items?.length) { const li = document.createElement('li'); li.textContent = 'No entries yet.'; list.appendChild(li); } };
+    const setList = (id, items, formatter = item => typeof item === 'string' ? item : JSON.stringify(item)) => { const list = document.getElementById(id); list.replaceChildren(); (items || []).forEach(item => { const li = document.createElement('li'); li.textContent = formatter(item); list.appendChild(li); }); if (!items?.length) { const li = document.createElement('li'); li.textContent = 'No entries yet.'; list.appendChild(li); } };
+    const setLinkList = (id, items, formatter = item => item.title || item.label || item.url) => { const list = document.getElementById(id); list.replaceChildren(); (items || []).forEach(item => { const li = document.createElement('li'); const link = document.createElement('a'); link.textContent = formatter(item); link.href = /^https?:\/\//i.test(item.url || '') ? item.url : '#'; link.target = '_blank'; link.rel = 'noopener noreferrer'; li.appendChild(link); list.appendChild(li); }); if (!items?.length) { const li = document.createElement('li'); li.textContent = 'No entries yet.'; list.appendChild(li); } };
     const currentCard = () => cards.find(card => card.dataset.reelId === activeReelId) || activeCard;
 
-    function openContext(card) {
-        const context = JSON.parse(card.dataset.context || '{}');
+    function renderContext(context, card) {
         setText('context-title', card.querySelector('.reel-title')?.textContent.trim() || 'Reel context');
-        setText('context-summary', context.summary); setList('context-claims', context.claims); setText('context-history', context.historical_context);
-        setList('context-people', context.people, 'Person: '); setList('context-locations', context.locations, 'Location: '); setList('context-timeline', context.timeline);
-        setText('context-topics', (context.topics || []).join(' · ')); setText('context-status', context.verification_status);
-        const confidence = Math.round((context.confidence || 0) * 100); setText('context-confidence', `${confidence}% confidence · ${context.verification_status}`); document.getElementById('context-confidence-bar').style.width = `${confidence}%`;
-        setList('context-sources', (context.sources || []).map(source => source.label || source.url)); const sourceLink = document.getElementById('context-source-link'); sourceLink.href = card.dataset.sourceUrl || '#'; sourceLink.hidden = !card.dataset.sourceUrl;
+        setText('context-summary', context.summary);
+        setList('context-facts', context.key_facts);
+        setList('context-claims', context.claims, item => `${item.text || item.label || 'Claim'} · ${item.label || item.status || 'Insufficient evidence'}`);
+        setText('context-history', context.historical_context);
+        const entities = context.entities || [];
+        setList('context-people', entities.filter(item => ['person', 'organization', 'cultural_group'].includes(item.type)), item => `${item.name} · ${item.type.replaceAll('_', ' ')}`);
+        setList('context-locations', entities.filter(item => ['place', 'date', 'event'].includes(item.type)), item => `${item.name} · ${item.type}`);
+        setList('context-timeline', context.timeline, item => `${item.date || 'Unknown date'}: ${item.event || 'Event'}${item.location ? ` · ${item.location}` : ''}`);
+        setText('context-topics', (context.related_topics || []).join(' · '));
+        setText('context-status', context.verification_label || context.verification_status || 'Insufficient evidence');
+        const confidence = Math.round((context.confidence || 0) * 100);
+        setText('context-confidence', `${confidence}% confidence · ${context.verification_label || context.verification_status || 'Insufficient evidence'} · transcript: ${context.transcript_status || 'not available'}`);
+        document.getElementById('context-confidence-bar').style.width = `${confidence}%`;
+        setLinkList('context-sources', context.sources, item => `${item.title || item.url}${item.publisher ? ` · ${item.publisher}` : ''}`);
+        setLinkList('context-external-links', context.external_links, item => item.label || item.title || item.url);
+        const sourceLink = document.getElementById('context-source-link'); sourceLink.href = card.dataset.sourceUrl || '#'; sourceLink.hidden = !card.dataset.sourceUrl;
+    }
+    async function openContext(card) {
         document.getElementById('context-sheet').hidden = false;
+        setText('context-status', 'Generating evidence-aware context…'); setText('context-summary', 'Loading context and supporting sources…');
+        setText('context-history', 'Checking available evidence…'); setText('context-confidence', 'Loading confidence…');
+        try {
+            const response = await fetch(`/api/v1/reels/${card.dataset.reelId}/context/`);
+            if (!response.ok) throw new Error('Context request failed');
+            renderContext(await response.json(), card);
+        } catch (error) {
+            let fallback = {};
+            try { fallback = JSON.parse(card.dataset.context || '{}'); } catch (_) { /* ignore malformed legacy context */ }
+            fallback.verification_status = 'insufficient_evidence'; fallback.verification_label = 'Insufficient evidence'; fallback.confidence = Math.min(fallback.confidence || 0, .2);
+            renderContext(fallback, card); toast('Context is temporarily unavailable.');
+        }
     }
     function openSheet(id) { document.getElementById(id).hidden = false; }
     document.querySelectorAll('[data-close-sheet]').forEach(button => button.addEventListener('click', () => button.closest('.sheet-backdrop').hidden = true));

@@ -17,10 +17,15 @@ from ReelRoots_app.models import (
     ReelCreatorFollow,
     ReelLike,
     ReelSave,
+    ContextClaim,
+    KnowledgeSource,
+    ReelContext,
     Topic,
     UserProfile,
 )
-from ReelRoots_app.content_providers import classify_heritage_relevance
+from ReelRoots_app.content_providers import WikimediaCommonsVideoProvider, classify_heritage_relevance
+from ReelRoots_app.context_engine import ContextEngine
+from ReelRoots_app.source_retrieval import SourceCandidate
 from ReelRoots_app.personalization import ranked_interests, record_engagement
 
 
@@ -189,13 +194,13 @@ class ReelExperienceTests(TestCase):
             creator_profile=self.profile,
             creator_name="Reel Reader",
             creator_handle="reelreader",
-            source_platform="pexels",
+            source_platform="wikimedia",
             external_id="test-heritage-1",
-            source_url="https://www.pexels.com/video/test-heritage-1/",
-            video_url="https://videos.pexels.com/video-files/test.mp4",
+            source_url="https://commons.wikimedia.org/wiki/File:Test_heritage.webm",
+            video_url="https://upload.wikimedia.org/wikipedia/commons/test.webm",
             title="A heritage visual reference",
             description="A short visual story about cultural heritage.",
-            source_attribution="Pexels source",
+            source_attribution="Wikimedia Commons source",
             license_status="licensed",
             content_type="curated_external",
             heritage_relevance="0.85",
@@ -245,3 +250,82 @@ class ReelExperienceTests(TestCase):
         score, topics = classify_heritage_relevance("Traditional oral history ceremony", "Community storytelling")
         self.assertGreaterEqual(score, 0.45)
         self.assertIn("oral-history", topics)
+
+
+class ContextEngineTests(TestCase):
+    def setUp(self):
+        self.reel = Reel.objects.create(
+            creator_name="Archive Curator",
+            source_platform="wikimedia",
+            external_id="context-test-1",
+            source_url="https://commons.wikimedia.org/wiki/File:Heritage.webm",
+            video_url="https://upload.wikimedia.org/wikipedia/commons/heritage.webm",
+            title="Oral history in a heritage archive",
+            description="A short introduction to community storytelling.",
+            license_status="public_domain",
+            content_type="curated_external",
+            heritage_relevance="0.85",
+            status="published",
+        )
+        self.reel.topics.add(Topic.objects.get(slug="oral-history"))
+
+    def test_context_is_cached_and_sources_are_reused(self):
+        class FakeAI:
+            model = "test-model"
+            prompt_version = "test-v1"
+            extracts = 0
+            generations = 0
+
+            def extract(self, reel, transcript):
+                self.extracts += 1
+                return {"claims": [], "entities": [], "topics": ["oral-history"], "timeline": []}
+
+            def generate(self, reel, transcript, extraction, sources):
+                self.generations += 1
+                return {
+                    "summary": "A documented community storytelling reference.",
+                    "key_facts": ["The media is an open visual reference."],
+                    "historical_context": "The historical interpretation requires source review.",
+                    "claims": [{"text": "The reel is an oral-history reference.", "type": "media", "status": "verified", "confidence": 0.8, "evidence_indices": [0]}],
+                    "entities": [], "timeline": [], "related_topics": ["oral-history"], "external_links": [], "confidence": 0.8,
+                }
+
+        class FakeRetriever:
+            def retrieve(self, reel, extraction):
+                return [SourceCandidate(title="Archive record", url="https://example.org/archive", publisher="University archive", source_type="archive", authority_rank=5, excerpt="The archive record.")]
+
+        ai = FakeAI()
+        engine = ContextEngine(ai=ai, source_retriever=FakeRetriever())
+        first = engine.get_or_generate(self.reel)
+        second = engine.get_or_generate(self.reel)
+        self.assertEqual(first.pk, second.pk)
+        self.assertEqual(ai.generations, 1)
+        self.assertEqual(ContextClaim.objects.filter(context=first).count(), 1)
+        self.assertEqual(KnowledgeSource.objects.filter(url="https://example.org/archive").count(), 1)
+
+    def test_claim_without_evidence_is_downgraded(self):
+        class UnsafeAI:
+            model = "test-model"
+            prompt_version = "test-v1"
+            def extract(self, reel, transcript):
+                return {"claims": [], "entities": [], "topics": [], "timeline": []}
+            def generate(self, reel, transcript, extraction, sources):
+                return {"summary": "Summary", "key_facts": [], "historical_context": "Context", "claims": [{"text": "Unsupported claim", "status": "verified", "confidence": 1, "evidence_indices": []}], "entities": [], "timeline": [], "confidence": 1}
+
+        engine = ContextEngine(ai=UnsafeAI(), source_retriever=type("Retriever", (), {"retrieve": lambda self, reel, extraction: []})())
+        context = engine.get_or_generate(self.reel)
+        claim = context.claims.get()
+        self.assertEqual(claim.verification_status, "insufficient_evidence")
+        self.assertLessEqual(float(claim.confidence_score), 0.2)
+
+    @patch("ReelRoots_app.content_providers.requests.get")
+    def test_wikimedia_provider_accepts_video_and_license_metadata(self, get):
+        get.return_value = SimpleNamespace(
+            raise_for_status=lambda: None,
+            json=lambda: {"query": {"pages": [{"pageid": 10, "title": "File:African Heritage.webm", "imageinfo": [{"url": "https://upload.wikimedia.org/a.webm", "thumburl": "https://upload.wikimedia.org/a.jpg", "mime": "video/webm", "duration": "00:01:02", "extmetadata": {"Artist": {"value": "Community Archive"}, "LicenseShortName": {"value": "Public domain"}, "ImageDescription": {"value": "African oral history archive"}}}]}]}}
+        )
+        items = WikimediaCommonsVideoProvider().fetch()
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].source_platform, "wikimedia")
+        self.assertEqual(items[0].license_status, "public_domain")
+        self.assertEqual(items[0].duration_seconds, 62)

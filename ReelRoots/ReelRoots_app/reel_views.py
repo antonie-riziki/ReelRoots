@@ -3,9 +3,10 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views.decorators.http import require_http_methods, require_POST
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from .decorators import api_login_required
+from .context_engine import ContextEngine, serialize_context
 from .models import Reel, ReelComment, ReelCreatorFollow, ReelLike, ReelReport, ReelSave
 from .personalization import record_engagement
 
@@ -99,3 +100,11 @@ def reel_comments(request, reel_id):
             for comment in comments
         ],
     })
+
+
+@require_GET
+def reel_context(request, reel_id):
+    """Return cached or newly generated evidence-aware context for a public reel."""
+    reel = get_object_or_404(Reel, id=reel_id, status="published")
+    context = ContextEngine().get_or_generate(reel)
+    return JsonResponse(serialize_context(context))
