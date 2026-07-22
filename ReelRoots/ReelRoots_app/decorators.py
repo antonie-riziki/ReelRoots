@@ -1,6 +1,7 @@
 from functools import wraps
 
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import redirect
 
 from .models import UserProfile
@@ -37,6 +38,18 @@ def onboarding_required(view):
         profile = request.reelroots_profile
         if not profile.onboarding_completed:
             return redirect("onboarding")
+        return view(request, *args, **kwargs)
+
+    return wrapped
+
+
+def api_login_required(view):
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        profile = get_session_profile(request)
+        if profile is None:
+            return JsonResponse({"error": "Authentication required."}, status=401)
+        request.reelroots_profile = profile
         return view(request, *args, **kwargs)
 
     return wrapped

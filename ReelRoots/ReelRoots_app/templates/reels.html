@@ -1,186 +1,244 @@
 <!DOCTYPE html>
-
 {% load static %}
-
-<html class="light" lang="en">
-
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>History Reels Feed - ReelRoots</title>
-    <link rel="stylesheet" href="/static/css/reelroots.css" />
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Google Fonts: Plus Jakarta Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap"
-        rel="stylesheet" />
-    <!-- Material Symbols -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#1F5E4A",
-                        "background-light": "#f6f6f8",
-                        "background-dark": "#101022",
-                    },
-                    fontFamily: {
-                        "display": ["Plus Jakarta Sans", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-                },
-            },
-        }
-    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Reels · ReelRoots</title>
+    <link rel="stylesheet" href="{% static 'css/reelroots.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        .video-gradient {
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 30%, rgba(0, 0, 0, 0) 100%);
-        }
-
-        .glass-nav {
-            backdrop-filter: blur(12px);
-            background-color: rgba(255, 255, 255, 0.85);
-        }
-
-        .safe-area-bottom {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-    </style>
-    <style>
-        body {
-            min-height: max(884px, 100dvh);
+        :root { --rr-green: #1f5e4a; --rr-gold: #d4af37; }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; background: #080b0a; color: #f7faf9; font-family: "Plus Jakarta Sans", system-ui, sans-serif; }
+        body { overflow: hidden; }
+        .reel-shell { position: relative; height: 100dvh; max-width: 560px; margin: 0 auto; background: #0b1210; overflow: hidden; }
+        .reel-feed { height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: none; overscroll-behavior-y: contain; }
+        .reel-feed::-webkit-scrollbar { display: none; }
+        .reel-card { position: relative; min-height: 100dvh; scroll-snap-align: start; overflow: hidden; background: #101614; }
+        .reel-video, .reel-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .reel-poster { background: radial-gradient(circle at 30% 20%, #356b58, #111c18 55%, #050807); opacity: .86; }
+        .reel-video { z-index: 1; }
+        .reel-shade { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.50) 0%, transparent 28%, transparent 48%, rgba(0,0,0,.82) 100%); }
+        .reel-topbar { position: absolute; z-index: 5; inset: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: max(18px, env(safe-area-inset-top)) 18px 14px; }
+        .brand-mark { display: flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -.03em; text-decoration: none; color: white; }
+        .brand-mark span { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px; background: var(--rr-gold); color: #1d3228; font-size: 15px; }
+        .feed-tabs { position: absolute; z-index: 6; top: 64px; left: 16px; right: 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+        .feed-tabs::-webkit-scrollbar { display: none; }
+        .feed-tab { border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 8px 13px; background: rgba(0,0,0,.25); color: rgba(255,255,255,.75); font-size: 11px; font-weight: 700; text-decoration: none; white-space: nowrap; backdrop-filter: blur(12px); }
+        .feed-tab.active { background: white; border-color: white; color: #18382c; }
+        .reel-progress { position: absolute; z-index: 5; left: 16px; right: 16px; bottom: 130px; height: 3px; overflow: hidden; border-radius: 5px; background: rgba(255,255,255,.24); }
+        .reel-progress span { display: block; height: 100%; width: 0; background: var(--rr-gold); transition: width .1s linear; }
+        .reel-copy { position: absolute; z-index: 4; left: 18px; right: 82px; bottom: 46px; }
+        .creator-line { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+        .creator-avatar { display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid rgba(255,255,255,.5); border-radius: 50%; background: rgba(31,94,74,.95); font-weight: 800; }
+        .creator-name { font-size: 14px; font-weight: 800; }
+        .follow-button { border: 1px solid rgba(255,255,255,.65); border-radius: 999px; padding: 5px 10px; background: rgba(0,0,0,.2); color: white; font-size: 11px; font-weight: 800; }
+        .follow-button.following { border-color: var(--rr-gold); color: var(--rr-gold); }
+        .reel-title { margin: 0 0 6px; font-size: 18px; line-height: 1.25; font-weight: 800; }
+        .reel-caption { margin: 0 0 10px; color: rgba(255,255,255,.84); font-size: 12px; line-height: 1.45; }
+        .topic-row { display: flex; gap: 6px; overflow: hidden; }
+        .topic-pill { color: rgba(255,255,255,.9); font-size: 11px; font-weight: 700; }
+        .source-line { margin-top: 8px; color: rgba(255,255,255,.62); font-size: 10px; }
+        .reel-actions { position: absolute; z-index: 5; right: 15px; bottom: 148px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .reel-action { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: transparent; color: white; cursor: pointer; }
+        .reel-action .icon-wrap { display: grid; place-items: center; width: 43px; height: 43px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; background: rgba(0,0,0,.28); backdrop-filter: blur(10px); }
+        .reel-action.active .icon-wrap { background: var(--rr-gold); color: #15251e; border-color: var(--rr-gold); }
+        .reel-action small { color: rgba(255,255,255,.8); font-size: 10px; font-weight: 800; }
+        .material-symbols-outlined { font-size: 21px; font-variation-settings: 'FILL' 0, 'wght' 600; }
+        .reel-action.active .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 700; }
+        .center-play { position: absolute; z-index: 4; top: 50%; left: 50%; display: grid; place-items: center; width: 65px; height: 65px; border: 1px solid rgba(255,255,255,.36); border-radius: 50%; background: rgba(0,0,0,.35); color: white; transform: translate(-50%, -50%); opacity: 0; transition: opacity .2s; pointer-events: none; }
+        .reel-card.paused .center-play { opacity: 1; }
+        .reel-empty { display: grid; min-height: 100dvh; place-items: center; padding: 35px; text-align: center; background: radial-gradient(circle at 50% 20%, #1d4b3b, #08100c 58%); }
+        .reel-empty h1 { font-size: 27px; }
+        .reel-empty p { color: rgba(255,255,255,.7); font-size: 14px; line-height: 1.6; }
+        .reel-empty a { display: inline-block; margin-top: 12px; border-radius: 999px; padding: 12px 18px; background: var(--rr-gold); color: #15251e; font-size: 13px; font-weight: 800; text-decoration: none; }
+        .sheet-backdrop { position: fixed; z-index: 70; inset: 0; display: flex; align-items: flex-end; background: rgba(0,0,0,.58); }
+        .sheet-backdrop[hidden] { display: none; }
+        .sheet { width: 100%; max-height: 82dvh; overflow-y: auto; border-radius: 24px 24px 0 0; background: #f7faf8; color: #173229; padding: 12px 18px calc(24px + env(safe-area-inset-bottom)); box-shadow: 0 -14px 40px rgba(0,0,0,.28); }
+        .sheet-handle { width: 42px; height: 4px; margin: 0 auto 16px; border-radius: 4px; background: #c4d1c9; }
+        .sheet-head { display: flex; justify-content: space-between; gap: 15px; align-items: start; }
+        .sheet h2 { margin: 0; font-size: 20px; line-height: 1.2; }
+        .sheet h3 { margin: 20px 0 7px; font-size: 12px; text-transform: uppercase; letter-spacing: .09em; color: var(--rr-green); }
+        .sheet p, .sheet li { color: #52645b; font-size: 13px; line-height: 1.55; }
+        .sheet ul { margin: 0; padding-left: 18px; }
+        .sheet-close { border: 0; background: #e5eee8; color: #173229; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+        .status-chip { display: inline-flex; margin-top: 12px; border-radius: 999px; padding: 6px 9px; background: #e5eee8; color: var(--rr-green); font-size: 11px; font-weight: 800; }
+        .confidence-track { height: 7px; margin-top: 8px; overflow: hidden; border-radius: 8px; background: #dfe9e2; }
+        .confidence-track span { display: block; height: 100%; background: var(--rr-green); }
+        .sheet a { color: var(--rr-green); font-size: 13px; font-weight: 700; }
+        .comment-list { display: grid; gap: 12px; margin: 12px 0 18px; }
+        .comment { border-bottom: 1px solid #e1e9e3; padding-bottom: 9px; }
+        .comment strong { font-size: 12px; }
+        .comment p { margin: 3px 0 0; }
+        .sheet-form { display: flex; gap: 8px; }
+        .sheet-form input, .sheet-form textarea, .sheet-form select { min-width: 0; flex: 1; border: 1px solid #cddbd1; border-radius: 12px; padding: 11px; background: white; color: #173229; font: inherit; font-size: 13px; }
+        .sheet-form button, .primary-button { border: 0; border-radius: 12px; padding: 11px 14px; background: var(--rr-green); color: white; font-weight: 800; cursor: pointer; }
+        .report-form { display: grid; gap: 10px; }
+        .toast { position: fixed; z-index: 100; left: 50%; bottom: 90px; transform: translateX(-50%); border-radius: 999px; padding: 10px 15px; background: #17251e; color: white; font-size: 12px; box-shadow: 0 5px 25px rgba(0,0,0,.25); }
+        .toast[hidden] { display: none; }
+        @media (min-width: 900px) {
+            .reel-shell { max-width: none; }
+            .reel-feed { width: min(560px, 100%); margin: 0 auto; border-left: 1px solid rgba(255,255,255,.06); border-right: 1px solid rgba(255,255,255,.06); }
+            .reel-topbar { width: min(560px, 100%); left: 50%; right: auto; transform: translateX(-50%); }
+            .feed-tabs { width: min(560px, calc(100% - 32px)); left: 50%; right: auto; transform: translateX(-50%); }
         }
     </style>
 </head>
-
-<body
-    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-hidden">
-    <!-- Mobile Container (Simulating iOS Phone Frame) -->
-    <div class="relative mx-auto h-screen max-w-[430px] bg-black flex flex-col shadow-2xl overflow-hidden lg:max-w-none lg:shadow-none">
-        <!-- Header Overlay -->
-        <div class="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-6 pt-12">
-            <img src="{% static 'img/archives/media/logo1.png' %}" alt="ReelRoots" class="h-10 w-auto rounded-lg object-contain" />
-            <div class="flex gap-4">
-                <button class="text-white bg-black/20 p-2 rounded-full backdrop-blur-md">
-                    <span class="material-symbols-outlined">search</span>
-                </button>
-                <button class="text-white bg-black/20 p-2 rounded-full backdrop-blur-md">
-                    <span class="material-symbols-outlined">more_horiz</span>
-                </button>
-            </div>
+<body>
+<div class="reel-shell" data-authenticated="{{ is_authenticated|yesno:'true,false' }}">
+    <div class="reel-topbar">
+        <a href="{% url 'home' %}" class="brand-mark"><span>R</span>ReelRoots</a>
+        <div style="display:flex; gap:8px">
+            <button class="reel-action" type="button" data-feed-search aria-label="Search reels"><span class="icon-wrap"><span class="material-symbols-outlined">search</span></span></button>
+            <button class="reel-action" type="button" data-open-report aria-label="Report a reel"><span class="icon-wrap"><span class="material-symbols-outlined">flag</span></span></button>
         </div>
-
-        <!-- Scroll Container -->
-        <div class="h-screen overflow-y-scroll snap-y snap-mandatory">
-
-            {% for reel in reels %}
-
-            <!-- Each Reel = Full Screen -->
-            <div class="relative h-screen w-full snap-start bg-slate-900 flex items-center justify-center">
-
-                <!-- <div class="relative w-full aspect-[9/16] mb-6">
-                    <iframe
-                        loading="lazy"
-                        class="absolute inset-0 w-full h-full"
-                        src="{{ reel.video_url }}"
-                        frameborder="0"
-                        allowfullscreen>
-                    </iframe>
-                </div>-->
-
-                <!-- Video -->
-
-                <div class="relative w-full aspect-[9/16] mb-6 rounded-xl overflow-hidden">
-
-                    <video class="w-full h-full object-cover" src="{{ reel.video_url }}" autoplay muted loop
-                        playsinline>
-                    </video>
-
-                    <div class="absolute bottom-0 p-4 text-white bg-gradient-to-t from-black/60 to-transparent w-full">
-                        <p class="text-sm font-semibold">{{ reel.creator }}</p>
-                        <p class="text-xs opacity-80">Duration: {{ reel.duration }}s</p>
-                    </div>
-
-                </div>
-
-                <!-- Right Sidebar -->
-                <div class="absolute right-4 bottom-32 z-10 flex flex-col items-center gap-6">
-
-                    <button class="flex flex-col items-center gap-1">
-                        <div class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white">
-                            <span class="material-symbols-outlined text-3xl">favorite</span>
-                        </div>
-                        <span class="text-white text-xs font-bold drop-shadow-md">
-                            {{ reel.likes }}
-                        </span>
-                    </button>
-
-                    <button class="flex flex-col items-center gap-1">
-                        <div class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white">
-                            <span class="material-symbols-outlined text-3xl">chat_bubble</span>
-                        </div>
-                        <span class="text-white text-xs font-bold drop-shadow-md">
-                            {{ reel.comments }}
-                        </span>
-                    </button>
-
-                    <button class="flex flex-col items-center gap-1">
-                        <div class="bg-black/20 backdrop-blur-md p-3 rounded-full text-white">
-                            <span class="material-symbols-outlined text-3xl">share</span>
-                        </div>
-                        <span class="text-white text-xs font-bold drop-shadow-md">
-                            {{ reel.shares }}
-                        </span>
-                    </button>
-
-                </div>
-
-                <!-- Bottom Info -->
-                <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-
-                    <h3 class="text-white font-bold text-lg mb-1">
-                        @{{ reel.creator }}
-                    </h3>
-
-                    <p class="text-white/90 text-sm mb-3">
-                        {{ reel.summary }}
-                    </p>
-
-                    <div class="flex flex-wrap gap-2">
-                        {% for tag in reel.hashtags %}
-                        <span class="px-2 py-1 bg-white/10 rounded-lg text-white/80 text-[11px]">
-                            #{{ tag }}
-                        </span>
-                        {% endfor %}
-                    </div>
-
-                </div>
-
-            </div>
-
-            {% endfor %}
-
-        </div>
-
-
-        <!-- Bottom Navigation Bar (iOS Style) -->
-
-        {% include 'navbar.html' %}
-
-        <!-- Dynamic Island/Notch Spacer for iPhone 14/15 Pro style -->
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-8 bg-black rounded-b-3xl z-50"></div>
     </div>
-</body>
+    <div class="feed-tabs" aria-label="Reel feeds">
+        {% for slug, label in feed_tabs %}<a class="feed-tab {% if feed_type == slug %}active{% endif %}" href="?feed={{ slug }}">{{ label }}</a>{% endfor %}
+    </div>
 
+    <main class="reel-feed" id="reel-feed">
+        {% for reel in reels %}
+        <article class="reel-card" data-reel-id="{{ reel.id }}" data-source-url="{{ reel.source_url }}" data-context="{{ reel.context_json|escape }}">
+            {% if reel.thumbnail_url %}<div class="reel-poster" style="background-image:url('{{ reel.thumbnail_url|escapejs }}'); background-size:cover; background-position:center"></div>{% else %}<div class="reel-poster"></div>{% endif %}
+            <video class="reel-video" data-reel-video preload="metadata" playsinline muted {% if reel.thumbnail_url %}poster="{{ reel.thumbnail_url }}"{% endif %}>
+                <source src="{{ reel.video_url }}" type="video/mp4">
+            </video>
+            <div class="reel-shade"></div>
+            <button class="center-play" type="button" data-toggle-play aria-label="Play or pause reel"><span class="material-symbols-outlined">play_arrow</span></button>
+            <div class="reel-progress" aria-label="Video progress"><span data-progress></span></div>
+
+            <div class="reel-actions">
+                <button class="reel-action" type="button" data-interaction="like" aria-label="Like reel"><span class="icon-wrap"><span class="material-symbols-outlined">favorite</span></span><small data-count="likes">{{ reel.likes }}</small></button>
+                <button class="reel-action" type="button" data-open-comments aria-label="Open comments"><span class="icon-wrap"><span class="material-symbols-outlined">chat_bubble</span></span><small data-count="comments">{{ reel.comments }}</small></button>
+                <button class="reel-action" type="button" data-interaction="save" aria-label="Save reel"><span class="icon-wrap"><span class="material-symbols-outlined">bookmark</span></span><small data-count="saves">{{ reel.saves }}</small></button>
+                <button class="reel-action" type="button" data-share aria-label="Share reel"><span class="icon-wrap"><span class="material-symbols-outlined">share</span></span><small>Share</small></button>
+                <button class="reel-action" type="button" data-open-context aria-label="Open context"><span class="icon-wrap"><span class="material-symbols-outlined">menu_book</span></span><small>Context</small></button>
+                <button class="reel-action" type="button" data-source aria-label="Open source"><span class="icon-wrap"><span class="material-symbols-outlined">link</span></span><small>Source</small></button>
+                <button class="reel-action" type="button" data-report aria-label="Report reel"><span class="icon-wrap"><span class="material-symbols-outlined">flag</span></span><small>Report</small></button>
+            </div>
+
+            <div class="reel-copy">
+                <div class="creator-line">
+                    <div class="creator-avatar">{{ reel.creator|first|upper }}</div>
+                    <div class="creator-name">@{{ reel.creator_handle }}</div>
+                    <button class="follow-button" type="button" data-interaction="follow">Follow</button>
+                </div>
+                <h1 class="reel-title">{{ reel.title }}</h1>
+                <p class="reel-caption">{{ reel.description }}</p>
+                <div class="topic-row">{% for topic in reel.topics %}<span class="topic-pill">#{{ topic.name }}</span>{% endfor %}</div>
+                <div class="source-line">{{ reel.source_attribution }} · {{ reel.verification_status }}</div>
+            </div>
+            <button class="reel-action" type="button" data-mute style="position:absolute; z-index:5; right:16px; top:114px" aria-label="Mute or unmute"><span class="icon-wrap"><span class="material-symbols-outlined">volume_off</span></span></button>
+        </article>
+        {% empty %}
+        <section class="reel-empty"><div><div class="brand-mark" style="justify-content:center; font-size:20px"><span>R</span>ReelRoots</div><h1>Heritage stories are on the way.</h1><p>There are no published reels in this feed yet. Connect a permitted content provider or upload the first ReelRoots story.</p><a href="{% url 'upload' %}">Create a story</a></div></section>
+        {% endfor %}
+    </main>
+
+    {% include 'navbar.html' %}
+</div>
+
+<div class="sheet-backdrop" id="context-sheet" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="context-title">
+        <div class="sheet-handle"></div><div class="sheet-head"><div><h2 id="context-title">Reel context</h2><span class="status-chip" id="context-status"></span></div><button class="sheet-close" data-close-sheet aria-label="Close">×</button></div>
+        <h3>What this reel is about</h3><p id="context-summary"></p>
+        <h3>Key historical claims</h3><ul id="context-claims"></ul>
+        <h3>Historical context</h3><p id="context-history"></p>
+        <h3>People and locations</h3><ul id="context-people"></ul><ul id="context-locations"></ul>
+        <h3>Timeline</h3><ul id="context-timeline"></ul>
+        <h3>Related topics</h3><p id="context-topics"></p>
+        <h3>Confidence indicator</h3><p id="context-confidence"></p><div class="confidence-track"><span id="context-confidence-bar"></span></div>
+        <h3>Sources and external references</h3><ul id="context-sources"></ul><a id="context-source-link" target="_blank" rel="noopener noreferrer">Open original source</a>
+    </section>
+</div>
+
+<div class="sheet-backdrop" id="comments-sheet" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="comments-title">
+        <div class="sheet-handle"></div><div class="sheet-head"><h2 id="comments-title">Community notes</h2><button class="sheet-close" data-close-sheet aria-label="Close">×</button></div>
+        <div class="comment-list" id="comment-list"></div>
+        {% if is_authenticated %}<form class="sheet-form" id="comment-form"><input name="body" maxlength="500" placeholder="Add a respectful note…" required><button type="submit">Post</button></form>{% else %}<p><a href="{% url 'auth' %}">Sign in</a> to join the conversation.</p>{% endif %}
+    </section>
+</div>
+
+<div class="sheet-backdrop" id="report-sheet" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="report-title">
+        <div class="sheet-handle"></div><div class="sheet-head"><h2 id="report-title">Report this reel</h2><button class="sheet-close" data-close-sheet aria-label="Close">×</button></div>
+        <form class="report-form" id="report-form"><select name="reason"><option>Misleading historical claim</option><option>Copyright or usage concern</option><option>Harmful or hateful content</option><option>Other</option></select><textarea name="details" rows="3" maxlength="500" placeholder="Tell us what needs review"></textarea><button class="primary-button" type="submit">Send report</button></form>
+    </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+    const shell = document.querySelector('.reel-shell');
+    const authenticated = shell.dataset.authenticated === 'true';
+    const cards = [...document.querySelectorAll('.reel-card')];
+    let activeCard = cards[0] || null;
+    let activeReelId = activeCard?.dataset.reelId || null;
+
+    const toast = (message) => { const el = document.getElementById('toast'); el.textContent = message; el.hidden = false; clearTimeout(window.rrToast); window.rrToast = setTimeout(() => el.hidden = true, 2600); };
+    const csrf = () => { const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/); return match ? decodeURIComponent(match[1]) : ''; };
+    const authGuard = () => { if (authenticated) return true; window.location.href = "{% url 'auth' %}"; return false; };
+    const setText = (id, value) => { document.getElementById(id).textContent = value || 'No editorial note yet.'; };
+    const setList = (id, items, prefix = '') => { const list = document.getElementById(id); list.replaceChildren(); (items || []).forEach(item => { const li = document.createElement('li'); li.textContent = prefix + (typeof item === 'string' ? item : (item.label || item.event || item.date || JSON.stringify(item))); list.appendChild(li); }); if (!items?.length) { const li = document.createElement('li'); li.textContent = 'No entries yet.'; list.appendChild(li); } };
+    const currentCard = () => cards.find(card => card.dataset.reelId === activeReelId) || activeCard;
+
+    function openContext(card) {
+        const context = JSON.parse(card.dataset.context || '{}');
+        setText('context-title', card.querySelector('.reel-title')?.textContent.trim() || 'Reel context');
+        setText('context-summary', context.summary); setList('context-claims', context.claims); setText('context-history', context.historical_context);
+        setList('context-people', context.people, 'Person: '); setList('context-locations', context.locations, 'Location: '); setList('context-timeline', context.timeline);
+        setText('context-topics', (context.topics || []).join(' · ')); setText('context-status', context.verification_status);
+        const confidence = Math.round((context.confidence || 0) * 100); setText('context-confidence', `${confidence}% confidence · ${context.verification_status}`); document.getElementById('context-confidence-bar').style.width = `${confidence}%`;
+        setList('context-sources', (context.sources || []).map(source => source.label || source.url)); const sourceLink = document.getElementById('context-source-link'); sourceLink.href = card.dataset.sourceUrl || '#'; sourceLink.hidden = !card.dataset.sourceUrl;
+        document.getElementById('context-sheet').hidden = false;
+    }
+    function openSheet(id) { document.getElementById(id).hidden = false; }
+    document.querySelectorAll('[data-close-sheet]').forEach(button => button.addEventListener('click', () => button.closest('.sheet-backdrop').hidden = true));
+    document.querySelectorAll('.sheet-backdrop').forEach(sheet => sheet.addEventListener('click', event => { if (event.target === sheet) sheet.hidden = true; }));
+
+    async function interaction(card, action, extra = {}) {
+        if (!authenticated && (action === 'watch' || action === 'completion')) return null;
+        if (!authGuard()) return null;
+        const response = await fetch(`/api/v1/reels/${card.dataset.reelId}/interaction/`, { method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf()}, body: JSON.stringify({ action, ...extra }) });
+        if (response.status === 401) { window.location.href = "{% url 'auth' %}"; return null; }
+        const data = await response.json(); if (!response.ok) { toast(data.error || 'That action could not be completed.'); return null; }
+        if (data.counts) Object.entries(data.counts).forEach(([key, value]) => { const count = card.querySelector(`[data-count="${key}"]`); if (count && typeof value === 'number') count.textContent = value; const button = card.querySelector(`[data-interaction="${key.slice(0, -1)}"]`); if (button && typeof value === 'boolean') button.classList.toggle('active', value); });
+        return data;
+    }
+
+    cards.forEach(card => {
+        const video = card.querySelector('[data-reel-video]');
+        card.querySelector('[data-toggle-play]')?.addEventListener('click', () => video.paused ? video.play() : video.pause());
+        video.addEventListener('click', () => video.paused ? video.play() : video.pause());
+        video.addEventListener('play', () => card.classList.remove('paused'));
+        video.addEventListener('pause', () => card.classList.add('paused'));
+        video.addEventListener('timeupdate', () => { if (video.duration) card.querySelector('[data-progress]').style.width = `${(video.currentTime / video.duration) * 100}%`; });
+        video.addEventListener('ended', () => interaction(card, 'completion', {value: 1}));
+        card.querySelector('[data-mute]')?.addEventListener('click', () => { video.muted = !video.muted; card.querySelector('[data-mute] .material-symbols-outlined').textContent = video.muted ? 'volume_off' : 'volume_up'; });
+        card.querySelector('[data-open-context]')?.addEventListener('click', () => openContext(card));
+        card.querySelector('[data-open-comments]')?.addEventListener('click', async () => { activeCard = card; activeReelId = card.dataset.reelId; openSheet('comments-sheet'); await loadComments(card); });
+        card.querySelector('[data-share]')?.addEventListener('click', async () => { const shareUrl = `${window.location.origin}${window.location.pathname}?reel=${card.dataset.reelId}`; if (!authenticated) { if (navigator.share) await navigator.share({title: card.querySelector('.reel-title').textContent, url: shareUrl}); else { await navigator.clipboard?.writeText(shareUrl); toast('Reel link copied.'); } return; } const data = await interaction(card, 'share'); if (!data) return; if (navigator.share) await navigator.share({title: card.querySelector('.reel-title').textContent, url: data.share_url}); else { await navigator.clipboard?.writeText(data.share_url); toast('Reel link copied.'); } });
+        card.querySelector('[data-source]')?.addEventListener('click', () => { if (card.dataset.sourceUrl) window.open(card.dataset.sourceUrl, '_blank', 'noopener,noreferrer'); else toast('Source details are not available yet.'); });
+        card.querySelector('[data-report]')?.addEventListener('click', () => { activeCard = card; activeReelId = card.dataset.reelId; openSheet('report-sheet'); });
+        card.querySelector('[data-interaction="like"]')?.addEventListener('click', () => interaction(card, 'like'));
+        card.querySelector('[data-interaction="save"]')?.addEventListener('click', () => interaction(card, 'save'));
+        card.querySelector('[data-interaction="follow"]')?.addEventListener('click', async event => { const data = await interaction(card, 'follow'); if (data) event.currentTarget.classList.toggle('following', data.counts.followed); event.currentTarget.textContent = event.currentTarget.classList.contains('following') ? 'Following' : 'Follow'; });
+    });
+
+    async function loadComments(card) { const list = document.getElementById('comment-list'); list.replaceChildren(); const response = await fetch(`/api/v1/reels/${card.dataset.reelId}/comments/`); if (!response.ok) { list.textContent = 'Sign in to view comments.'; return; } const data = await response.json(); if (!data.comments.length) { list.textContent = 'Be the first to add a respectful note.'; return; } data.comments.forEach(comment => { const item = document.createElement('div'); item.className = 'comment'; const author = document.createElement('strong'); author.textContent = comment.author; const body = document.createElement('p'); body.textContent = comment.body; item.append(author, body); list.appendChild(item); }); }
+    document.getElementById('comment-form')?.addEventListener('submit', async event => { event.preventDefault(); const form = event.currentTarget; const body = new FormData(form).get('body'); const response = await fetch(`/api/v1/reels/${activeReelId}/comments/`, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf()}, body: JSON.stringify({body})}); if (response.ok) { form.reset(); await loadComments(currentCard()); toast('Note added.'); } else toast('Comment could not be posted.'); });
+    document.querySelector('[data-open-report]')?.addEventListener('click', () => openSheet('report-sheet'));
+    document.getElementById('report-form')?.addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const card = currentCard(); if (!card || !(await interaction(card, 'report', {reason: form.get('reason'), details: form.get('details')}))) return; document.getElementById('report-sheet').hidden = true; toast('Thanks. Our team will review this reel.'); });
+    document.querySelector('[data-feed-search]')?.addEventListener('click', () => toast('Search is coming to the discovery layer.'));
+
+    if (cards.length) {
+        const observer = new IntersectionObserver(entries => entries.forEach(entry => { const video = entry.target.querySelector('[data-reel-video]'); if (entry.isIntersecting && entry.intersectionRatio > .65) { activeCard = entry.target; activeReelId = entry.target.dataset.reelId; cards.forEach(other => { if (other !== entry.target) other.querySelector('[data-reel-video]')?.pause(); }); video.play().catch(() => entry.target.classList.add('paused')); if (!entry.target.dataset.watched) { entry.target.dataset.watched = 'true'; interaction(entry.target, 'watch'); } } else video.pause(); }), {threshold: [.25, .65, .9]});
+        cards.forEach(card => observer.observe(card));
+    }
+})();
+</script>
+</body>
 </html>

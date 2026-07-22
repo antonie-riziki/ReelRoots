@@ -286,6 +286,162 @@ class PhoneVerification(models.Model):
         return self.attempts >= self.max_attempts
 
 
+class Reel(models.Model):
+    """Canonical, publishable short-form heritage media item."""
+
+    SOURCE_PLATFORMS = [
+        ("native", "ReelRoots"),
+        ("pexels", "Pexels"),
+        ("youtube", "YouTube"),
+        ("vimeo", "Vimeo"),
+        ("archive", "Archive"),
+        ("other", "Other"),
+    ]
+    CONTENT_TYPES = [
+        ("native", "Native ReelRoots video"),
+        ("creator", "Creator upload"),
+        ("licensed", "Licensed content"),
+        ("public_domain", "Public-domain footage"),
+        ("embed", "Permitted embed"),
+        ("curated_external", "Curated external media"),
+    ]
+    LICENSE_STATUSES = [
+        ("owned", "Owned"),
+        ("licensed", "Licensed"),
+        ("public_domain", "Public domain"),
+        ("permitted_embed", "Permitted embed"),
+        ("pending_review", "Pending review"),
+    ]
+    VERIFICATION_STATUSES = [
+        ("unreviewed", "Unreviewed"),
+        ("reviewed", "Reviewed"),
+        ("verified", "Verified"),
+        ("disputed", "Disputed"),
+    ]
+    STATUSES = [
+        ("draft", "Draft"),
+        ("published", "Published"),
+        ("hidden", "Hidden"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    creator_profile = models.ForeignKey(
+        UserProfile,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="reels",
+    )
+    creator_name = models.CharField(max_length=150)
+    creator_handle = models.CharField(max_length=150, blank=True)
+    original_creator_name = models.CharField(max_length=150, blank=True)
+    topics = models.ManyToManyField("Topic", blank=True, related_name="reels")
+    source_platform = models.CharField(max_length=32, choices=SOURCE_PLATFORMS)
+    external_id = models.CharField(max_length=255, null=True, blank=True)
+    source_url = models.URLField(blank=True)
+    video_url = models.URLField()
+    thumbnail_url = models.URLField(blank=True)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    duration_seconds = models.PositiveIntegerField(default=0)
+    publication_date = models.DateField(null=True, blank=True)
+    source_attribution = models.CharField(max_length=255, blank=True)
+    license_status = models.CharField(max_length=32, choices=LICENSE_STATUSES, default="pending_review")
+    content_type = models.CharField(max_length=32, choices=CONTENT_TYPES, default="curated_external")
+    heritage_relevance = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    geographic_relevance = models.CharField(max_length=150, blank=True)
+    verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUSES, default="unreviewed")
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    quality_score = models.DecimalField(max_digits=5, decimal_places=4, default=0.5)
+    context_summary = models.TextField(blank=True)
+    key_claims = models.JSONField(default=list, blank=True)
+    historical_context = models.TextField(blank=True)
+    important_people = models.JSONField(default=list, blank=True)
+    important_locations = models.JSONField(default=list, blank=True)
+    timeline = models.JSONField(default=list, blank=True)
+    external_references = models.JSONField(default=list, blank=True)
+    status = models.CharField(max_length=20, choices=STATUSES, default="draft")
+    view_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["source_platform", "external_id"],
+                name="unique_reel_external_source",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["status", "heritage_relevance", "created_at"]),
+            models.Index(fields=["source_platform", "external_id"]),
+        ]
+        ordering = ["-created_at"]
+
+    @property
+    def content_key(self):
+        return str(self.id)
+
+    @property
+    def creator_key(self):
+        if self.creator_profile_id:
+            return f"profile:{self.creator_profile_id}"
+        return f"{self.source_platform}:{self.creator_name}"
+
+
+class ReelLike(models.Model):
+    reel = models.ForeignKey(Reel, on_delete=models.CASCADE, related_name="likes")
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="reel_likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["reel", "profile"], name="unique_reel_like")]
+
+
+class ReelSave(models.Model):
+    reel = models.ForeignKey(Reel, on_delete=models.CASCADE, related_name="saves")
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="reel_saves")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["reel", "profile"], name="unique_reel_save")]
+
+
+class ReelComment(models.Model):
+    reel = models.ForeignKey(Reel, on_delete=models.CASCADE, related_name="comments")
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="reel_comments")
+    body = models.CharField(max_length=500)
+    is_hidden = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [models.Index(fields=["reel", "created_at"])]
+
+
+class ReelCreatorFollow(models.Model):
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="followed_creators")
+    creator_key = models.CharField(max_length=255)
+    creator_name = models.CharField(max_length=150)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["profile", "creator_key"], name="unique_creator_follow")]
+
+
+class ReelReport(models.Model):
+    STATUS_CHOICES = [("open", "Open"), ("reviewed", "Reviewed"), ("dismissed", "Dismissed")]
+    reel = models.ForeignKey(Reel, on_delete=models.CASCADE, related_name="reports")
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="reel_reports")
+    reason = models.CharField(max_length=80)
+    details = models.CharField(max_length=500, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["reel", "profile"], name="unique_reel_report")]
+
+
 
 
 # class Profile(models.Model):

@@ -12,9 +12,15 @@ from ReelRoots_app.models import (
     PersonalizationEvent,
     ProfileInterest,
     ProfilePreference,
+    Reel,
+    ReelComment,
+    ReelCreatorFollow,
+    ReelLike,
+    ReelSave,
     Topic,
     UserProfile,
 )
+from ReelRoots_app.content_providers import classify_heritage_relevance
 from ReelRoots_app.personalization import ranked_interests, record_engagement
 
 
@@ -167,3 +173,75 @@ class PersonalizationTests(TestCase):
         self.assertTrue(self.profile.onboarding_completed)
         self.assertEqual(self.profile.interests.filter(source="explicit").count(), 2)
         self.assertTrue(ProfilePreference.objects.filter(profile=self.profile, preference_type="language", value="sw").exists())
+
+
+class ReelExperienceTests(TestCase):
+    def setUp(self):
+        self.profile = UserProfile.objects.create(
+            supabase_user_id=uuid4(),
+            email="reel-reader@example.com",
+            name="Reel Reader",
+            phone_number="+254722222222",
+            phone_verified_at=timezone.now(),
+            onboarding_completed=True,
+        )
+        self.reel = Reel.objects.create(
+            creator_profile=self.profile,
+            creator_name="Reel Reader",
+            creator_handle="reelreader",
+            source_platform="pexels",
+            external_id="test-heritage-1",
+            source_url="https://www.pexels.com/video/test-heritage-1/",
+            video_url="https://videos.pexels.com/video-files/test.mp4",
+            title="A heritage visual reference",
+            description="A short visual story about cultural heritage.",
+            source_attribution="Pexels source",
+            license_status="licensed",
+            content_type="curated_external",
+            heritage_relevance="0.85",
+            confidence_score="0.20",
+            status="published",
+        )
+        self.reel.topics.add(Topic.objects.get(slug="heritage"))
+        session = self.client.session
+        session["profile_id"] = str(self.profile.id)
+        session["supabase_user_id"] = str(self.profile.supabase_user_id)
+        session.save()
+
+    def test_reel_feed_renders_context_and_feed_tabs(self):
+        response = self.client.get(reverse("reels"), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Context")
+        self.assertContains(response, "For You")
+        self.assertContains(response, "A heritage visual reference")
+        self.assertContains(response, "Open source")
+
+    def test_following_feed_does_not_expose_general_feed_to_anonymous_users(self):
+        self.client.session.flush()
+        response = self.client.get(reverse("reels") + "?feed=following", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "There are no published reels in this feed yet")
+
+    def test_reel_interactions_and_comments_are_persistent(self):
+        interaction_url = reverse("reel-interaction", args=[self.reel.id])
+        response = self.client.post(interaction_url, data={"action": "like"}, content_type="application/json", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(ReelLike.objects.filter(reel=self.reel, profile=self.profile).exists())
+        self.client.post(interaction_url, data={"action": "save"}, content_type="application/json", HTTP_HOST="localhost")
+        self.client.post(interaction_url, data={"action": "follow"}, content_type="application/json", HTTP_HOST="localhost")
+        self.assertTrue(ReelSave.objects.filter(reel=self.reel, profile=self.profile).exists())
+        self.assertTrue(ReelCreatorFollow.objects.filter(profile=self.profile, creator_key=self.reel.creator_key).exists())
+        comments_url = reverse("reel-comments", args=[self.reel.id])
+        response = self.client.post(comments_url, data={"body": "This made me curious to learn more."}, content_type="application/json", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(ReelComment.objects.filter(reel=self.reel).count(), 1)
+
+    def test_reel_interactions_require_authentication(self):
+        self.client.session.flush()
+        response = self.client.post(reverse("reel-interaction", args=[self.reel.id]), data={"action": "like"}, content_type="application/json", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 401)
+
+    def test_relevance_classifier_only_accepts_heritage_signals(self):
+        score, topics = classify_heritage_relevance("Traditional oral history ceremony", "Community storytelling")
+        self.assertGreaterEqual(score, 0.45)
+        self.assertIn("oral-history", topics)
