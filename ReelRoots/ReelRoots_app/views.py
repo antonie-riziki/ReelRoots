@@ -5,8 +5,10 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from datetime import datetime
 from .models import Archive
-from .decorators import onboarding_required, reelroots_login_required
+from .content_providers import WikimediaCommonsVideoProvider, seed_provider_feed
+from .decorators import get_session_profile, onboarding_required, reelroots_login_required
 from .personalization import profile_preferences, ranked_interests
+from .reel_feed import get_ranked_reels
 import requests
 import os
 import json
@@ -17,7 +19,6 @@ from .supabase_client import supabase
 
 
 YOUTUBE_API_KEY=os.getenv("YOUTUBE_API_KEY")
-PEXEL_API_KEY=os.getenv("PEXEL_API_KEY")
 
 
 # Keep optional integrations lazy so routes such as landing, upload, and auth can
@@ -30,10 +31,6 @@ def get_genai_client():
     if _genai_client is None:
         _genai_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
     return _genai_client
-
-headers = {
-        "Authorization": PEXEL_API_KEY
-    }
 
 todays_date = datetime.today()
 
@@ -266,26 +263,21 @@ def home(request):
 
     # on_this_day = history_highlights("provide any archive in history that happend on this day " + str(todays_date))
 
-    response = requests.get(
-        "https://api.pexels.com/videos/search?query=kenya%20culture/&per_page=10",
-        headers=headers
-    )
-
-    data = response.json()
-
     reels = []
-
-    for video in data.get("videos", []):
-        reels.append({
-            "title": "Historical Visual Archive",
-            "summary": "Stock archival style footage",
-            "video_url": video["video_files"][0]["link"],
-            "creator": "Pexels",
-            "likes": "—",
-            "comments": "—",
-            "shares": "—",
-            "hashtags": ["Archive", "VisualHistory"]
-        })
+    try:
+        for item in WikimediaCommonsVideoProvider().fetch(feed_type="for-you", per_page=10):
+            reels.append({
+                "title": item.title,
+                "summary": item.description,
+                "video_url": item.video_url,
+                "creator": item.creator_name,
+                "likes": "—",
+                "comments": "—",
+                "shares": "—",
+                "hashtags": list(item.topic_slugs),
+            })
+    except requests.RequestException:
+        pass
 
     context = {
         "reels": reels[::-1],
@@ -549,55 +541,69 @@ def chatbot_response(request):
 
 #     return JsonResponse({"reels": reels})
 
-import random
-PEXELS_URL = "https://api.pexels.com/videos/search"
-
-HISTORICAL_QUERIES = [
-    "Kenyan heritage documentary style",
-    "Maasai traditional ceremony",
-    "African independence celebration",
-    "African museum artifacts",
-    "vintage Africa black and white",
-    "Swahili culture Lamu",
-    "African traditional storytelling",
-]
-
-
 def reels(request):
-    query = random.choice(HISTORICAL_QUERIES)
+    feed_type = request.GET.get("feed", "for-you")
+    allowed_feeds = {"for-you", "following", "trending", "recent", "history", "culture", "heritage", "oral-history", "indigenous-knowledge", "architecture", "music", "food", "art"}
+    if feed_type not in allowed_feeds:
+        feed_type = "for-you"
+    profile = get_session_profile(request)
+    feed_reels = get_ranked_reels(profile, feed_type=feed_type)
+    if not feed_reels and feed_type != "following":
+        try:
+            seed_provider_feed(feed_type)
+        except requests.RequestException:
+            pass
+        feed_reels = get_ranked_reels(profile, feed_type=feed_type)
 
-    headers = {
-        "Authorization": PEXEL_API_KEY
-    }
-
-    params = {
-        "query": query,
-        "per_page": 20
-    }
-
-    response = requests.get(PEXELS_URL, headers=headers, params=params)
-
-    if response.status_code != 200:
-        return render(request, "reels.html", {"reels": []})
-
-
-    data = response.json()
-
-    reels = []
-
-    for video in data.get("videos", []):
-        reels.append({
-            "title": "Historical Visual Archive",
-            "summary": "Stock archival style footage",
-            "video_url": video["video_files"][0]["link"],
-            "creator": "Pexels",
-            "likes": "—",
-            "comments": "—",
-            "shares": "—",
-            "hashtags": ["Archive", "VisualHistory"]
+    reel_cards = []
+    for reel in feed_reels:
+        context = {
+            "summary": reel.context_summary or reel.description,
+            "claims": reel.key_claims,
+            "historical_context": reel.historical_context or "Context is being prepared by the ReelRoots editorial team.",
+            "people": reel.important_people,
+            "locations": reel.important_locations,
+            "timeline": reel.timeline,
+            "topics": [topic.name for topic in reel.topics.all()],
+            "sources": reel.external_references,
+            "verification_status": reel.get_verification_status_display(),
+            "confidence": float(reel.confidence_score or 0),
+        }
+        reel_cards.append({
+            "id": str(reel.id),
+            "video_url": reel.video_url,
+            "thumbnail_url": reel.thumbnail_url,
+            "title": reel.title,
+            "description": reel.description,
+            "creator": reel.creator_name,
+            "creator_handle": reel.creator_handle or reel.creator_name.lower().replace(" ", ""),
+            "duration": reel.duration_seconds,
+            "source_url": reel.source_url,
+            "source_attribution": reel.source_attribution,
+            "verification_status": reel.get_verification_status_display(),
+            "confidence": float(reel.confidence_score or 0),
+            "topics": [{"slug": topic.slug, "name": topic.name} for topic in reel.topics.all()],
+            "context_json": json.dumps(context),
+            "likes": reel.likes.count(),
+            "comments": reel.comments.filter(is_hidden=False).count(),
+            "saves": reel.saves.count(),
         })
 
-    return render(request, "reels.html", {"reels": reels})
+    return render(request, "reels.html", {
+        "reels": reel_cards,
+        "feed_type": feed_type,
+        "profile": profile,
+        "is_authenticated": profile is not None,
+        "feed_tabs": [
+            ("for-you", "For You"),
+            ("following", "Following"),
+            ("trending", "Trending"),
+            ("recent", "Recent"),
+            ("heritage", "Heritage"),
+            ("culture", "Culture"),
+            ("history", "History"),
+        ],
+    })
 
 
 

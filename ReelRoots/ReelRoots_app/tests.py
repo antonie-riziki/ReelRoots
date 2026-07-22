@@ -12,9 +12,24 @@ from ReelRoots_app.models import (
     PersonalizationEvent,
     ProfileInterest,
     ProfilePreference,
+    Reel,
+    ReelComment,
+    ReelCreatorFollow,
+    ReelLike,
+    ReelSave,
+    ContextClaim,
+    KnowledgeSource,
+    ReelContext,
+    VerificationClaim,
+    VerificationRequest,
+    VerificationResult,
     Topic,
     UserProfile,
 )
+from ReelRoots_app.content_providers import WikimediaCommonsVideoProvider, classify_heritage_relevance
+from ReelRoots_app.context_engine import ContextEngine
+from ReelRoots_app.source_retrieval import SourceCandidate
+from ReelRoots_app.verification_engine import VerificationEngine
 from ReelRoots_app.personalization import ranked_interests, record_engagement
 
 
@@ -167,3 +182,237 @@ class PersonalizationTests(TestCase):
         self.assertTrue(self.profile.onboarding_completed)
         self.assertEqual(self.profile.interests.filter(source="explicit").count(), 2)
         self.assertTrue(ProfilePreference.objects.filter(profile=self.profile, preference_type="language", value="sw").exists())
+
+
+class ReelExperienceTests(TestCase):
+    def setUp(self):
+        self.profile = UserProfile.objects.create(
+            supabase_user_id=uuid4(),
+            email="reel-reader@example.com",
+            name="Reel Reader",
+            phone_number="+254722222222",
+            phone_verified_at=timezone.now(),
+            onboarding_completed=True,
+        )
+        self.reel = Reel.objects.create(
+            creator_profile=self.profile,
+            creator_name="Reel Reader",
+            creator_handle="reelreader",
+            source_platform="wikimedia",
+            external_id="test-heritage-1",
+            source_url="https://commons.wikimedia.org/wiki/File:Test_heritage.webm",
+            video_url="https://upload.wikimedia.org/wikipedia/commons/test.webm",
+            title="A heritage visual reference",
+            description="A short visual story about cultural heritage.",
+            source_attribution="Wikimedia Commons source",
+            license_status="licensed",
+            content_type="curated_external",
+            heritage_relevance="0.85",
+            confidence_score="0.20",
+            status="published",
+        )
+        self.reel.topics.add(Topic.objects.get(slug="heritage"))
+        session = self.client.session
+        session["profile_id"] = str(self.profile.id)
+        session["supabase_user_id"] = str(self.profile.supabase_user_id)
+        session.save()
+
+    def test_reel_feed_renders_context_and_feed_tabs(self):
+        response = self.client.get(reverse("reels"), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Context")
+        self.assertContains(response, "For You")
+        self.assertContains(response, "A heritage visual reference")
+        self.assertContains(response, "Open source")
+
+    def test_following_feed_does_not_expose_general_feed_to_anonymous_users(self):
+        self.client.session.flush()
+        response = self.client.get(reverse("reels") + "?feed=following", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "There are no published reels in this feed yet")
+
+    def test_reel_interactions_and_comments_are_persistent(self):
+        interaction_url = reverse("reel-interaction", args=[self.reel.id])
+        response = self.client.post(interaction_url, data={"action": "like"}, content_type="application/json", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(ReelLike.objects.filter(reel=self.reel, profile=self.profile).exists())
+        self.client.post(interaction_url, data={"action": "save"}, content_type="application/json", HTTP_HOST="localhost")
+        self.client.post(interaction_url, data={"action": "follow"}, content_type="application/json", HTTP_HOST="localhost")
+        self.assertTrue(ReelSave.objects.filter(reel=self.reel, profile=self.profile).exists())
+        self.assertTrue(ReelCreatorFollow.objects.filter(profile=self.profile, creator_key=self.reel.creator_key).exists())
+        comments_url = reverse("reel-comments", args=[self.reel.id])
+        response = self.client.post(comments_url, data={"body": "This made me curious to learn more."}, content_type="application/json", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(ReelComment.objects.filter(reel=self.reel).count(), 1)
+
+    def test_reel_interactions_require_authentication(self):
+        self.client.session.flush()
+        response = self.client.post(reverse("reel-interaction", args=[self.reel.id]), data={"action": "like"}, content_type="application/json", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 401)
+
+    def test_relevance_classifier_only_accepts_heritage_signals(self):
+        score, topics = classify_heritage_relevance("Traditional oral history ceremony", "Community storytelling")
+        self.assertGreaterEqual(score, 0.45)
+        self.assertIn("oral-history", topics)
+
+
+class ContextEngineTests(TestCase):
+    def setUp(self):
+        self.reel = Reel.objects.create(
+            creator_name="Archive Curator",
+            source_platform="wikimedia",
+            external_id="context-test-1",
+            source_url="https://commons.wikimedia.org/wiki/File:Heritage.webm",
+            video_url="https://upload.wikimedia.org/wikipedia/commons/heritage.webm",
+            title="Oral history in a heritage archive",
+            description="A short introduction to community storytelling.",
+            license_status="public_domain",
+            content_type="curated_external",
+            heritage_relevance="0.85",
+            status="published",
+        )
+        self.reel.topics.add(Topic.objects.get(slug="oral-history"))
+
+    def test_context_is_cached_and_sources_are_reused(self):
+        class FakeAI:
+            model = "test-model"
+            prompt_version = "test-v1"
+            extracts = 0
+            generations = 0
+
+            def extract(self, reel, transcript):
+                self.extracts += 1
+                return {"claims": [], "entities": [], "topics": ["oral-history"], "timeline": []}
+
+            def generate(self, reel, transcript, extraction, sources):
+                self.generations += 1
+                return {
+                    "summary": "A documented community storytelling reference.",
+                    "key_facts": ["The media is an open visual reference."],
+                    "historical_context": "The historical interpretation requires source review.",
+                    "claims": [{"text": "The reel is an oral-history reference.", "type": "media", "status": "verified", "confidence": 0.8, "evidence_indices": [0]}],
+                    "entities": [], "timeline": [], "related_topics": ["oral-history"], "external_links": [], "confidence": 0.8,
+                }
+
+        class FakeRetriever:
+            def retrieve(self, reel, extraction):
+                return [SourceCandidate(title="Archive record", url="https://example.org/archive", publisher="University archive", source_type="archive", authority_rank=5, excerpt="The archive record.")]
+
+        ai = FakeAI()
+        engine = ContextEngine(ai=ai, source_retriever=FakeRetriever())
+        first = engine.get_or_generate(self.reel)
+        second = engine.get_or_generate(self.reel)
+        self.assertEqual(first.pk, second.pk)
+        self.assertEqual(ai.generations, 1)
+        self.assertEqual(ContextClaim.objects.filter(context=first).count(), 1)
+        self.assertEqual(KnowledgeSource.objects.filter(url="https://example.org/archive").count(), 1)
+
+    def test_claim_without_evidence_is_downgraded(self):
+        class UnsafeAI:
+            model = "test-model"
+            prompt_version = "test-v1"
+            def extract(self, reel, transcript):
+                return {"claims": [], "entities": [], "topics": [], "timeline": []}
+            def generate(self, reel, transcript, extraction, sources):
+                return {"summary": "Summary", "key_facts": [], "historical_context": "Context", "claims": [{"text": "Unsupported claim", "status": "verified", "confidence": 1, "evidence_indices": []}], "entities": [], "timeline": [], "confidence": 1}
+
+        engine = ContextEngine(ai=UnsafeAI(), source_retriever=type("Retriever", (), {"retrieve": lambda self, reel, extraction: []})())
+        context = engine.get_or_generate(self.reel)
+        claim = context.claims.get()
+        self.assertEqual(claim.verification_status, "insufficient_evidence")
+        self.assertLessEqual(float(claim.confidence_score), 0.2)
+
+    @patch("ReelRoots_app.content_providers.requests.get")
+    def test_wikimedia_provider_accepts_video_and_license_metadata(self, get):
+        get.return_value = SimpleNamespace(
+            raise_for_status=lambda: None,
+            json=lambda: {"query": {"pages": [{"pageid": 10, "title": "File:African Heritage.webm", "imageinfo": [{"url": "https://upload.wikimedia.org/a.webm", "thumburl": "https://upload.wikimedia.org/a.jpg", "mime": "video/webm", "duration": "00:01:02", "extmetadata": {"Artist": {"value": "Community Archive"}, "LicenseShortName": {"value": "Public domain"}, "ImageDescription": {"value": "African oral history archive"}}}]}]}}
+        )
+        items = WikimediaCommonsVideoProvider().fetch()
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].source_platform, "wikimedia")
+        self.assertEqual(items[0].license_status, "public_domain")
+        self.assertEqual(items[0].duration_seconds, 62)
+
+
+class VerificationEngineTests(TestCase):
+    def setUp(self):
+        self.profile = UserProfile.objects.create(
+            supabase_user_id=uuid4(),
+            email="verification@example.com",
+            name="Verification Reader",
+            phone_number="+254733333333",
+            phone_verified_at=timezone.now(),
+            onboarding_completed=True,
+        )
+
+    def request(self, text="The archive records place the event in 1952 in Kenya."):
+        return VerificationRequest.objects.create(profile=self.profile, input_type="text", input_text=text)
+
+    def engine(self, source_candidates):
+        class FakeExtractor:
+            def extract(self, request):
+                return request.input_text, {"method": "test"}
+
+        class FakeAI:
+            model = "test-model"
+            prompt_version = "verification-test-v1"
+            def extract(self, text):
+                return {"claims": [{"text": text, "type": "historical", "topic_slugs": ["history"]}], "entities": [], "topics": ["history"]}
+            def explain(self, submitted_text, assessment, claims, entities, topics):
+                return {"summary": assessment, "historical_context": "Evidence context.", "explanation": "Compared retrieved source excerpts.", "recommendations": ["Read the cited source."]}
+
+        class FakeRetriever:
+            def retrieve_query(self, query, limit=5):
+                return source_candidates
+
+        return VerificationEngine(extractor=FakeExtractor(), ai=FakeAI(), source_retriever=FakeRetriever())
+
+    def test_supported_claim_is_driven_by_authoritative_evidence(self):
+        source = SourceCandidate(title="University archive record", url="https://example.org/archive/1952", publisher="University archive", source_type="archive", authority_rank=5, excerpt="The archive records place the event in 1952 in Kenya.")
+        request = self.request()
+        result = self.engine([source]).process(request.id)
+        request.refresh_from_db()
+        self.assertEqual(request.status, "complete")
+        self.assertEqual(result.overall_assessment, "supported")
+        self.assertEqual(request.claims.get().assessment, "supported")
+        self.assertEqual(request.claims.get().evidence.count(), 1)
+
+    def test_contradicting_evidence_is_not_overridden_by_the_llm(self):
+        source = SourceCandidate(title="Research correction", url="https://example.org/correction", publisher="University archive", source_type="archive", authority_rank=5, excerpt="The claim is disputed and incorrect; the archive does not place the event in 1952 in Kenya.")
+        request = self.request()
+        result = self.engine([source]).process(request.id)
+        self.assertIn(result.overall_assessment, {"false", "disputed"})
+        self.assertIn(request.claims.get().assessment, {"false", "disputed"})
+        self.assertEqual(request.claims.get().evidence.get().relationship, "contradicts")
+
+    def test_no_retrieved_evidence_is_unable_to_verify(self):
+        request = self.request()
+        result = self.engine([]).process(request.id)
+        self.assertEqual(result.overall_assessment, "unable_to_verify")
+        self.assertEqual(request.claims.get().assessment, "unable_to_verify")
+        self.assertLessEqual(float(result.confidence_score), 0.1)
+
+    @patch("ReelRoots_app.verification_views.enqueue_verification")
+    def test_submission_api_queues_owner_scoped_request(self, enqueue):
+        session = self.client.session
+        session["profile_id"] = str(self.profile.id)
+        session["supabase_user_id"] = str(self.profile.supabase_user_id)
+        session.save()
+        response = self.client.post(reverse("verification-create"), {"input_type": "text", "input_text": "A claim to inspect."}, HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 202)
+        request_id = response.json()["id"]
+        enqueue.assert_called_once()
+        status = self.client.get(reverse("verification-status", args=[request_id]), HTTP_HOST="localhost")
+        self.assertEqual(status.status_code, 200)
+        self.assertEqual(status.json()["status"], "queued")
+
+    def test_verification_request_is_not_visible_to_another_profile(self):
+        request = self.request()
+        session = self.client.session
+        other = UserProfile.objects.create(supabase_user_id=uuid4(), email="other@example.com", name="Other", phone_number="+254744444444")
+        session["profile_id"] = str(other.id)
+        session["supabase_user_id"] = str(other.supabase_user_id)
+        session.save()
+        response = self.client.get(reverse("verification-status", args=[request.id]), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 404)

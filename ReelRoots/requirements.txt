@@ -7,13 +7,13 @@ Flask
 google-genai
 supabase
 cryptography
+pypdf
 # langchain-classic
 # langchain-text-splitters
 # langchain
 # langchain-community
 # langchain-core
 # langchain-google-genai
-
 
 
 
