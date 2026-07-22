@@ -292,6 +292,8 @@ def home(request):
 
 @reelroots_login_required
 def admin_dashboard(request):
+    if not request.reelroots_profile.is_moderator:
+        return render(request, "moderation_forbidden.html", status=403)
     return render(request, 'admin_dashboard.html')
 
 

@@ -138,6 +138,15 @@ class AuthFlowTests(TestCase):
         response = self.client.post(reverse("personalization-event"), data="{}", content_type="application/json", HTTP_HOST="localhost")
         self.assertIn(response.status_code, {302, 403})
 
+    def test_authenticated_non_moderator_cannot_open_legacy_admin_dashboard(self):
+        profile = self.create_profile(onboarding_completed=True)
+        session = self.client.session
+        session["profile_id"] = str(profile.id)
+        session["supabase_user_id"] = str(profile.supabase_user_id)
+        session.save()
+        response = self.client.get(reverse("admin-dashboard"), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 403)
+
     def test_password_reset_is_generic_and_does_not_enumerate_accounts(self):
         with patch.object(__import__("ReelRoots_app.auth_views", fromlist=["SupabaseAuth"]).SupabaseAuth, "request_password_reset") as request_reset:
             response = self.client.post(reverse("forgot-password"), {"email": "unknown@example.com"}, HTTP_HOST="localhost")
@@ -424,6 +433,16 @@ class VerificationEngineTests(TestCase):
         session.save()
         response = self.client.get(reverse("verification-status", args=[request.id]), HTTP_HOST="localhost")
         self.assertEqual(response.status_code, 404)
+
+    def test_verification_requests_are_rate_limited_per_profile(self):
+        for index in range(10):
+            VerificationRequest.objects.create(profile=self.profile, input_type="text", input_text=f"Claim {index}")
+        session = self.client.session
+        session["profile_id"] = str(self.profile.id)
+        session["supabase_user_id"] = str(self.profile.supabase_user_id)
+        session.save()
+        response = self.client.post(reverse("verification-create"), {"input_type": "text", "input_text": "One more claim."}, HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 429)
 
 
 class ContributorTrustAndModerationTests(TestCase):
