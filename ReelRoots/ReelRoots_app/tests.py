@@ -1,7 +1,7 @@
 from datetime import timedelta
 import os
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from uuid import uuid4
 
 from django.test import TestCase
@@ -40,6 +40,7 @@ from ReelRoots_app.verification_engine import VerificationEngine
 from ReelRoots_app.personalization import ranked_interests, record_engagement
 from ReelRoots_app.moderation import publish_submission, process_submission, submit_submission, transition_submission
 from ReelRoots_app.trust import recalculate_trust
+from ReelRoots_app.integrations import AfricaTalkingSMS
 
 
 class AuthFlowTests(TestCase):
@@ -121,7 +122,7 @@ class AuthFlowTests(TestCase):
         self.assertContains(response, "already in use")
 
     def test_signup_explains_missing_sms_configuration(self):
-        with patch.dict(os.environ, {"AT_USERNAME": "", "AT_API_KEY": "configured"}, clear=False):
+        with patch.dict(os.environ, {"AT_USERNAME": "", "AT_API_KEY": ""}, clear=False):
             response = self.client.post(reverse("auth"), self.signup_payload(), HTTP_HOST="localhost")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Phone verification is not configured yet")
@@ -166,6 +167,22 @@ class AuthFlowTests(TestCase):
         response = self.client.get(reverse("reset-password"), HTTP_HOST="localhost")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Choose a new password")
+
+
+class AfricaTalkingSMSTests(TestCase):
+    def test_welcome_otp_uses_sender_id_and_provider_credentials(self):
+        with patch.dict(os.environ, {"AT_USERNAME": "EMID", "AT_API_KEY": "configured", "AT_SENDER_ID": "20384"}):
+            sms_service = SimpleNamespace(send=Mock(return_value={"SMSMessageData": {}}))
+            with patch("ReelRoots_app.integrations.africastalking.initialize") as initialize, patch(
+                "ReelRoots_app.integrations.africastalking.SMS", sms_service
+            ):
+                AfricaTalkingSMS().send_otp("+254712345678", "123456")
+
+        initialize.assert_called_once_with(username="EMID", api_key="configured")
+        message, recipients, sender = sms_service.send.call_args.args
+        self.assertIn("Welcome to ReelRoots", message)
+        self.assertEqual(recipients, ["+254712345678"])
+        self.assertEqual(sender, "20384")
 
 
 class PersonalizationTests(TestCase):

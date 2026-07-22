@@ -14,16 +14,25 @@ class AfricaTalkingSMS:
     """Small provider adapter so OTP logic remains testable and provider-agnostic."""
 
     def __init__(self):
-        self.username = os.getenv("AT_USERNAME", "").strip()
+        # EMID and 20384 are the Africa's Talking account/sender details supplied
+        # for ReelRoots. Environment variables still override them per deployment.
+        self.username = os.getenv("AT_USERNAME", "").strip() or "EMID"
         self.api_key = os.getenv("AT_API_KEY", "").strip()
-        self.sender_id = os.getenv("AT_SENDER_ID", "").strip() or None
-        if not self.username or not self.api_key:
-            raise SMSConfigurationError("AT_USERNAME and AT_API_KEY are required to send SMS.")
+        self.sender_id = os.getenv("AT_SENDER_ID", "20384").strip() or "20384"
+        if not self.api_key:
+            raise SMSConfigurationError("AT_API_KEY is required to send SMS.")
+
+    def send_message(self, phone_number, message_context):
+        africastalking.initialize(username=self.username, api_key=self.api_key)
+        recipients = [str(phone_number)]
+        return africastalking.SMS.send(str(message_context), recipients, self.sender_id)
 
     def send_otp(self, phone_number, code):
-        africastalking.initialize(username=self.username, api_key=self.api_key)
-        message = f"Your ReelRoots verification code is {code}. It expires in 10 minutes."
-        return africastalking.SMS.send(message, [phone_number], sender_id=self.sender_id)
+        message = (
+            f"Welcome to ReelRoots! Your verification code is {code}. "
+            "It expires in 10 minutes."
+        )
+        return self.send_message(phone_number, message)
 
 
 class SupabaseAuth:

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import secrets
 from datetime import timedelta
@@ -24,6 +25,7 @@ PENDING_SIGNUP_SESSION_KEY = "pending_signup_id"
 OTP_LIFETIME = timedelta(minutes=10)
 PENDING_SIGNUP_LIFETIME = timedelta(minutes=15)
 OTP_RESEND_COOLDOWN = timedelta(seconds=60)
+logger = logging.getLogger(__name__)
 
 
 def _code():
@@ -105,9 +107,10 @@ def auth_page(request):
                 except SMSConfigurationError:
                     messages.error(
                         request,
-                        "Phone verification is not configured yet. Add AT_USERNAME and AT_API_KEY, then try again.",
+                        "Phone verification is not configured yet. Add AT_API_KEY, then try again.",
                     )
                 except Exception:
+                    logger.exception("ReelRoots signup failed while starting the account")
                     messages.error(request, "We could not start your account. Please try again.")
             else:
                 messages.error(request, _form_error(form, "Check the signup form."))
