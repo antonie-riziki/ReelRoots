@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from google import genai
 from google.genai import types
 from django.http import JsonResponse
+from django.db.utils import OperationalError, ProgrammingError
 from django.views.decorators.http import require_POST
 from datetime import datetime
 from .models import Archive
@@ -549,13 +550,20 @@ def reels(request):
     if feed_type not in allowed_feeds:
         feed_type = "for-you"
     profile = get_session_profile(request)
-    feed_reels = get_ranked_reels(profile, feed_type=feed_type)
-    if not feed_reels and feed_type != "following":
-        try:
-            seed_provider_feed(feed_type)
-        except requests.RequestException:
-            pass
+    try:
         feed_reels = get_ranked_reels(profile, feed_type=feed_type)
+        if not feed_reels and feed_type != "following":
+            try:
+                seed_provider_feed(feed_type)
+            except requests.RequestException:
+                pass
+            feed_reels = get_ranked_reels(profile, feed_type=feed_type)
+    except (OperationalError, ProgrammingError):
+        # Vercel's filesystem is ephemeral and the local SQLite database is
+        # unavailable there until a persistent production database is wired
+        # in. Keep the discovery shell usable and show its empty state rather
+        # than turning a missing data store into a function-level 500.
+        feed_reels = []
 
     reel_cards = []
     for reel in feed_reels:

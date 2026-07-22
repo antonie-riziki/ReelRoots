@@ -36,6 +36,14 @@ def _csv_env(name):
 ALLOWED_HOSTS = _csv_env("DJANGO_ALLOWED_HOSTS") or ["localhost", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = _csv_env("DJANGO_CSRF_TRUSTED_ORIGINS")
 
+# Vercel creates deployment-specific hostnames in addition to the project
+# aliases. Trust those hostnames at Django's host-validation boundary so a
+# direct deployment URL does not fail before the WSGI app can respond.
+if ".vercel.app" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".vercel.app")
+if "https://*.vercel.app" not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append("https://*.vercel.app")
+
 # Vercel exposes the active deployment URL and (when configured) the
 # production URL as system environment variables. Include them automatically
 # so preview deployments do not fail Django's host or CSRF validation.
