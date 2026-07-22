@@ -1,0 +1,6 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Profile settings · ReelRoots</title><link rel="stylesheet" href="{% static 'css/reelroots.css' %}"><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="min-h-screen bg-[#f5f7f4] text-[#10231c]"><main class="mx-auto max-w-xl px-5 py-10"><a href="{% url 'user-profile' %}" class="text-sm font-bold text-[#176447]">← Back to profile</a><section class="mt-6 rounded-3xl border border-[#dce5df] bg-white p-7 shadow-xl"><p class="text-xs font-extrabold uppercase tracking-[.18em] text-[#176447]">Account</p><h1 class="mt-2 text-3xl font-extrabold">Profile settings</h1><form method="post" class="mt-7 space-y-5">{% csrf_token %}{{ form.as_p }}<button class="w-full rounded-2xl bg-[#176447] px-4 py-4 font-bold text-white">Save profile</button></form><a href="{% url 'onboarding' %}" class="mt-4 block text-center text-sm font-bold text-[#176447]">Update interests and preferences</a></section></main></body>
+</html>

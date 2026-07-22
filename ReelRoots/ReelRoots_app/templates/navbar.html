@@ -16,6 +16,11 @@
             <a class="hover:text-primary" href="/reels">Reels</a>
             <a class="hover:text-primary" href="/upload">Upload</a>
             <a class="hover:text-primary" href="/user-profile">Profile</a>
+            <a class="hover:text-primary" href="{% url 'profile-settings' %}">Settings</a>
+            <form method="post" action="{% url 'logout' %}" class="inline">
+                {% csrf_token %}
+                <button class="hover:text-primary" type="submit">Sign out</button>
+            </form>
         </div>
     </div>
 </nav>
