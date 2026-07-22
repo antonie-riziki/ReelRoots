@@ -7,7 +7,8 @@ from uuid import UUID
 
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, ProgrammingError, transaction
+from django.db.utils import OperationalError
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -96,6 +97,12 @@ def auth_page(request):
                     else:
                         _establish_session(request, profile, auth_response)
                         return redirect("home" if profile.onboarding_completed else "onboarding")
+                except (OperationalError, ProgrammingError):
+                    logger.exception("ReelRoots sign-in database is unavailable")
+                    messages.error(
+                        request,
+                        "Your password was accepted, but ReelRoots profile storage is not configured. Set DATABASE_URL on the server.",
+                    )
                 except Exception:
                     messages.error(request, "Invalid email or password.")
             else:
