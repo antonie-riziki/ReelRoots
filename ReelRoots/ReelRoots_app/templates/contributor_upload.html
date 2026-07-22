@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contribute to ReelRoots</title><link rel="stylesheet" href="{% static 'css/reelroots.css' %}">
+    <style>
+        body{margin:0;background:#f4f8f5;color:#173229;font-family:system-ui,sans-serif}.contribute{max-width:880px;margin:auto;padding:88px 18px 90px}.hero h1{margin:0 0 8px;font-size:clamp(28px,6vw,44px);letter-spacing:-.04em}.hero p{color:#5c6e64;line-height:1.6}.panel{margin-top:22px;padding:20px;border:1px solid #d8e5dc;border-radius:22px;background:#fff;box-shadow:0 12px 32px rgba(23,50,41,.07)}.trust{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:18px 0;padding:14px;border-radius:15px;background:#edf5ef}.trust strong{color:#1f5e4a}.trust small{display:block;color:#63766b;line-height:1.5}.grid{display:grid;gap:14px}.two{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}label{display:grid;gap:6px;color:#506359;font-size:12px;font-weight:800}input,textarea,select{box-sizing:border-box;width:100%;border:1px solid #cbdad0;border-radius:12px;padding:12px;background:#fbfdfb;color:#173229;font:inherit}textarea{min-height:100px;resize:vertical}.required-note{font-size:12px;color:#687a70}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}button{border:0;border-radius:999px;padding:12px 18px;background:#1f5e4a;color:white;font-weight:800;cursor:pointer}button.secondary{background:#e5eee8;color:#1f5e4a}.notice{margin:15px 0;padding:12px 14px;border-radius:12px;background:#e9f5ed;color:#235c40;font-size:13px;font-weight:700}.error{background:#fff0ed;color:#993e34}
+    </style>
+</head>
+<body>
+{% include 'navbar.html' %}
+<main class="contribute">
+    <section class="hero"><h1>Contribute a heritage story.</h1><p>ReelRoots welcomes community knowledge, but every submission is verified and reviewed before it can enter the public feed. Provide enough context for another person to understand and responsibly reuse your work.</p></section>
+    <section class="trust"><div><strong>{{ trust.get_level_display }}</strong><small>Dynamic trust score: {{ trust.score|floatformat:2 }} · recalculated from accuracy, source quality, reports, decisions, account age, and engagement.</small></div><a href="{% url 'moderation-dashboard' %}" style="display:none">Moderation</a></section>
+    {% if submitted %}<div class="notice">{{ submitted }}</div>{% endif %}{% if saved %}<div class="notice">{{ saved }}</div>{% endif %}{% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+    <form class="panel grid" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="grid two"><label>Title *<input name="title" maxlength="255" required></label><label>Category *<input name="category" maxlength="120" placeholder="Oral history, architecture, music…" required></label></div>
+        <label>Description *<textarea name="description" maxlength="10000" required placeholder="What should viewers know about this contribution?"></textarea></label>
+        <div class="grid two"><label>Country *<input name="country" maxlength="150" required></label><label>Region / location *<input name="region" maxlength="150" required></label></div>
+        <label>Cultural or historical context *<textarea name="cultural_context" maxlength="15000" required placeholder="Explain the people, place, tradition, event, or historical interpretation involved."></textarea></label>
+        <div class="grid two"><label>Source URL<input name="source_reference" type="url" maxlength="2000" placeholder="https://…"></label><label>Source notes<textarea name="source_notes" maxlength="10000" placeholder="Archive, interview, collection, or publication details"></textarea></label></div>
+        <div class="grid two"><label>Ownership / permission *<select name="permission_type" required><option value="owned">I own this content</option><option value="licensed">I have a license</option><option value="public_domain">Public domain</option><option value="permission">I have permission</option><option value="pending">Permission needs review</option></select></label><label>Permission details<textarea name="permission_details" maxlength="5000" placeholder="License name, rights holder, or permission context"></textarea></label></div>
+        <label>Optional transcript<textarea name="transcript" maxlength="50000" placeholder="Add spoken words or an interview transcript to improve claim review."></textarea></label>
+        <div class="grid two"><label>Media file *<input type="file" name="media_file" accept="video/mp4,video/webm,video/quicktime,video/ogg" required><span class="required-note">MP4, WebM, QuickTime, or Ogg video up to 50 MB. This file stays in review until approved.</span></label><label>Optional thumbnail<input type="file" name="thumbnail_file" accept="image/jpeg,image/png,image/webp"></label></div>
+        <div class="actions"><button class="secondary" name="save_draft" value="1" type="submit">Save draft</button><button type="submit">Submit for review</button></div>
+    </form>
+</main>
+</body></html>

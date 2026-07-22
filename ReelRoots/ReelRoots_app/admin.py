@@ -103,3 +103,51 @@ class ArchiveAdmin(admin.ModelAdmin):
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     search_fields = ("name",)
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "phone_verified", "onboarding_completed", "is_moderator", "created_at")
+    list_filter = ("is_moderator", "onboarding_completed", "phone_verified_at")
+    search_fields = ("name", "email", "phone_number", "institution")
+    readonly_fields = ("supabase_user_id", "created_at", "updated_at")
+
+
+@admin.register(ContributorSubmission)
+class ContributorSubmissionAdmin(admin.ModelAdmin):
+    list_display = ("title", "profile", "status", "risk_level", "risk_score", "created_at", "published_at")
+    list_filter = ("status", "risk_level", "permission_type", "category")
+    search_fields = ("title", "description", "country", "region", "profile__name", "profile__email")
+    readonly_fields = ("submitted_at", "processed_at", "approved_at", "published_at", "created_at", "updated_at")
+
+
+@admin.register(ContributorTrustProfile)
+class ContributorTrustProfileAdmin(admin.ModelAdmin):
+    list_display = ("profile", "level", "score", "confidence", "calculated_at")
+    list_filter = ("level",)
+    search_fields = ("profile__name", "profile__email")
+    readonly_fields = ("score", "confidence", "component_scores", "explanation", "calculated_at", "updated_at")
+
+
+@admin.register(ContributorTrustSignal)
+class ContributorTrustSignalAdmin(admin.ModelAdmin):
+    list_display = ("profile", "signal_type", "value", "weight", "created_at")
+    list_filter = ("signal_type",)
+    search_fields = ("profile__name", "profile__email", "explanation")
+    readonly_fields = ("created_at",)
+
+
+@admin.register(ModerationAction)
+class ModerationActionAdmin(admin.ModelAdmin):
+    list_display = ("submission", "from_status", "to_status", "action", "moderator", "created_at")
+    list_filter = ("to_status", "action")
+    search_fields = ("submission__title", "moderator__name", "notes")
+    readonly_fields = ("created_at",)
+
+
+@admin.register(SubmissionReport)
+class SubmissionReportAdmin(admin.ModelAdmin):
+    list_display = ("submission", "profile", "reason", "status", "reviewer", "created_at")
+    list_filter = ("status", "reason")
+    search_fields = ("submission__title", "profile__name", "profile__email", "details")
+    readonly_fields = ("created_at",)

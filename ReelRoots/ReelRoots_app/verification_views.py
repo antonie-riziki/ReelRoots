@@ -1,12 +1,18 @@
 """Verification page and owner-scoped request/result APIs."""
 
+from datetime import timedelta
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
 from .decorators import api_login_required, reelroots_login_required
 from .models import VerificationRequest, VerificationResult
 from .verification_jobs import enqueue_verification
+
+
+MAX_VERIFICATION_REQUESTS_PER_HOUR = 10
 
 
 @reelroots_login_required
@@ -89,6 +95,9 @@ def _request_payload(verification_request, include_result=True):
 @require_POST
 @api_login_required
 def create_verification_request(request):
+    window_start = timezone.now() - timedelta(hours=1)
+    if VerificationRequest.objects.filter(profile=request.reelroots_profile, created_at__gte=window_start).count() >= MAX_VERIFICATION_REQUESTS_PER_HOUR:
+        return JsonResponse({"error": "Verification is limited to 10 submissions per hour. Please try again later."}, status=429)
     input_type = str(request.POST.get("input_type", "text")).strip().lower()
     allowed = {item[0] for item in VerificationRequest.INPUT_TYPES}
     if input_type not in allowed:

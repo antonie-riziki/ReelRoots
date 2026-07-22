@@ -6,6 +6,8 @@ from django.conf.urls.static import static
 from . import auth_views
 from . import reel_views
 from . import verification_views
+from . import contributor_views
+from . import moderation_views
 
 
 
@@ -24,7 +26,10 @@ urlpatterns = [
     path('chat/', views.chat, name='chat'),
     path('explore/', views.explore, name='explore'),
     path('api/archives/create/', views.create_archive, name='create_archive'),
-    path('upload/', views.new_upload, name='upload'),
+    path('upload/', contributor_views.contributor_upload, name='upload'),
+    path('api/v1/submissions/<uuid:submission_id>/report/', contributor_views.report_submission, name='submission-report'),
+    path('moderation/', moderation_views.moderation_dashboard, name='moderation-dashboard'),
+    path('api/v1/moderation/submissions/<uuid:submission_id>/action/', moderation_views.moderation_action, name='moderation-action'),
     path('reels/', views.reels, name='reels'),
     path('verify/', verification_views.verification_page, name='verification-page'),
     path('api/v1/verification/requests/', verification_views.create_verification_request, name='verification-create'),

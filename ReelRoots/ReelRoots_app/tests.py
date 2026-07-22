@@ -4,6 +4,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils import timezone
 
@@ -25,12 +26,19 @@ from ReelRoots_app.models import (
     VerificationResult,
     Topic,
     UserProfile,
+    ContributorSubmission,
+    ContributorTrustProfile,
+    ContributorTrustSignal,
+    ModerationAction,
+    SubmissionReport,
 )
 from ReelRoots_app.content_providers import WikimediaCommonsVideoProvider, classify_heritage_relevance
 from ReelRoots_app.context_engine import ContextEngine
 from ReelRoots_app.source_retrieval import SourceCandidate
 from ReelRoots_app.verification_engine import VerificationEngine
 from ReelRoots_app.personalization import ranked_interests, record_engagement
+from ReelRoots_app.moderation import publish_submission, process_submission, submit_submission, transition_submission
+from ReelRoots_app.trust import recalculate_trust
 
 
 class AuthFlowTests(TestCase):
@@ -129,6 +137,15 @@ class AuthFlowTests(TestCase):
             self.assertIn(reverse("auth"), response["Location"])
         response = self.client.post(reverse("personalization-event"), data="{}", content_type="application/json", HTTP_HOST="localhost")
         self.assertIn(response.status_code, {302, 403})
+
+    def test_authenticated_non_moderator_cannot_open_legacy_admin_dashboard(self):
+        profile = self.create_profile(onboarding_completed=True)
+        session = self.client.session
+        session["profile_id"] = str(profile.id)
+        session["supabase_user_id"] = str(profile.supabase_user_id)
+        session.save()
+        response = self.client.get(reverse("admin-dashboard"), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 403)
 
     def test_password_reset_is_generic_and_does_not_enumerate_accounts(self):
         with patch.object(__import__("ReelRoots_app.auth_views", fromlist=["SupabaseAuth"]).SupabaseAuth, "request_password_reset") as request_reset:
@@ -416,3 +433,156 @@ class VerificationEngineTests(TestCase):
         session.save()
         response = self.client.get(reverse("verification-status", args=[request.id]), HTTP_HOST="localhost")
         self.assertEqual(response.status_code, 404)
+
+    def test_verification_requests_are_rate_limited_per_profile(self):
+        for index in range(10):
+            VerificationRequest.objects.create(profile=self.profile, input_type="text", input_text=f"Claim {index}")
+        session = self.client.session
+        session["profile_id"] = str(self.profile.id)
+        session["supabase_user_id"] = str(self.profile.supabase_user_id)
+        session.save()
+        response = self.client.post(reverse("verification-create"), {"input_type": "text", "input_text": "One more claim."}, HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 429)
+
+
+class ContributorTrustAndModerationTests(TestCase):
+    def setUp(self):
+        self.profile = UserProfile.objects.create(
+            supabase_user_id=uuid4(),
+            email="contributor@example.com",
+            name="Community Contributor",
+            phone_number="+254755555555",
+            phone_verified_at=timezone.now(),
+            onboarding_completed=True,
+        )
+        self.moderator = UserProfile.objects.create(
+            supabase_user_id=uuid4(),
+            email="moderator@example.com",
+            name="Heritage Moderator",
+            phone_number="+254766666666",
+            phone_verified_at=timezone.now(),
+            onboarding_completed=True,
+            is_moderator=True,
+        )
+
+    def login_as(self, profile):
+        session = self.client.session
+        session["profile_id"] = str(profile.id)
+        session["supabase_user_id"] = str(profile.supabase_user_id)
+        session.save()
+
+    def submission(self, status="draft", permission_type="owned"):
+        return ContributorSubmission.objects.create(
+            profile=self.profile,
+            title="Community archive story",
+            description="A short story from a community archive.",
+            category="Oral history",
+            country="Kenya",
+            region="East Africa",
+            cultural_context="This story is shared with community context and attribution.",
+            source_reference="https://example.org/archive",
+            source_notes="Community archive record.",
+            permission_type=permission_type,
+            permission_details="Permission recorded by the contributor.",
+            transcript="The archive documents this oral history.",
+            media_file=SimpleUploadedFile("story.mp4", b"video bytes", content_type="video/mp4"),
+            status=status,
+        )
+
+    def test_new_contributor_has_explainable_dynamic_trust(self):
+        trust = recalculate_trust(self.profile)
+        self.assertEqual(trust.level, "viewer")
+        self.assertIn("accuracy_history", trust.component_scores)
+        submission = self.submission()
+        submit_submission(submission)
+        trust.refresh_from_db()
+        self.assertEqual(trust.level, "contributor")
+        self.assertIn("not a permanent label", " ".join(trust.explanation))
+
+    @patch("ReelRoots_app.contributor_views.enqueue_submission")
+    def test_upload_requires_metadata_and_never_publishes_automatically(self, enqueue):
+        self.login_as(self.profile)
+        response = self.client.post(reverse("upload"), {
+            "title": "A community archive story",
+            "description": "A short story about a local archive.",
+            "category": "Oral history",
+            "country": "Kenya",
+            "region": "East Africa",
+            "cultural_context": "The story is presented with community context.",
+            "source_reference": "https://example.org/archive",
+            "source_notes": "Archive catalogue reference.",
+            "permission_type": "owned",
+            "permission_details": "I recorded and own this material.",
+            "transcript": "An optional transcript.",
+            "media_file": SimpleUploadedFile("upload.mp4", b"video bytes", content_type="video/mp4"),
+        }, HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        submission = ContributorSubmission.objects.get(title="A community archive story")
+        self.assertEqual(submission.status, "submitted")
+        self.assertIsNone(submission.reel_id)
+        enqueue.assert_called_once_with(submission.id)
+
+    @patch("ReelRoots_app.moderation.VerificationEngine")
+    def test_processing_always_stops_for_moderator_review(self, engine_class):
+        submission = self.submission(status="submitted")
+
+        def process(request_id):
+            request = VerificationRequest.objects.get(id=request_id)
+            return VerificationResult.objects.create(
+                request=request,
+                overall_assessment="supported",
+                confidence_score="0.80",
+                summary="Evidence supports the submitted context.",
+            )
+
+        engine_class.return_value.process.side_effect = process
+        processed = process_submission(submission.id)
+        self.assertEqual(processed.status, "needs_review")
+        self.assertIsNone(processed.reel_id)
+        self.assertEqual(processed.risk_level, "low")
+        self.assertTrue(ModerationAction.objects.filter(submission=processed, to_status="needs_review").exists())
+
+    def test_moderator_approval_then_publication_creates_reel(self):
+        submission = self.submission(status="needs_review")
+        self.login_as(self.moderator)
+        response = self.client.post(
+            reverse("moderation-action", args=[submission.id]),
+            data={"action": "approve", "notes": "Metadata and rights reviewed."},
+            content_type="application/json",
+            HTTP_HOST="localhost",
+        )
+        self.assertEqual(response.status_code, 200)
+        submission.refresh_from_db()
+        self.assertEqual(submission.status, "approved")
+        response = self.client.post(
+            reverse("moderation-action", args=[submission.id]),
+            data={"action": "publish"},
+            content_type="application/json",
+            HTTP_HOST="localhost",
+        )
+        self.assertEqual(response.status_code, 200)
+        submission.refresh_from_db()
+        self.assertEqual(submission.status, "published")
+        self.assertEqual(submission.reel.status, "published")
+        self.assertEqual(submission.reel.content_type, "creator")
+
+    def test_non_moderator_cannot_open_moderation_dashboard(self):
+        self.login_as(self.profile)
+        response = self.client.get(reverse("moderation-dashboard"), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 403)
+
+    def test_submission_reports_are_owner_scoped_and_deduplicated(self):
+        submission = self.submission(status="published")
+        reporter = UserProfile.objects.create(
+            supabase_user_id=uuid4(), email="reporter@example.com", name="Reporter", phone_number="+254777777777"
+        )
+        self.login_as(reporter)
+        url = reverse("submission-report", args=[submission.id])
+        response = self.client.post(url, {"reason": "Unsupported claim", "details": "Please review the source."}, HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post(url, {"reason": "Duplicate", "details": "Same report."}, HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(SubmissionReport.objects.filter(submission=submission, profile=reporter).count(), 1)
+        self.login_as(self.profile)
+        response = self.client.post(url, {"reason": "Self report"}, HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 400)
