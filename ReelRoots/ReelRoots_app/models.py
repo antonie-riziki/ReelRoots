@@ -146,6 +146,7 @@ class UserProfile(models.Model):
     phone_verified_at = models.DateTimeField(null=True, blank=True)
     institution = models.CharField(max_length=255, blank=True)
     onboarding_completed = models.BooleanField(default=False)
+    is_moderator = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -701,6 +702,144 @@ class VerificationEvidence(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["claim", "source"], name="unique_verification_claim_source")]
+
+
+class ContributorTrustProfile(models.Model):
+    """Dynamic, explainable trust state; it is recalculated from recent signals."""
+
+    LEVELS = [
+        ("viewer", "Viewer"),
+        ("contributor", "Contributor"),
+        ("verified_contributor", "Verified Contributor"),
+        ("heritage_partner", "Heritage Partner"),
+    ]
+
+    profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name="trust_profile")
+    level = models.CharField(max_length=32, choices=LEVELS, default="viewer")
+    score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    confidence = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    component_scores = models.JSONField(default=dict, blank=True)
+    explanation = models.JSONField(default=list, blank=True)
+    calculated_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class ContributorSubmission(models.Model):
+    """Contributor-owned media moving through trust, verification, and moderation."""
+
+    STATUSES = [
+        ("draft", "Draft"),
+        ("submitted", "Submitted"),
+        ("processing", "Processing"),
+        ("needs_review", "Needs Review"),
+        ("approved", "Approved"),
+        ("published", "Published"),
+        ("rejected", "Rejected"),
+        ("flagged", "Flagged"),
+        ("archived", "Archived"),
+    ]
+    RISK_LEVELS = [("low", "Low"), ("medium", "Medium"), ("high", "High")]
+    PERMISSION_TYPES = [
+        ("owned", "I own this content"),
+        ("licensed", "I have a license"),
+        ("public_domain", "Public domain"),
+        ("permission", "I have permission"),
+        ("pending", "Permission needs review"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="contributor_submissions")
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    category = models.CharField(max_length=120)
+    country = models.CharField(max_length=150)
+    region = models.CharField(max_length=150)
+    cultural_context = models.TextField()
+    source_reference = models.URLField(blank=True, max_length=2000)
+    source_notes = models.TextField(blank=True)
+    permission_type = models.CharField(max_length=20, choices=PERMISSION_TYPES, default="pending")
+    permission_details = models.TextField(blank=True)
+    transcript = models.TextField(blank=True)
+    media_file = models.FileField(upload_to="contributor/submissions/")
+    thumbnail_file = models.FileField(upload_to="contributor/thumbnails/", blank=True)
+    status = models.CharField(max_length=20, choices=STATUSES, default="draft")
+    risk_level = models.CharField(max_length=12, choices=RISK_LEVELS, default="medium")
+    risk_score = models.DecimalField(max_digits=5, decimal_places=4, default=0.5)
+    risk_reasons = models.JSONField(default=list, blank=True)
+    ai_summary = models.TextField(blank=True)
+    moderation_notes = models.TextField(blank=True)
+    verification_request = models.OneToOneField(
+        "VerificationRequest", on_delete=models.SET_NULL, null=True, blank=True, related_name="submission"
+    )
+    reel = models.OneToOneField("Reel", on_delete=models.SET_NULL, null=True, blank=True, related_name="contributor_submission")
+    submitted_at = models.DateTimeField(null=True, blank=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    published_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status", "risk_level", "created_at"]),
+            models.Index(fields=["profile", "status", "created_at"]),
+        ]
+
+
+class ContributorTrustSignal(models.Model):
+    SIGNAL_TYPES = [
+        ("accuracy", "Accuracy history"),
+        ("quality", "Content quality"),
+        ("community_report", "Community report"),
+        ("moderator_decision", "Moderator decision"),
+        ("source_quality", "Source quality"),
+        ("account_age", "Account age"),
+        ("engagement", "Engagement pattern"),
+    ]
+
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="trust_signals")
+    submission = models.ForeignKey(ContributorSubmission, on_delete=models.SET_NULL, null=True, blank=True, related_name="trust_signals")
+    signal_type = models.CharField(max_length=32, choices=SIGNAL_TYPES)
+    value = models.DecimalField(max_digits=6, decimal_places=4)
+    weight = models.DecimalField(max_digits=6, decimal_places=4, default=1)
+    explanation = models.CharField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["profile", "signal_type", "created_at"])]
+
+
+class ModerationAction(models.Model):
+    submission = models.ForeignKey(ContributorSubmission, on_delete=models.CASCADE, related_name="moderation_history")
+    moderator = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name="moderation_actions")
+    from_status = models.CharField(max_length=20, blank=True)
+    to_status = models.CharField(max_length=20)
+    action = models.CharField(max_length=80)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+class SubmissionReport(models.Model):
+    STATUS_CHOICES = [("open", "Open"), ("reviewed", "Reviewed"), ("dismissed", "Dismissed")]
+
+    submission = models.ForeignKey(ContributorSubmission, on_delete=models.CASCADE, related_name="reports")
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="submission_reports")
+    reason = models.CharField(max_length=100)
+    details = models.CharField(max_length=1000, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open")
+    reviewer = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name="reviewed_submission_reports")
+    resolution_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        constraints = [models.UniqueConstraint(fields=["submission", "profile"], name="unique_submission_report")]
 
 
 

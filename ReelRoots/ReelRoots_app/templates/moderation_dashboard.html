@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trust & moderation · ReelRoots</title>
+    <link rel="stylesheet" href="{% static 'css/reelroots.css' %}">
+    <style>
+        body{margin:0;background:#f4f8f5;color:#173229;font-family:system-ui,sans-serif}.wrap{max-width:1180px;margin:auto;padding:80px 18px}.hero h1{margin:0 0 8px;font-size:clamp(28px,5vw,44px);letter-spacing:-.04em}.hero p{color:#60736a;line-height:1.6}.filters{display:flex;gap:8px;overflow:auto;margin:20px 0}.filters a{white-space:nowrap;padding:9px 13px;border-radius:999px;background:#e5eee8;color:#1f5e4a;text-decoration:none;font-size:12px;font-weight:800}.filters a.active{background:#1f5e4a;color:white}.card{margin:14px 0;padding:18px;border:1px solid #d8e5dc;border-radius:18px;background:#fff;box-shadow:0 8px 22px rgba(23,50,41,.05)}.row{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap}.pill{display:inline-flex;padding:6px 9px;border-radius:999px;background:#edf5ef;color:#1f5e4a;font-size:11px;font-weight:900}.risk-high{background:#fff0ed;color:#9b3f35}.risk-medium{background:#fff8e8;color:#946b18}.meta{color:#61746a;font-size:13px;line-height:1.55}.summary{margin:12px 0;color:#40564b;line-height:1.55}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.actions button{border:0;border-radius:999px;padding:9px 13px;background:#1f5e4a;color:#fff;font-weight:800;cursor:pointer}.actions button.reject,.actions button.flag{background:#fff0ed;color:#9b3f35}.section-title{margin-top:34px;color:#1f5e4a;font-size:13px;text-transform:uppercase;letter-spacing:.08em}.report{border-left:4px solid #d4af37}.empty{padding:25px;border-radius:15px;background:#edf5ef;color:#557066}.history{margin-top:12px;padding-top:10px;border-top:1px solid #e5eee8;color:#64776c;font-size:12px}.history p{line-height:1.55}.history a{color:#1f5e4a;font-weight:800}
+    </style>
+</head>
+<body>
+{% include 'navbar.html' %}
+<main class="wrap">
+    <section class="hero"><h1>Trust & moderation</h1><p>Review submissions with claims, verification outcomes, source quality, contributor trust signals, reports, and moderation history. High-risk claims are never published automatically.</p></section>
+    <nav class="filters"><a class="{% if selected_status == 'needs_review' %}active{% endif %}" href="?status=needs_review">Needs review</a>{% for value,label in statuses %}<a class="{% if selected_status == value %}active{% endif %}" href="?status={{ value }}">{{ label }}</a>{% endfor %}<a class="{% if selected_status == 'all' %}active{% endif %}" href="?status=all">All</a></nav>
+    <h2 class="section-title">Submissions</h2>
+    {% for submission in submissions %}
+    <article class="card" data-submission-id="{{ submission.id }}">
+        <div class="row"><div><h2>{{ submission.title }}</h2><p class="meta">{{ submission.profile.name }} · {{ submission.category }} · {{ submission.region }}, {{ submission.country }}</p></div><div><span class="pill">{{ submission.get_status_display }}</span> <span class="pill risk-{{ submission.risk_level }}">{{ submission.get_risk_level_display }} risk</span></div></div>
+        <p class="summary">{{ submission.description }}</p>
+        <p class="meta"><strong>Context:</strong> {{ submission.cultural_context|truncatechars:300 }}</p>
+        <p class="meta"><strong>Source:</strong> {% if submission.source_reference %}<a href="{{ submission.source_reference }}" target="_blank" rel="noopener">{{ submission.source_reference }}</a>{% else %}Not provided{% endif %}</p>
+        <p class="meta"><strong>Risk reasons:</strong> {{ submission.risk_reasons|join:' · '|default:'No automated risk notes.' }}</p>
+        {% if submission.verification_result %}
+        <p class="meta"><strong>Verification:</strong> {{ submission.verification_result.get_overall_assessment_display }} · {{ submission.verification_result.confidence_score|floatformat:2 }} confidence · {{ submission.verification_result.summary }}</p>
+        <details class="history"><summary>Claims, sources, and evidence</summary>{% for claim in submission.verification_request.claims.all %}<p><strong>{{ claim.claim_text }}</strong> — {{ claim.get_assessment_display }} ({{ claim.confidence_score|floatformat:2 }})<br>{{ claim.reasoning }}</p><ul>{% for evidence in claim.evidence.all %}<li>{{ evidence.get_relationship_display }}: <a href="{{ evidence.source.url }}" target="_blank" rel="noopener">{{ evidence.source.title }}</a>{% if evidence.excerpt %} — {{ evidence.excerpt|truncatechars:240 }}{% endif %}</li>{% empty %}<li>No evidence linked.</li>{% endfor %}</ul>{% endfor %}</details>
+        {% else %}<p class="meta"><strong>Verification:</strong> Processing or unavailable.</p>{% endif %}
+        <div class="actions"><button data-action="approve">Approve for publishing</button><button data-action="publish">Publish approved</button><button class="reject" data-action="reject">Reject</button><button class="flag" data-action="flag">Flag for review</button><button class="flag" data-action="archive">Archive</button></div>
+        <div class="history">Moderation history: {% for action in submission.moderation_history.all|slice:':5' %}{{ action.action }} → {{ action.to_status }}{% if not forloop.last %} · {% endif %}{% empty %}No actions yet.{% endfor %}</div>
+    </article>
+    {% empty %}<div class="empty">No submissions match this moderation view.</div>{% endfor %}
+    <h2 class="section-title">Open reports on contributor submissions</h2>
+    {% for report in submission_reports %}<article class="card report"><strong>{{ report.reason }}</strong><p class="meta">{{ report.submission.title }} · reported by {{ report.profile.name }}</p><p class="summary">{{ report.details|default:'No additional details.' }}</p></article>{% empty %}<div class="empty">No open submission reports.</div>{% endfor %}
+    <h2 class="section-title">Open reports on published reels</h2>
+    {% for report in reel_reports %}<article class="card report"><strong>{{ report.reason }}</strong><p class="meta">{{ report.reel.title }} · reported by {{ report.profile.name }}</p><p class="summary">{{ report.details|default:'No additional details.' }}</p></article>{% empty %}<div class="empty">No open reel reports.</div>{% endfor %}
+</main>
+<script>(()=>{const csrf=()=>document.querySelector('input[name=csrfmiddlewaretoken]')?.value||'';document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',async event=>{const card=event.currentTarget.closest('[data-submission-id]');const notes=window.prompt('Optional moderation note','')||'';const response=await fetch(`/api/v1/moderation/submissions/${card.dataset.submissionId}/action/`,{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':csrf()},body:JSON.stringify({action:event.currentTarget.dataset.action,notes})});const data=await response.json();if(!response.ok){window.alert(data.error||'Action failed.');return}window.location.reload()}))})()</script>
+</body></html>
