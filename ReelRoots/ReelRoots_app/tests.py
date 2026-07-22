@@ -40,7 +40,11 @@ from ReelRoots_app.verification_engine import VerificationEngine
 from ReelRoots_app.personalization import ranked_interests, record_engagement
 from ReelRoots_app.moderation import publish_submission, process_submission, submit_submission, transition_submission
 from ReelRoots_app.trust import recalculate_trust
-from ReelRoots_app.integrations import AfricaTalkingSMS
+from ReelRoots_app.integrations import (
+    AfricaTalkingSMS,
+    SupabaseAuth,
+    SupabaseDuplicateAccountError,
+)
 
 
 class AuthFlowTests(TestCase):
@@ -121,6 +125,16 @@ class AuthFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "already in use")
 
+    def test_remote_duplicate_account_is_explained(self):
+        with patch.object(
+            __import__("ReelRoots_app.auth_views", fromlist=["SupabaseAuth"]).SupabaseAuth,
+            "create_staged_user",
+            side_effect=SupabaseDuplicateAccountError(),
+        ):
+            response = self.client.post(reverse("auth"), self.signup_payload(), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "already exists")
+
     def test_signup_explains_missing_sms_configuration(self):
         with patch.dict(os.environ, {"AT_USERNAME": "", "AT_API_KEY": ""}, clear=False):
             response = self.client.post(reverse("auth"), self.signup_payload(), HTTP_HOST="localhost")
@@ -183,6 +197,55 @@ class AfricaTalkingSMSTests(TestCase):
         self.assertIn("Welcome to ReelRoots", message)
         self.assertEqual(recipients, ["+254712345678"])
         self.assertEqual(sender, "20384")
+
+
+class SupabaseAdminTests(TestCase):
+    @patch("ReelRoots_app.integrations.httpx.request")
+    @patch(
+        "ReelRoots_app.integrations.get_supabase_admin_config",
+        return_value=("https://example.supabase.co", "sb_secret_test"),
+    )
+    def test_admin_requests_use_apikey_header_without_bearer(self, get_config, request):
+        response = Mock(is_success=True, status_code=200, content=b'{"user":{"id":"user-id"}}')
+        response.json.return_value = {"user": {"id": "user-id"}}
+        request.return_value = response
+
+        user = SupabaseAuth().create_staged_user(
+            email="new@example.com",
+            password="StrongPassword123!",
+            phone_number="+254712345678",
+            name="New User",
+        )
+
+        self.assertEqual(user["id"], "user-id")
+        headers = request.call_args.kwargs["headers"]
+        self.assertEqual(headers["apikey"], "sb_secret_test")
+        self.assertNotIn("Authorization", headers)
+        get_config.assert_called_once_with()
+
+    @patch("ReelRoots_app.integrations.httpx.request")
+    @patch(
+        "ReelRoots_app.integrations.get_supabase_admin_config",
+        return_value=("https://example.supabase.co", "sb_secret_test"),
+    )
+    def test_admin_duplicate_is_classified(self, get_config, request):
+        response = Mock(
+            is_success=False,
+            status_code=422,
+            content=b'{"msg":"A user with this email address has already been registered"}',
+        )
+        response.json.return_value = {
+            "msg": "A user with this email address has already been registered"
+        }
+        request.return_value = response
+
+        with self.assertRaises(SupabaseDuplicateAccountError):
+            SupabaseAuth().create_staged_user(
+                email="existing@example.com",
+                password="StrongPassword123!",
+                phone_number="+254712345678",
+                name="Existing User",
+            )
 
 
 class PersonalizationTests(TestCase):

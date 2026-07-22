@@ -15,7 +15,13 @@ from django.views.decorators.http import require_POST
 
 from .decorators import reelroots_login_required
 from .forms import OnboardingForm, ProfileForm, SignInForm, SignUpForm, VerifyPhoneForm
-from .integrations import AfricaTalkingSMS, SMSConfigurationError, SupabaseAuth
+from .integrations import (
+    AfricaTalkingSMS,
+    SMSConfigurationError,
+    SupabaseAuth,
+    SupabaseConfigurationError,
+    SupabaseDuplicateAccountError,
+)
 from .models import PendingSignup, PhoneVerification, UserProfile
 from .personalization import profile_preferences, set_explicit_interests, set_preferences
 from .security import decrypt_secret, encrypt_secret, normalize_phone
@@ -102,12 +108,23 @@ def auth_page(request):
                     _start_signup(request, form.cleaned_data)
                     messages.success(request, "We sent a verification code to your phone.")
                     return redirect("verify-phone")
+                except SupabaseDuplicateAccountError:
+                    messages.error(
+                        request,
+                        "An account with that email or phone already exists. Sign in or reset your password.",
+                    )
                 except (ValueError, IntegrityError):
                     messages.error(request, "That phone number or email is already in use.")
                 except SMSConfigurationError:
                     messages.error(
                         request,
                         "Phone verification is not configured yet. Add AT_API_KEY, then try again.",
+                    )
+                except SupabaseConfigurationError:
+                    logger.exception("ReelRoots signup could not authenticate to Supabase Admin")
+                    messages.error(
+                        request,
+                        "Account creation is temporarily unavailable. Please check the server Supabase configuration.",
                     )
                 except Exception:
                     logger.exception("ReelRoots signup failed while starting the account")

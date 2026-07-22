@@ -6,6 +6,7 @@ africastalking
 Flask
 google-genai
 supabase
+httpx
 cryptography
 pypdf
 # langchain-classic
@@ -14,7 +15,6 @@ pypdf
 # langchain-community
 # langchain-core
 # langchain-google-genai
-
 
 
 
