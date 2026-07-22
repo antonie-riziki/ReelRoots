@@ -115,6 +115,10 @@ class SourceRetriever:
                 unique[candidate.url] = candidate
         return list(unique.values())[:8]
 
+    def retrieve_query(self, query, limit=5):
+        """Retrieve reusable research candidates for a standalone verification claim."""
+        return self.academic_retriever.search(query, limit=limit)
+
 
 class KnowledgeSourceStore:
     def persist(self, candidates):

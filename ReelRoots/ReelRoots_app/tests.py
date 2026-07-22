@@ -20,12 +20,16 @@ from ReelRoots_app.models import (
     ContextClaim,
     KnowledgeSource,
     ReelContext,
+    VerificationClaim,
+    VerificationRequest,
+    VerificationResult,
     Topic,
     UserProfile,
 )
 from ReelRoots_app.content_providers import WikimediaCommonsVideoProvider, classify_heritage_relevance
 from ReelRoots_app.context_engine import ContextEngine
 from ReelRoots_app.source_retrieval import SourceCandidate
+from ReelRoots_app.verification_engine import VerificationEngine
 from ReelRoots_app.personalization import ranked_interests, record_engagement
 
 
@@ -329,3 +333,86 @@ class ContextEngineTests(TestCase):
         self.assertEqual(items[0].source_platform, "wikimedia")
         self.assertEqual(items[0].license_status, "public_domain")
         self.assertEqual(items[0].duration_seconds, 62)
+
+
+class VerificationEngineTests(TestCase):
+    def setUp(self):
+        self.profile = UserProfile.objects.create(
+            supabase_user_id=uuid4(),
+            email="verification@example.com",
+            name="Verification Reader",
+            phone_number="+254733333333",
+            phone_verified_at=timezone.now(),
+            onboarding_completed=True,
+        )
+
+    def request(self, text="The archive records place the event in 1952 in Kenya."):
+        return VerificationRequest.objects.create(profile=self.profile, input_type="text", input_text=text)
+
+    def engine(self, source_candidates):
+        class FakeExtractor:
+            def extract(self, request):
+                return request.input_text, {"method": "test"}
+
+        class FakeAI:
+            model = "test-model"
+            prompt_version = "verification-test-v1"
+            def extract(self, text):
+                return {"claims": [{"text": text, "type": "historical", "topic_slugs": ["history"]}], "entities": [], "topics": ["history"]}
+            def explain(self, submitted_text, assessment, claims, entities, topics):
+                return {"summary": assessment, "historical_context": "Evidence context.", "explanation": "Compared retrieved source excerpts.", "recommendations": ["Read the cited source."]}
+
+        class FakeRetriever:
+            def retrieve_query(self, query, limit=5):
+                return source_candidates
+
+        return VerificationEngine(extractor=FakeExtractor(), ai=FakeAI(), source_retriever=FakeRetriever())
+
+    def test_supported_claim_is_driven_by_authoritative_evidence(self):
+        source = SourceCandidate(title="University archive record", url="https://example.org/archive/1952", publisher="University archive", source_type="archive", authority_rank=5, excerpt="The archive records place the event in 1952 in Kenya.")
+        request = self.request()
+        result = self.engine([source]).process(request.id)
+        request.refresh_from_db()
+        self.assertEqual(request.status, "complete")
+        self.assertEqual(result.overall_assessment, "supported")
+        self.assertEqual(request.claims.get().assessment, "supported")
+        self.assertEqual(request.claims.get().evidence.count(), 1)
+
+    def test_contradicting_evidence_is_not_overridden_by_the_llm(self):
+        source = SourceCandidate(title="Research correction", url="https://example.org/correction", publisher="University archive", source_type="archive", authority_rank=5, excerpt="The claim is disputed and incorrect; the archive does not place the event in 1952 in Kenya.")
+        request = self.request()
+        result = self.engine([source]).process(request.id)
+        self.assertIn(result.overall_assessment, {"false", "disputed"})
+        self.assertIn(request.claims.get().assessment, {"false", "disputed"})
+        self.assertEqual(request.claims.get().evidence.get().relationship, "contradicts")
+
+    def test_no_retrieved_evidence_is_unable_to_verify(self):
+        request = self.request()
+        result = self.engine([]).process(request.id)
+        self.assertEqual(result.overall_assessment, "unable_to_verify")
+        self.assertEqual(request.claims.get().assessment, "unable_to_verify")
+        self.assertLessEqual(float(result.confidence_score), 0.1)
+
+    @patch("ReelRoots_app.verification_views.enqueue_verification")
+    def test_submission_api_queues_owner_scoped_request(self, enqueue):
+        session = self.client.session
+        session["profile_id"] = str(self.profile.id)
+        session["supabase_user_id"] = str(self.profile.supabase_user_id)
+        session.save()
+        response = self.client.post(reverse("verification-create"), {"input_type": "text", "input_text": "A claim to inspect."}, HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 202)
+        request_id = response.json()["id"]
+        enqueue.assert_called_once()
+        status = self.client.get(reverse("verification-status", args=[request_id]), HTTP_HOST="localhost")
+        self.assertEqual(status.status_code, 200)
+        self.assertEqual(status.json()["status"], "queued")
+
+    def test_verification_request_is_not_visible_to_another_profile(self):
+        request = self.request()
+        session = self.client.session
+        other = UserProfile.objects.create(supabase_user_id=uuid4(), email="other@example.com", name="Other", phone_number="+254744444444")
+        session["profile_id"] = str(other.id)
+        session["supabase_user_id"] = str(other.supabase_user_id)
+        session.save()
+        response = self.client.get(reverse("verification-status", args=[request.id]), HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 404)

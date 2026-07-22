@@ -43,6 +43,10 @@ class ContextAI:
         except Exception:
             return None
 
+    def generate_json(self, prompt):
+        """Shared structured-output entry point for verification and other pipelines."""
+        return self._generate(prompt)
+
     def extract(self, reel, transcript):
         prompt = f"""You are extracting research leads for a cultural heritage context engine.
 Do not infer facts. Use only the reel metadata and transcript below. Return JSON only.

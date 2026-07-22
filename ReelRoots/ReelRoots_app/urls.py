@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import auth_views
 from . import reel_views
+from . import verification_views
 
 
 
@@ -25,6 +26,10 @@ urlpatterns = [
     path('api/archives/create/', views.create_archive, name='create_archive'),
     path('upload/', views.new_upload, name='upload'),
     path('reels/', views.reels, name='reels'),
+    path('verify/', verification_views.verification_page, name='verification-page'),
+    path('api/v1/verification/requests/', verification_views.create_verification_request, name='verification-create'),
+    path('api/v1/verification/requests/<uuid:request_id>/', verification_views.verification_status, name='verification-status'),
+    path('api/v1/verification/requests/<uuid:request_id>/result/', verification_views.verification_result, name='verification-result'),
     path('api/v1/reels/<uuid:reel_id>/interaction/', reel_views.reel_interaction, name='reel-interaction'),
     path('api/v1/reels/<uuid:reel_id>/comments/', reel_views.reel_comments, name='reel-comments'),
     path('api/v1/reels/<uuid:reel_id>/context/', reel_views.reel_context, name='reel-context'),

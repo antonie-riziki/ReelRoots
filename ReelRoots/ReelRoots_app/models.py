@@ -579,6 +579,130 @@ class ContextEvidence(models.Model):
         constraints = [models.UniqueConstraint(fields=["claim", "source"], name="unique_claim_source_evidence")]
 
 
+class VerificationRequest(models.Model):
+    """A user-submitted item waiting for evidence-based verification."""
+
+    INPUT_TYPES = [
+        ("url", "URL"),
+        ("article", "Article"),
+        ("webpage", "Webpage"),
+        ("pdf", "PDF"),
+        ("text", "Text"),
+        ("video", "Video URL"),
+        ("image", "Image"),
+    ]
+    STATUS_CHOICES = [
+        ("queued", "Queued"),
+        ("extracting", "Analyzing content"),
+        ("extracting_claims", "Extracting claims"),
+        ("finding_evidence", "Finding evidence"),
+        ("comparing_sources", "Comparing sources"),
+        ("preparing_results", "Preparing results"),
+        ("complete", "Complete"),
+        ("failed", "Failed"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="verification_requests")
+    input_type = models.CharField(max_length=20, choices=INPUT_TYPES)
+    source_url = models.URLField(blank=True, max_length=2000)
+    source_file = models.FileField(upload_to="verification/submissions/", blank=True)
+    input_text = models.TextField(blank=True)
+    content_title = models.CharField(max_length=500, blank=True)
+    extracted_text = models.TextField(blank=True)
+    content_metadata = models.JSONField(default=dict, blank=True)
+    content_hash = models.CharField(max_length=64, blank=True)
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default="queued")
+    progress = models.PositiveSmallIntegerField(default=0)
+    status_message = models.CharField(max_length=255, blank=True)
+    error_message = models.TextField(blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["profile", "status", "created_at"]),
+            models.Index(fields=["content_hash", "status"]),
+        ]
+
+
+class VerificationResult(models.Model):
+    ASSESSMENTS = [
+        ("supported", "Supported"),
+        ("mostly_supported", "Mostly supported"),
+        ("partially_supported", "Partially supported"),
+        ("disputed", "Disputed"),
+        ("unsupported", "Unsupported"),
+        ("misleading", "Misleading"),
+        ("false", "False"),
+        ("unable_to_verify", "Unable to verify"),
+        ("subjective", "Subjective"),
+    ]
+
+    request = models.OneToOneField(VerificationRequest, on_delete=models.CASCADE, related_name="result")
+    overall_assessment = models.CharField(max_length=32, choices=ASSESSMENTS, default="unable_to_verify")
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    summary = models.TextField(blank=True)
+    historical_context = models.TextField(blank=True)
+    explanation = models.TextField(blank=True)
+    recommendations = models.JSONField(default=list, blank=True)
+    entities = models.JSONField(default=list, blank=True)
+    topic_slugs = models.JSONField(default=list, blank=True)
+    model_name = models.CharField(max_length=120, blank=True)
+    prompt_version = models.CharField(max_length=40, blank=True)
+    generated_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class VerificationClaim(models.Model):
+    CLAIM_TYPES = [
+        ("factual", "Factual"),
+        ("historical", "Historical"),
+        ("cultural", "Cultural"),
+        ("subjective", "Subjective"),
+    ]
+    ASSESSMENTS = VerificationResult.ASSESSMENTS
+
+    request = models.ForeignKey(VerificationRequest, on_delete=models.CASCADE, related_name="claims")
+    claim_text = models.TextField()
+    claim_type = models.CharField(max_length=20, choices=CLAIM_TYPES, default="factual")
+    assessment = models.CharField(max_length=32, choices=ASSESSMENTS, default="unable_to_verify")
+    confidence_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    reasoning = models.TextField(blank=True, help_text="Concise user-facing reasoning, never chain-of-thought.")
+    entities = models.JSONField(default=list, blank=True)
+    topic_slugs = models.JSONField(default=list, blank=True)
+    ordinal = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["ordinal", "id"]
+        indexes = [models.Index(fields=["request", "assessment"])]
+
+
+class VerificationEvidence(models.Model):
+    RELATIONSHIPS = [
+        ("supports", "Supporting evidence"),
+        ("contradicts", "Contradicting evidence"),
+        ("unclear", "Unclear evidence"),
+    ]
+
+    claim = models.ForeignKey(VerificationClaim, on_delete=models.CASCADE, related_name="evidence")
+    source = models.ForeignKey(KnowledgeSource, on_delete=models.CASCADE, related_name="verification_evidence")
+    relationship = models.CharField(max_length=20, choices=RELATIONSHIPS, default="unclear")
+    excerpt = models.TextField(blank=True)
+    source_locator = models.CharField(max_length=255, blank=True)
+    relevance_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    quality_score = models.DecimalField(max_digits=5, decimal_places=4, default=0)
+    comparison_note = models.TextField(blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["claim", "source"], name="unique_verification_claim_source")]
+
+
 
 
 # class Profile(models.Model):

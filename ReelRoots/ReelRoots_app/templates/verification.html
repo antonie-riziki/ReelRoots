@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verify a claim · ReelRoots</title>
+    <link rel="stylesheet" href="{% static 'css/reelroots.css' %}">
+    <style>
+        :root { --rr-green: #1f5e4a; --rr-gold: #d4af37; }
+        body { margin: 0; background: #f4f8f5; color: #173229; font-family: system-ui, sans-serif; }
+        .verify-wrap { max-width: 900px; margin: 0 auto; padding: 88px 18px 100px; }
+        .verify-hero { margin-bottom: 22px; }
+        .verify-hero h1 { margin: 0 0 8px; font-size: clamp(28px, 6vw, 46px); letter-spacing: -.04em; }
+        .verify-hero p { max-width: 650px; margin: 0; color: #5d6e65; line-height: 1.6; }
+        .verify-card { border: 1px solid #d8e5dc; border-radius: 22px; padding: 20px; background: white; box-shadow: 0 12px 32px rgba(23,50,41,.07); }
+        .verify-form { display: grid; gap: 13px; }
+        .verify-form label { display: grid; gap: 6px; color: #4b6257; font-size: 12px; font-weight: 800; }
+        .verify-form input, .verify-form textarea, .verify-form select { width: 100%; border: 1px solid #cbdad0; border-radius: 12px; padding: 12px; box-sizing: border-box; background: #fbfdfb; color: #173229; font: inherit; }
+        .verify-form textarea { min-height: 150px; resize: vertical; }
+        .verify-form [data-field] { display: none; }
+        .verify-form [data-field].active { display: grid; }
+        .verify-submit { justify-self: start; border: 0; border-radius: 999px; padding: 12px 20px; background: var(--rr-green); color: white; font-weight: 800; cursor: pointer; }
+        .verify-submit:disabled { opacity: .55; cursor: wait; }
+        .status-panel { display: none; margin-top: 20px; }
+        .status-panel.active { display: block; }
+        .status-line { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; font-weight: 800; }
+        .progress-track { height: 8px; margin: 10px 0 18px; overflow: hidden; border-radius: 999px; background: #e1ebe4; }
+        .progress-track span { display: block; height: 100%; width: 0; background: var(--rr-gold); transition: width .25s ease; }
+        .result { display: none; margin-top: 22px; }
+        .result.active { display: block; }
+        .assessment { display: inline-flex; border-radius: 999px; padding: 8px 12px; background: #e5eee8; color: var(--rr-green); font-size: 12px; font-weight: 900; }
+        .result h2 { margin: 14px 0 5px; font-size: 26px; }
+        .result h3 { margin: 24px 0 8px; color: var(--rr-green); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+        .result p, .result li { color: #53665c; line-height: 1.6; font-size: 14px; }
+        .result ul { padding-left: 20px; }
+        .why-button { border: 1px solid #bdd0c3; border-radius: 999px; padding: 9px 13px; background: white; color: var(--rr-green); font-weight: 800; cursor: pointer; }
+        .why-panel { display: none; margin-top: 15px; }
+        .why-panel.active { display: grid; gap: 12px; }
+        .claim-card { border: 1px solid #d8e5dc; border-radius: 15px; padding: 14px; background: #fbfdfb; }
+        .claim-card h4 { margin: 0 0 7px; font-size: 15px; }
+        .claim-card p { margin: 5px 0; font-size: 13px; }
+        .claim-status { color: var(--rr-green); font-weight: 900; }
+        .claim-card a { color: var(--rr-green); font-weight: 800; }
+        .error { display: none; margin-top: 12px; color: #9b332d; font-size: 13px; font-weight: 700; }
+        .error.active { display: block; }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <main class="verify-wrap">
+        <section class="verify-hero">
+            <h1>Check a historical claim.</h1>
+            <p>Submit a URL, document, image, video link, or text. ReelRoots extracts claims, compares them with research sources, and explains the evidence without presenting unsupported certainty.</p>
+        </section>
+        <section class="verify-card">
+            <form class="verify-form" id="verification-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label>What are you submitting?
+                    <select name="input_type" id="input-type">
+                        <option value="text">Text</option><option value="url">URL</option><option value="article">Article</option><option value="webpage">Webpage</option><option value="pdf">PDF</option><option value="video">Video URL</option><option value="image">Image</option>
+                    </select>
+                </label>
+                <label data-field="url">URL <input name="source_url" type="url" placeholder="https://example.org/article"></label>
+                <label data-field="text" class="active">Text or claim <textarea name="input_text" placeholder="Paste the claim or passage you want ReelRoots to examine."></textarea></label>
+                <label data-field="file">File <input name="source_file" type="file" accept=".pdf,.txt,.md,.png,.jpg,.jpeg,.webp"></label>
+                <label>Optional title <input name="content_title" type="text" maxlength="500" placeholder="Give this submission a helpful title"></label>
+                <button class="verify-submit" type="submit">Start verification</button>
+                <div class="error" id="form-error"></div>
+            </form>
+            <section class="status-panel" id="status-panel" aria-live="polite">
+                <div class="status-line"><span id="status-message">Queued</span><span id="status-percent">0%</span></div>
+                <div class="progress-track"><span id="progress-bar"></span></div>
+            </section>
+            <section class="result" id="result-panel">
+                <span class="assessment" id="result-assessment"></span>
+                <h2 id="result-summary"></h2>
+                <p id="result-explanation"></p>
+                <h3>Confidence</h3><p id="result-confidence"></p>
+                <h3>Historical context</h3><p id="result-history"></p>
+                <h3>Why did ReelRoots give this assessment?</h3>
+                <button class="why-button" id="why-button" type="button">Show claim → evidence → sources</button>
+                <div class="why-panel" id="why-panel"></div>
+                <h3>Further reading</h3><ul id="result-recommendations"></ul>
+            </section>
+        </section>
+    </main>
+    <script>
+    (() => {
+        const form = document.getElementById('verification-form');
+        const inputType = document.getElementById('input-type');
+        const statusPanel = document.getElementById('status-panel');
+        const resultPanel = document.getElementById('result-panel');
+        const errorPanel = document.getElementById('form-error');
+        let pollTimer = null;
+        const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+        const text = (id, value) => { document.getElementById(id).textContent = value || 'No additional note.'; };
+        const safeUrl = value => /^https?:\/\//i.test(value || '') ? value : '#';
+        const updateFields = () => {
+            document.querySelectorAll('[data-field]').forEach(field => field.classList.remove('active'));
+            const type = inputType.value;
+            if (['url', 'article', 'webpage', 'video'].includes(type)) document.querySelector('[data-field="url"]').classList.add('active');
+            else if (['pdf', 'image'].includes(type)) document.querySelector('[data-field="file"]').classList.add('active');
+            else document.querySelector('[data-field="text"]').classList.add('active');
+        };
+        inputType.addEventListener('change', updateFields);
+        const showError = message => { errorPanel.textContent = message; errorPanel.classList.add('active'); };
+        const clearError = () => { errorPanel.textContent = ''; errorPanel.classList.remove('active'); };
+        const renderWhy = claims => {
+            const panel = document.getElementById('why-panel'); panel.replaceChildren();
+            if (!claims?.length) { panel.textContent = 'No individual factual claims were available for comparison.'; return; }
+            claims.forEach(claim => {
+                const card = document.createElement('article'); card.className = 'claim-card';
+                const heading = document.createElement('h4'); heading.textContent = claim.text; card.appendChild(heading);
+                const assessment = document.createElement('p'); assessment.className = 'claim-status'; assessment.textContent = `${claim.assessment_label} · ${Math.round((claim.confidence || 0) * 100)}% confidence`; card.appendChild(assessment);
+                const reasoning = document.createElement('p'); reasoning.textContent = claim.reasoning || 'No concise reasoning was recorded.'; card.appendChild(reasoning);
+                const evidenceHeading = document.createElement('p'); evidenceHeading.textContent = 'Evidence and sources'; card.appendChild(evidenceHeading);
+                const list = document.createElement('ul');
+                (claim.evidence || []).forEach(item => { const li = document.createElement('li'); const link = document.createElement('a'); link.textContent = `${item.relationship_label}: ${item.title}${item.publisher ? ` · ${item.publisher}` : ''}`; link.href = safeUrl(item.url); link.target = '_blank'; link.rel = 'noopener noreferrer'; li.appendChild(link); if (item.excerpt) { const excerpt = document.createElement('p'); excerpt.textContent = item.excerpt; li.appendChild(excerpt); } list.appendChild(li); });
+                if (!claim.evidence?.length) { const li = document.createElement('li'); li.textContent = 'No supporting or contradicting source was retrieved.'; list.appendChild(li); }
+                card.appendChild(list); panel.appendChild(card);
+            });
+        };
+        const renderResult = result => {
+            const data = result.result; if (!data) return;
+            text('result-assessment', data.overall_label); text('result-summary', data.summary || data.overall_label); text('result-explanation', data.explanation); text('result-confidence', `${Math.round((data.confidence || 0) * 100)}% confidence`); text('result-history', data.historical_context);
+            const recommendations = document.getElementById('result-recommendations'); recommendations.replaceChildren(); (data.recommendations || []).forEach(item => { const li = document.createElement('li'); li.textContent = item; recommendations.appendChild(li); }); if (!data.recommendations?.length) { const li = document.createElement('li'); li.textContent = 'Review the cited sources and compare their scope and date.'; recommendations.appendChild(li); }
+            renderWhy(data.claims); resultPanel.classList.add('active');
+        };
+        const poll = async requestId => {
+            const response = await fetch(`/api/v1/verification/requests/${requestId}/`); if (!response.ok) throw new Error('The verification status could not be loaded.');
+            const data = await response.json(); text('status-message', data.status_message || data.status_label); text('status-percent', `${data.progress || 0}%`); document.getElementById('progress-bar').style.width = `${data.progress || 0}%`;
+            if (data.status === 'complete') { clearInterval(pollTimer); form.querySelector('button[type=submit]').disabled = false; renderResult(data); }
+            if (data.status === 'failed') { clearInterval(pollTimer); form.querySelector('button[type=submit]').disabled = false; showError(data.error || 'Verification failed.'); }
+        };
+        form.addEventListener('submit', async event => { event.preventDefault(); clearError(); resultPanel.classList.remove('active'); statusPanel.classList.add('active'); form.querySelector('button[type=submit]').disabled = true; const response = await fetch('{% url "verification-create" %}', {method: 'POST', headers: {'X-CSRFToken': csrf()}, body: new FormData(form)}); const data = await response.json(); if (!response.ok) { form.querySelector('button[type=submit]').disabled = false; showError(data.error || 'Verification could not start.'); return; } pollTimer = setInterval(() => poll(data.id).catch(error => showError(error.message)), 1500); await poll(data.id); });
+        document.getElementById('why-button').addEventListener('click', event => { const panel = document.getElementById('why-panel'); panel.classList.toggle('active'); event.currentTarget.textContent = panel.classList.contains('active') ? 'Hide claim evidence' : 'Show claim → evidence → sources'; });
+        updateFields();
+    })();
+    </script>
+</body>
+</html>
