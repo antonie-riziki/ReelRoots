@@ -154,14 +154,16 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 let lastScroll = 0;
 const nav = document.querySelector('nav');
 
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    
-    if (currentScroll > 50) {
-        nav.classList.add('shadow-sm');
-    } else {
-        nav.classList.remove('shadow-sm');
-    }
-    
-    lastScroll = currentScroll;
-});
+if (nav) {
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+
+        if (currentScroll > 50) {
+            nav.classList.add('shadow-sm');
+        } else {
+            nav.classList.remove('shadow-sm');
+        }
+
+        lastScroll = currentScroll;
+    });
+}

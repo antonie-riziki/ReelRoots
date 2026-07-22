@@ -109,7 +109,7 @@ class SupabaseAuth:
     def _user(response):
         user = getattr(response, "user", None)
         if user is None and isinstance(response, dict):
-            user = response.get("user")
+            user = response.get("user") or (response if response.get("id") else None)
         if user is None:
             raise ValueError("Supabase did not return a user.")
         return user

@@ -206,8 +206,8 @@ class SupabaseAdminTests(TestCase):
         return_value=("https://example.supabase.co", "sb_secret_test"),
     )
     def test_admin_requests_use_apikey_header_without_bearer(self, get_config, request):
-        response = Mock(is_success=True, status_code=200, content=b'{"user":{"id":"user-id"}}')
-        response.json.return_value = {"user": {"id": "user-id"}}
+        response = Mock(is_success=True, status_code=200, content=b'{"id":"user-id"}')
+        response.json.return_value = {"id": "user-id"}
         request.return_value = response
 
         user = SupabaseAuth().create_staged_user(
