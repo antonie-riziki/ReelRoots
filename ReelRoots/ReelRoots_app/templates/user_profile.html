@@ -46,6 +46,14 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        .profile-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .profile-tab { min-width: 0; color: #64748b; transition: color .2s ease, border-color .2s ease, background .2s ease; }
+        .profile-tab[aria-selected="true"] { color: #1f5e4a; border-color: #1f5e4a; background: rgba(31,94,74,.04); }
+        .profile-tab span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .profile-tab-panel[hidden] { display: none; }
+        .profile-empty { min-height: 220px; display: grid; place-items: center; padding: 32px 20px; text-align: center; color: #64748b; }
+        @media (max-width: 420px) { .profile-tab { padding-inline: 8px; } .profile-tab span:last-child { font-size: 9px; letter-spacing: .08em; } }
     </style>
     <style>
         body {
@@ -179,22 +187,22 @@
         </div>
         <!-- Content Tabs -->
         <div class="mt-6 border-t border-slate-200 dark:border-slate-800">
-            <div class="flex bg-white dark:bg-background-dark">
-                <button class="flex-1 py-4 flex flex-col items-center gap-1 border-b-2 border-primary">
+            <div class="profile-tabs flex bg-white dark:bg-background-dark" role="tablist" aria-label="Profile collections">
+                <button class="profile-tab flex-1 py-4 flex flex-col items-center gap-1 border-b-2" type="button" role="tab" aria-selected="true" aria-controls="profile-panel-reels" data-profile-tab="reels">
                     <span class="material-symbols-outlined text-primary">grid_view</span>
                     <span class="text-[10px] font-bold uppercase text-primary tracking-widest">Reels</span>
                 </button>
-                <button class="flex-1 py-4 flex flex-col items-center gap-1 border-b-2 border-transparent opacity-40">
+                <button class="profile-tab flex-1 py-4 flex flex-col items-center gap-1 border-b-2 border-transparent" type="button" role="tab" aria-selected="false" aria-controls="profile-panel-archives" data-profile-tab="archives">
                     <span class="material-symbols-outlined">archive</span>
                     <span class="text-[10px] font-bold uppercase tracking-widest">Archives</span>
                 </button>
-                <button class="flex-1 py-4 flex flex-col items-center gap-1 border-b-2 border-transparent opacity-40">
+                <button class="profile-tab flex-1 py-4 flex flex-col items-center gap-1 border-b-2 border-transparent" type="button" role="tab" aria-selected="false" aria-controls="profile-panel-saved" data-profile-tab="saved">
                     <span class="material-symbols-outlined">bookmark</span>
                     <span class="text-[10px] font-bold uppercase tracking-widest">Saved</span>
                 </button>
             </div>
             <!-- Media Grid -->
-            <div class="grid grid-cols-3 gap-0.5 p-0.5">
+            <div class="profile-tab-panel grid grid-cols-3 gap-0.5 p-0.5" id="profile-panel-reels" role="tabpanel">
                 <div class="aspect-[9/16] bg-slate-200 dark:bg-slate-800 relative group overflow-hidden">
                     <img class="w-full h-full object-cover" data-alt="Vintage family portrait archival photo"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHFNqHyJrZlOsiynFx28d3qpDIeywNi2trQeLThIjqadDw2b9N5BKvkAJtTFM7dZptjQenNtsrHORew24tXXH7mQn8dcN2YUefgv-3uEYco3mcODbHo_HHbyVPQZV_bO3z2LFbXt0lcWO89FFITy__xIvDDFbivZmCJqnMgFU-TrPXEX74qkdiqlxQrUZEfEoKASTJXzF3HslPXZZN-ifGedMLyxCFcWiVfCz21PQRPIXr7W20vNiKTvKXHql3oJY4u6HjaALO3oiz" />
@@ -238,6 +246,12 @@
                     </div>
                 </div>
             </div>
+            <div class="profile-tab-panel profile-empty" id="profile-panel-archives" role="tabpanel" hidden>
+                <div><span class="material-symbols-outlined text-primary !text-4xl">archive</span><p class="font-semibold mt-2">Your archives will appear here.</p><p class="text-sm mt-1">This collection is ready for your future contributions.</p></div>
+            </div>
+            <div class="profile-tab-panel profile-empty" id="profile-panel-saved" role="tabpanel" hidden>
+                <div><span class="material-symbols-outlined text-primary !text-4xl">bookmark</span><p class="font-semibold mt-2">Saved reels will appear here.</p><p class="text-sm mt-1">Bookmark a reel to build your personal collection.</p></div>
+            </div>
         </div>
         <!-- Bottom Navigation Bar (Fixed to bottom of screen) -->
 
@@ -271,6 +285,33 @@
             </div>
         </div>
     </div> -->
+    <script>
+        (() => {
+            const tabs = [...document.querySelectorAll('[data-profile-tab]')];
+            const panels = [...document.querySelectorAll('.profile-tab-panel')];
+            const activate = tabName => {
+                tabs.forEach(tab => {
+                    const active = tab.dataset.profileTab === tabName;
+                    tab.setAttribute('aria-selected', active ? 'true' : 'false');
+                    tab.classList.toggle('text-primary', active);
+                    tab.classList.toggle('border-primary', active);
+                    tab.classList.toggle('border-transparent', !active);
+                    tab.querySelectorAll('span').forEach(span => span.classList.toggle('text-primary', active));
+                });
+                panels.forEach(panel => { panel.hidden = panel.id !== `profile-panel-${tabName}`; });
+            };
+            tabs.forEach((tab, index) => {
+                tab.addEventListener('click', () => activate(tab.dataset.profileTab));
+                tab.addEventListener('keydown', event => {
+                    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                    event.preventDefault();
+                    const next = (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+                    tabs[next].focus();
+                    activate(tabs[next].dataset.profileTab);
+                });
+            });
+        })();
+    </script>
 </body>
 
 </html>

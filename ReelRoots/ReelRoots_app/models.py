@@ -340,9 +340,9 @@ class Reel(models.Model):
     topics = models.ManyToManyField("Topic", blank=True, related_name="reels")
     source_platform = models.CharField(max_length=32, choices=SOURCE_PLATFORMS)
     external_id = models.CharField(max_length=255, null=True, blank=True)
-    source_url = models.URLField(blank=True)
-    video_url = models.URLField()
-    thumbnail_url = models.URLField(blank=True)
+    source_url = models.URLField(blank=True, max_length=2000)
+    video_url = models.URLField(max_length=2000)
+    thumbnail_url = models.URLField(blank=True, max_length=2000)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     duration_seconds = models.PositiveIntegerField(default=0)
@@ -547,7 +547,7 @@ class KnowledgeSource(models.Model):
         ("other", "Other"),
     ]
 
-    url = models.URLField(unique=True)
+    url = models.URLField(unique=True, max_length=2000)
     title = models.CharField(max_length=500)
     publisher = models.CharField(max_length=255, blank=True)
     source_type = models.CharField(max_length=32, choices=SOURCE_TYPES, default="other")
@@ -607,7 +607,7 @@ class VerificationRequest(models.Model):
     profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="verification_requests")
     input_type = models.CharField(max_length=20, choices=INPUT_TYPES)
     source_url = models.URLField(blank=True, max_length=2000)
-    source_file = models.FileField(upload_to="verification/submissions/", blank=True)
+    source_file = models.FileField(upload_to="verification/submissions/", blank=True, max_length=500)
     input_text = models.TextField(blank=True)
     content_title = models.CharField(max_length=500, blank=True)
     extracted_text = models.TextField(blank=True)

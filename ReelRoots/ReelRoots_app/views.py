@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from google import genai
 from google.genai import types
 from django.http import JsonResponse
-from django.db.utils import OperationalError, ProgrammingError
+from django.db.utils import DataError, OperationalError, ProgrammingError
 from django.views.decorators.http import require_POST
 from datetime import datetime
 from .models import Archive
@@ -555,7 +555,8 @@ def reels(request):
         if not feed_reels and feed_type != "following":
             try:
                 seed_provider_feed(feed_type)
-            except requests.RequestException:
+            except (DataError, OperationalError, ProgrammingError, requests.RequestException, ValueError):
+                # A provider item must never take down the discovery page.
                 pass
             feed_reels = get_ranked_reels(profile, feed_type=feed_type)
     except (OperationalError, ProgrammingError):
@@ -594,9 +595,9 @@ def reels(request):
             "confidence": float(reel.confidence_score or 0),
             "topics": [{"slug": topic.slug, "name": topic.name} for topic in reel.topics.all()],
             "context_json": json.dumps(context),
-            "likes": reel.likes.count(),
-            "comments": reel.comments.filter(is_hidden=False).count(),
-            "saves": reel.saves.count(),
+            "likes": reel.likes_count,
+            "comments": reel.comments_count,
+            "saves": reel.saves_count,
         })
 
     return render(request, "reels.html", {
