@@ -20,31 +20,31 @@
         .reel-poster { background: radial-gradient(circle at 30% 20%, #356b58, #111c18 55%, #050807); opacity: .86; }
         .reel-video { z-index: 1; }
         .reel-shade { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.50) 0%, transparent 28%, transparent 48%, rgba(0,0,0,.82) 100%); }
-        .reel-topbar { position: absolute; z-index: 5; inset: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: max(18px, env(safe-area-inset-top)) 18px 14px; }
-        .brand-mark { display: flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -.03em; text-decoration: none; color: white; }
-        .brand-mark span { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px; background: var(--rr-gold); color: #1d3228; font-size: 15px; }
-        .feed-tabs { position: absolute; z-index: 6; top: 64px; left: 16px; right: 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+        .reel-topbar { position: absolute; z-index: 7; inset: 0 0 auto; display: flex; justify-content: flex-end; padding: max(10px, env(safe-area-inset-top)) 14px 0; pointer-events: none; }
+        .reel-topbar-actions { display: flex; gap: 7px; pointer-events: auto; }
+        .feed-tabs { position: absolute; z-index: 6; top: max(10px, env(safe-area-inset-top)); left: 14px; right: 74px; display: flex; gap: 7px; overflow-x: auto; padding: 0 2px 5px; scrollbar-width: none; }
         .feed-tabs::-webkit-scrollbar { display: none; }
-        .feed-tab { border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 8px 13px; background: rgba(0,0,0,.25); color: rgba(255,255,255,.75); font-size: 11px; font-weight: 700; text-decoration: none; white-space: nowrap; backdrop-filter: blur(12px); }
+        .feed-tab { border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 7px 12px; background: rgba(0,0,0,.3); color: rgba(255,255,255,.78); font-size: 11px; font-weight: 700; text-decoration: none; white-space: nowrap; backdrop-filter: blur(12px); }
         .feed-tab.active { background: white; border-color: white; color: #18382c; }
         .reel-progress { position: absolute; z-index: 5; left: 16px; right: 16px; bottom: 130px; height: 3px; overflow: hidden; border-radius: 5px; background: rgba(255,255,255,.24); }
         .reel-progress span { display: block; height: 100%; width: 0; background: var(--rr-gold); transition: width .1s linear; }
-        .reel-copy { position: absolute; z-index: 4; left: 18px; right: 82px; bottom: 46px; }
+        .reel-copy { position: absolute; z-index: 4; left: 17px; right: 78px; bottom: calc(82px + env(safe-area-inset-bottom)); }
         .creator-line { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
         .creator-avatar { display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid rgba(255,255,255,.5); border-radius: 50%; background: rgba(31,94,74,.95); font-weight: 800; }
         .creator-name { font-size: 14px; font-weight: 800; }
         .follow-button { border: 1px solid rgba(255,255,255,.65); border-radius: 999px; padding: 5px 10px; background: rgba(0,0,0,.2); color: white; font-size: 11px; font-weight: 800; }
         .follow-button.following { border-color: var(--rr-gold); color: var(--rr-gold); }
-        .reel-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 0 0 6px; font-size: 18px; line-height: 1.25; font-weight: 800; }
-        .reel-caption { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; margin: 0 0 10px; color: rgba(255,255,255,.84); font-size: 12px; line-height: 1.45; }
+        .reel-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 0 0 5px; font-size: 17px; line-height: 1.23; font-weight: 800; }
+        .reel-caption { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 0 0 5px; color: rgba(255,255,255,.84); font-size: 12px; line-height: 1.42; }
+        .see-more { border: 0; padding: 0; background: transparent; color: rgba(255,255,255,.92); font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
         .topic-row { display: flex; gap: 6px; overflow: hidden; }
         .topic-pill { color: rgba(255,255,255,.9); font-size: 11px; font-weight: 700; }
-        .source-line { margin-top: 8px; color: rgba(255,255,255,.62); font-size: 10px; }
-        .reel-actions { position: absolute; z-index: 5; right: 15px; bottom: 148px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .reel-action { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: transparent; color: white; cursor: pointer; }
-        .reel-action .icon-wrap { display: grid; place-items: center; width: 43px; height: 43px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; background: rgba(0,0,0,.28); backdrop-filter: blur(10px); }
+        .source-line { max-width: 100%; margin-top: 7px; overflow: hidden; color: rgba(255,255,255,.62); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .reel-actions { position: absolute; z-index: 5; right: 12px; bottom: calc(126px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .reel-action { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; background: transparent; color: white; cursor: pointer; }
+        .reel-action .icon-wrap { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; background: rgba(0,0,0,.34); backdrop-filter: blur(10px); }
         .reel-action.active .icon-wrap { background: var(--rr-gold); color: #15251e; border-color: var(--rr-gold); }
-        .reel-action small { color: rgba(255,255,255,.8); font-size: 10px; font-weight: 800; }
+        .reel-action small { min-height: 10px; color: rgba(255,255,255,.86); font-size: 9px; font-weight: 800; line-height: 1; }
         .material-symbols-outlined { font-size: 21px; font-variation-settings: 'FILL' 0, 'wght' 600; }
         .reel-action.active .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 700; }
         .center-play { position: absolute; z-index: 4; top: 50%; left: 50%; display: grid; place-items: center; width: 65px; height: 65px; border: 1px solid rgba(255,255,255,.36); border-radius: 50%; background: rgba(0,0,0,.35); color: white; transform: translate(-50%, -50%); opacity: 0; transition: opacity .2s; pointer-events: none; }
@@ -55,7 +55,8 @@
         .reel-empty a { display: inline-block; margin-top: 12px; border-radius: 999px; padding: 12px 18px; background: var(--rr-gold); color: #15251e; font-size: 13px; font-weight: 800; text-decoration: none; }
         .sheet-backdrop { position: fixed; z-index: 70; inset: 0; display: flex; align-items: flex-end; background: rgba(0,0,0,.58); }
         .sheet-backdrop[hidden] { display: none; }
-        .sheet { width: 100%; max-height: 82dvh; overflow-y: auto; border-radius: 24px 24px 0 0; background: #f7faf8; color: #173229; padding: 12px 18px calc(24px + env(safe-area-inset-bottom)); box-shadow: 0 -14px 40px rgba(0,0,0,.28); }
+        .sheet { width: 100%; max-height: 82dvh; overflow-y: auto; border-radius: 24px 24px 0 0; background: #f7faf8; color: #173229; padding: 12px 18px calc(24px + env(safe-area-inset-bottom)); box-shadow: 0 -14px 40px rgba(0,0,0,.28); overscroll-behavior: contain; }
+        .full-reel-copy { white-space: pre-wrap; overflow-wrap: anywhere; }
         .sheet-handle { width: 42px; height: 4px; margin: 0 auto 16px; border-radius: 4px; background: #c4d1c9; }
         .sheet-head { display: flex; justify-content: space-between; gap: 15px; align-items: start; }
         .sheet h2 { margin: 0; font-size: 20px; line-height: 1.2; }
@@ -93,19 +94,30 @@
         .reel-shell > nav:last-of-type .material-symbols-outlined { font-size: 20px; }
         @media (max-width: 1023px) { .reel-shell > nav:last-of-type { display: block; } }
         @media (min-width: 1024px) { .reel-shell > nav:first-of-type { display: block; } }
+        @media (max-width: 430px) {
+            .reel-actions { right: 9px; gap: 6px; }
+            .reel-action .icon-wrap { width: 38px; height: 38px; }
+            .reel-action .material-symbols-outlined { font-size: 19px; }
+            .reel-copy { left: 14px; right: 68px; }
+        }
         @media (min-width: 900px) {
             .reel-shell { max-width: none; }
             .reel-feed { width: min(560px, 100%); margin: 0 auto; border-left: 1px solid rgba(255,255,255,.06); border-right: 1px solid rgba(255,255,255,.06); }
             .reel-topbar { width: min(560px, 100%); left: 50%; right: auto; transform: translateX(-50%); }
             .feed-tabs { width: min(560px, calc(100% - 32px)); left: 50%; right: auto; transform: translateX(-50%); }
         }
+        @media (min-width: 1024px) {
+            .reel-copy { bottom: 42px; }
+            .reel-progress { bottom: 24px; }
+            .reel-actions { bottom: 54px; }
+            .feed-tabs { right: 16px; }
+        }
     </style>
 </head>
 <body>
 <div class="reel-shell" data-authenticated="{{ is_authenticated|yesno:'true,false' }}">
     <div class="reel-topbar">
-        <a href="{% url 'home' %}" class="brand-mark"><span>R</span>ReelRoots</a>
-        <div style="display:flex; gap:8px">
+        <div class="reel-topbar-actions">
             <button class="reel-action" type="button" data-feed-search aria-label="Search reels"><span class="icon-wrap"><span class="material-symbols-outlined">search</span></span></button>
             <button class="reel-action" type="button" data-open-report aria-label="Report a reel"><span class="icon-wrap"><span class="material-symbols-outlined">flag</span></span></button>
         </div>
@@ -129,10 +141,10 @@
                 <button class="reel-action" type="button" data-interaction="like" aria-label="Like reel"><span class="icon-wrap"><span class="material-symbols-outlined">favorite</span></span><small data-count="likes">{{ reel.likes }}</small></button>
                 <button class="reel-action" type="button" data-open-comments aria-label="Open comments"><span class="icon-wrap"><span class="material-symbols-outlined">chat_bubble</span></span><small data-count="comments">{{ reel.comments }}</small></button>
                 <button class="reel-action" type="button" data-interaction="save" aria-label="Save reel"><span class="icon-wrap"><span class="material-symbols-outlined">bookmark</span></span><small data-count="saves">{{ reel.saves }}</small></button>
-                <button class="reel-action" type="button" data-share aria-label="Share reel"><span class="icon-wrap"><span class="material-symbols-outlined">share</span></span><small>Share</small></button>
-                <button class="reel-action" type="button" data-open-context aria-label="Open context"><span class="icon-wrap"><span class="material-symbols-outlined">menu_book</span></span><small>Context</small></button>
-                <button class="reel-action" type="button" data-source aria-label="Open source"><span class="icon-wrap"><span class="material-symbols-outlined">link</span></span><small>Source</small></button>
-                <button class="reel-action" type="button" data-report aria-label="Report reel"><span class="icon-wrap"><span class="material-symbols-outlined">flag</span></span><small>Report</small></button>
+                <button class="reel-action" type="button" data-share aria-label="Share reel"><span class="icon-wrap"><span class="material-symbols-outlined">share</span></span></button>
+                <button class="reel-action" type="button" data-open-context aria-label="Open context"><span class="icon-wrap"><span class="material-symbols-outlined">menu_book</span></span></button>
+                <button class="reel-action" type="button" data-source aria-label="Open source"><span class="icon-wrap"><span class="material-symbols-outlined">link</span></span></button>
+                <button class="reel-action" type="button" data-report aria-label="Report reel"><span class="icon-wrap"><span class="material-symbols-outlined">flag</span></span></button>
             </div>
 
             <div class="reel-copy">
@@ -143,10 +155,11 @@
                 </div>
                 <h1 class="reel-title">{{ reel.title }}</h1>
                 <p class="reel-caption">{{ reel.description }}</p>
+                <button class="see-more" type="button" data-see-more>See more</button>
                 <div class="topic-row">{% for topic in reel.topics %}<span class="topic-pill">#{{ topic.name }}</span>{% endfor %}</div>
                 <div class="source-line">{{ reel.source_attribution }} · {{ reel.verification_status }}</div>
             </div>
-            <button class="reel-action" type="button" data-mute style="position:absolute; z-index:5; right:16px; top:114px" aria-label="Mute or unmute"><span class="icon-wrap"><span class="material-symbols-outlined">volume_off</span></span></button>
+            <button class="reel-action" type="button" data-mute style="position:absolute; z-index:5; right:12px; top:calc(64px + env(safe-area-inset-top))" aria-label="Mute or unmute"><span class="icon-wrap"><span class="material-symbols-outlined">volume_off</span></span></button>
         </article>
         {% empty %}
         <section class="reel-empty"><div><div class="brand-mark" style="justify-content:center; font-size:20px"><span>R</span>ReelRoots</div><h1>Heritage stories are on the way.</h1><p>There are no published reels in this feed yet. Connect a permitted content provider or upload the first ReelRoots story.</p><a href="{% url 'upload' %}">Create a story</a></div></section>
@@ -157,7 +170,7 @@
 </div>
 
 <div class="sheet-backdrop" id="context-sheet" hidden>
-    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="context-title">
+        <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="context-title">
         <div class="sheet-handle"></div><div class="sheet-head"><div><h2 id="context-title">Reel context</h2><span class="status-chip" id="context-status"></span></div><button class="sheet-close" data-close-sheet aria-label="Close">×</button></div>
         <h3>What this reel is about</h3><p id="context-summary"></p>
         <h3>Key facts</h3><ul id="context-facts"></ul>
@@ -169,6 +182,16 @@
         <h3>Confidence indicator</h3><p id="context-confidence"></p><div class="confidence-track"><span id="context-confidence-bar"></span></div>
         <h3>Sources</h3><ul id="context-sources"></ul>
         <h3>External links</h3><ul id="context-external-links"></ul><a id="context-source-link" target="_blank" rel="noopener noreferrer">Open original source</a>
+    </section>
+</div>
+
+<div class="sheet-backdrop" id="caption-sheet" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="caption-title">
+        <div class="sheet-handle"></div><div class="sheet-head"><div><h2 id="caption-title">About this reel</h2><span class="status-chip" id="caption-creator"></span></div><button class="sheet-close" data-close-sheet aria-label="Close">×</button></div>
+        <h3 id="caption-reel-title"></h3>
+        <p class="full-reel-copy" id="caption-full-copy"></p>
+        <h3>Topics</h3><p class="full-reel-copy" id="caption-topics"></p>
+        <p class="source-line" id="caption-source"></p>
     </section>
 </div>
 
@@ -239,6 +262,14 @@
         }
     }
     function openSheet(id) { document.getElementById(id).hidden = false; }
+    function openCaption(card) {
+        document.getElementById('caption-creator').textContent = `@${card.querySelector('.creator-name')?.textContent.replace(/^@/, '').trim() || 'ReelRoots creator'}`;
+        document.getElementById('caption-reel-title').textContent = card.querySelector('.reel-title')?.textContent.trim() || 'ReelRoots story';
+        document.getElementById('caption-full-copy').textContent = card.querySelector('.reel-caption')?.textContent.trim() || 'No additional description is available yet.';
+        document.getElementById('caption-topics').textContent = [...card.querySelectorAll('.topic-pill')].map(topic => topic.textContent).join(' · ') || 'No topics added yet.';
+        document.getElementById('caption-source').textContent = card.querySelector('.source-line')?.textContent.trim() || '';
+        openSheet('caption-sheet');
+    }
     document.querySelectorAll('[data-close-sheet]').forEach(button => button.addEventListener('click', () => button.closest('.sheet-backdrop').hidden = true));
     document.querySelectorAll('.sheet-backdrop').forEach(sheet => sheet.addEventListener('click', event => { if (event.target === sheet) sheet.hidden = true; }));
 
@@ -262,6 +293,7 @@
         video.addEventListener('ended', () => interaction(card, 'completion', {value: 1}));
         card.querySelector('[data-mute]')?.addEventListener('click', () => { video.muted = !video.muted; card.querySelector('[data-mute] .material-symbols-outlined').textContent = video.muted ? 'volume_off' : 'volume_up'; });
         card.querySelector('[data-open-context]')?.addEventListener('click', () => openContext(card));
+        card.querySelector('[data-see-more]')?.addEventListener('click', () => openCaption(card));
         card.querySelector('[data-open-comments]')?.addEventListener('click', async () => { activeCard = card; activeReelId = card.dataset.reelId; openSheet('comments-sheet'); await loadComments(card); });
         card.querySelector('[data-share]')?.addEventListener('click', async () => { const shareUrl = `${window.location.origin}${window.location.pathname}?reel=${card.dataset.reelId}`; if (!authenticated) { if (navigator.share) await navigator.share({title: card.querySelector('.reel-title').textContent, url: shareUrl}); else { await navigator.clipboard?.writeText(shareUrl); toast('Reel link copied.'); } return; } const data = await interaction(card, 'share'); if (!data) return; if (navigator.share) await navigator.share({title: card.querySelector('.reel-title').textContent, url: data.share_url}); else { await navigator.clipboard?.writeText(data.share_url); toast('Reel link copied.'); } });
         card.querySelector('[data-source]')?.addEventListener('click', () => { if (card.dataset.sourceUrl) window.open(card.dataset.sourceUrl, '_blank', 'noopener,noreferrer'); else toast('Source details are not available yet.'); });
