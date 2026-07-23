@@ -129,7 +129,7 @@
         {% for reel in reels %}
         <article class="reel-card" data-reel-id="{{ reel.id }}" data-source-url="{{ reel.source_url }}" data-context="{{ reel.context_json|escape }}">
             {% if reel.thumbnail_url %}<div class="reel-poster" style="background-image:url('{{ reel.thumbnail_url|escapejs }}'); background-size:cover; background-position:center"></div>{% else %}<div class="reel-poster"></div>{% endif %}
-            <video class="reel-video" data-reel-video preload="metadata" playsinline muted {% if reel.thumbnail_url %}poster="{{ reel.thumbnail_url }}"{% endif %}>
+            <video class="reel-video" data-reel-video preload="metadata" playsinline {% if reel.thumbnail_url %}poster="{{ reel.thumbnail_url }}"{% endif %}>
                 <source src="{{ reel.video_url }}">
             </video>
             <div class="reel-shade"></div>
@@ -280,10 +280,16 @@
         return data;
     }
 
+    function playReelVideo(video, card) {
+        video.muted = false;
+        const playAttempt = video.play();
+        playAttempt?.catch(() => card.classList.add('paused'));
+    }
+
     cards.forEach(card => {
         const video = card.querySelector('[data-reel-video]');
-        card.querySelector('[data-toggle-play]')?.addEventListener('click', () => video.paused ? video.play() : video.pause());
-        video.addEventListener('click', () => video.paused ? video.play() : video.pause());
+        card.querySelector('[data-toggle-play]')?.addEventListener('click', () => video.paused ? playReelVideo(video, card) : video.pause());
+        video.addEventListener('click', () => video.paused ? playReelVideo(video, card) : video.pause());
         video.addEventListener('play', () => card.classList.remove('paused'));
         video.addEventListener('pause', () => card.classList.add('paused'));
         video.addEventListener('timeupdate', () => { if (video.duration) card.querySelector('[data-progress]').style.width = `${(video.currentTime / video.duration) * 100}%`; });
@@ -304,7 +310,7 @@
     document.querySelector('[data-feed-search]')?.addEventListener('click', () => toast('Search is coming to the discovery layer.'));
 
     if (cards.length) {
-        const observer = new IntersectionObserver(entries => entries.forEach(entry => { const video = entry.target.querySelector('[data-reel-video]'); if (entry.isIntersecting && entry.intersectionRatio > .65) { activeCard = entry.target; activeReelId = entry.target.dataset.reelId; cards.forEach(other => { if (other !== entry.target) other.querySelector('[data-reel-video]')?.pause(); }); video.play().catch(() => entry.target.classList.add('paused')); if (!entry.target.dataset.watched) { entry.target.dataset.watched = 'true'; interaction(entry.target, 'watch'); } } else video.pause(); }), {threshold: [.25, .65, .9]});
+        const observer = new IntersectionObserver(entries => entries.forEach(entry => { const video = entry.target.querySelector('[data-reel-video]'); if (entry.isIntersecting && entry.intersectionRatio > .65) { activeCard = entry.target; activeReelId = entry.target.dataset.reelId; cards.forEach(other => { if (other !== entry.target) other.querySelector('[data-reel-video]')?.pause(); }); playReelVideo(video, entry.target); if (!entry.target.dataset.watched) { entry.target.dataset.watched = 'true'; interaction(entry.target, 'watch'); } } else video.pause(); }), {threshold: [.25, .65, .9]});
         cards.forEach(card => observer.observe(card));
     }
 })();
