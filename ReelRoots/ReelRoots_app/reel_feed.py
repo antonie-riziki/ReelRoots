@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from django.db.models import Count, Sum
+from django.db.models import Count, Q, Sum
 from django.utils import timezone
 
 from .models import Reel
@@ -48,7 +48,8 @@ def _score(reel, profile, interests):
     score += Decimal(str(reel.likes_count or 0)) * Decimal("0.15")
     score += Decimal(str(reel.saves_count or 0)) * Decimal("0.35")
     score += Decimal("2") if reel.verification_status == "verified" else Decimal("0")
-    for slug in reel.topics.values_list("slug", flat=True):
+    for topic in reel.topics.all():
+        slug = topic.slug
         score += interests.get(slug, Decimal("0"))
     regions = _preference_values(profile, "region")
     countries = _preference_values(profile, "country")
@@ -63,6 +64,7 @@ def get_ranked_reels(profile=None, feed_type="for-you", limit=30):
     ).annotate(
         likes_count=Count("likes", distinct=True),
         saves_count=Count("saves", distinct=True),
+        comments_count=Count("comments", filter=Q(comments__is_hidden=False), distinct=True),
     ).prefetch_related("topics")
 
     category_slug = CATEGORY_SLUGS.get(feed_type)

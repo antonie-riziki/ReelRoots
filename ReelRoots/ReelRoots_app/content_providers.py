@@ -3,14 +3,19 @@
 from dataclasses import dataclass
 from decimal import Decimal
 import html
+import logging
 import os
 import re
 from urllib.parse import quote
 
 import requests
 from django.db import transaction
+from django.db.utils import DataError, IntegrityError
 
 from .models import Reel, Topic
+
+
+logger = logging.getLogger(__name__)
 
 
 HERITAGE_TOPIC_TERMS = {
@@ -176,33 +181,37 @@ def ingest_external_items(items):
     topic_map = {topic.slug: topic for topic in Topic.objects.filter(is_active=True)}
     reels = []
     for item in items:
-        reel, _ = Reel.objects.update_or_create(
-            source_platform=item.source_platform,
-            external_id=item.external_id,
-            defaults={
-                "creator_name": item.creator_name,
-                "original_creator_name": item.original_creator_name,
-                "source_url": item.source_url,
-                "video_url": item.video_url,
-                "thumbnail_url": item.thumbnail_url,
-                "title": item.title,
-                "description": item.description,
-                "duration_seconds": item.duration_seconds,
-                "source_attribution": item.source_attribution,
-                "license_status": item.license_status,
-                "content_type": item.content_type,
-                "heritage_relevance": item.heritage_relevance,
-                "geographic_relevance": item.geographic_relevance,
-                "verification_status": "unreviewed",
-                "confidence_score": Decimal("0.2"),
-                "quality_score": Decimal("0.65"),
-                "context_summary": item.context_summary,
-                "external_references": [{"label": label, "url": url} for label, url in item.external_references],
-                "status": "published",
-            },
-        )
-        reel.topics.set([topic_map[slug] for slug in item.topic_slugs if slug in topic_map])
-        reels.append(reel)
+        try:
+            with transaction.atomic():
+                reel, _ = Reel.objects.update_or_create(
+                    source_platform=item.source_platform,
+                    external_id=item.external_id,
+                    defaults={
+                        "creator_name": item.creator_name[:150],
+                        "original_creator_name": item.original_creator_name[:150],
+                        "source_url": item.source_url,
+                        "video_url": item.video_url,
+                        "thumbnail_url": item.thumbnail_url,
+                        "title": item.title[:255],
+                        "description": item.description,
+                        "duration_seconds": item.duration_seconds,
+                        "source_attribution": item.source_attribution[:255],
+                        "license_status": item.license_status,
+                        "content_type": item.content_type,
+                        "heritage_relevance": item.heritage_relevance,
+                        "geographic_relevance": item.geographic_relevance[:150],
+                        "verification_status": "unreviewed",
+                        "confidence_score": Decimal("0.2"),
+                        "quality_score": Decimal("0.65"),
+                        "context_summary": item.context_summary,
+                        "external_references": [{"label": label, "url": url} for label, url in item.external_references],
+                        "status": "published",
+                    },
+                )
+                reel.topics.set([topic_map[slug] for slug in item.topic_slugs if slug in topic_map])
+                reels.append(reel)
+        except (DataError, IntegrityError, ValueError):
+            logger.exception("Skipping invalid external reel item", extra={"provider": item.source_platform, "external_id": item.external_id})
     return reels
 
 

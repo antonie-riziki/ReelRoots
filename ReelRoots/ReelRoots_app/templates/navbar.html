@@ -1,16 +1,136 @@
 {% load static %}
 <!-- Desktop navigation keeps the full app usable beyond phone-sized screens. -->
 <style>
+    .site-nav-desktop,
+    .site-nav-mobile { box-sizing: border-box; }
+
+    .site-nav-desktop {
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 50;
+        display: none;
+        min-height: 72px;
+        padding: 10px clamp(16px, 4vw, 32px);
+        border-bottom: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, .96);
+        box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
+    }
+
+    .site-nav-desktop-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        width: min(100%, 1152px);
+        margin: 0 auto;
+    }
+
+    .site-nav-brand,
+    .site-nav-mobile a {
+        text-decoration: none;
+    }
+
+    .site-nav-brand img {
+        display: block;
+        width: 176px;
+        height: 52px;
+        max-width: 100%;
+        object-fit: contain;
+    }
+
+    .site-nav-desktop-links {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: clamp(12px, 2vw, 28px);
+        color: #475569;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .site-nav-desktop-links a,
+    .site-nav-desktop-links button { color: inherit; text-decoration: none; }
+    .site-nav-desktop-links a:hover,
+    .site-nav-desktop-links button:hover { color: #1f5e4a; }
+    .site-nav-desktop-links form { display: inline; margin: 0; }
+    .site-nav-desktop-links button { border: 0; background: transparent; cursor: pointer; font: inherit; padding: 0; }
+
+    .site-nav-mobile {
+        position: fixed;
+        inset: auto 0 0;
+        z-index: 50;
+        display: block;
+        padding: 8px 16px max(18px, env(safe-area-inset-bottom));
+        border-top: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, .97);
+        box-shadow: 0 -4px 18px rgba(15, 23, 42, .06);
+    }
+
+    .site-nav-mobile-inner {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 8px;
+        width: min(100%, 480px);
+        margin: 0 auto;
+    }
+
+    .site-nav-mobile a {
+        display: flex;
+        flex: 1 1 0;
+        min-width: 0;
+        align-items: center;
+        flex-direction: column;
+        gap: 3px;
+        color: #94a3b8;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .site-nav-mobile img {
+        display: block;
+        width: 36px;
+        height: 36px;
+        max-width: 36px;
+        object-fit: contain;
+        border-radius: 7px;
+    }
+
+    .site-nav-mobile .site-nav-upload-icon {
+        display: grid;
+        width: 48px;
+        height: 40px;
+        margin-top: -22px;
+        place-items: center;
+        border-radius: 12px;
+        background: #1f5e4a;
+        color: #fff;
+        box-shadow: 0 8px 18px rgba(31, 94, 74, .28);
+    }
+
+    .site-nav-mobile .site-nav-upload-label { margin-top: 2px; }
+
     @media (min-width: 1024px) {
-        body:has(> nav) { padding-top: 57px; }
+        .site-nav-desktop { display: block; }
+        .site-nav-mobile { display: none; }
+        body:has(> .site-nav-desktop) { padding-top: 72px; }
+    }
+
+    @media (max-width: 1023px) {
+        .site-nav-desktop { display: none; }
+        .site-nav-mobile { display: block; }
+        body:has(> .site-nav-mobile) { padding-bottom: 84px; overflow-x: hidden; }
     }
 </style>
-<nav class="fixed inset-x-0 top-0 z-50 hidden border-b border-slate-200 bg-white/95 px-8 py-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/95 lg:block">
-    <div class="mx-auto flex max-w-6xl items-center justify-between">
-        <a class="flex items-center gap-2" href="/home">
-            <img src="{% static 'img/archives/media/logo2.png' %}" alt="ReelRoots" class="h-14 w-auto object-contain" />
+<nav class="site-nav-desktop" aria-label="Primary navigation">
+    <div class="site-nav-desktop-inner">
+        <a class="site-nav-brand" href="/home">
+            <img src="{% static 'img/archives/media/logo2.png' %}" alt="ReelRoots" />
         </a>
-        <div class="flex items-center gap-7 text-sm font-semibold text-slate-600 dark:text-slate-300">
+        <div class="site-nav-desktop-links">
             <a class="hover:text-primary" href="/home">Home</a>
             <a class="hover:text-primary" href="/explore">Discover</a>
             <a class="hover:text-primary" href="/reels">Reels</a>
@@ -27,31 +147,27 @@
 </nav>
 
 <!-- Bottom Navigation Bar -->
-<nav
-    class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 px-6 py-2 pb-6 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 dark:bg-slate-950/95 lg:hidden">
-    <div class="flex items-center justify-between max-w-md mx-auto">
-        <a class="flex flex-col items-center gap-1 text-primary" href="/home">
-            <img src="{% static 'img/archives/media/logo2.png' %}" alt="ReelRoots home" class="h-9 w-9 rounded-md object-contain" />
-            <span class="text-[10px] font-bold">Home</span>
+<nav class="site-nav-mobile" aria-label="Mobile navigation">
+    <div class="site-nav-mobile-inner">
+        <a href="/home">
+            <img src="{% static 'img/archives/media/logo2.png' %}" alt="ReelRoots home" />
+            <span>Home</span>
         </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="/explore">
+        <a href="/explore">
             <span class="material-symbols-outlined">explore</span>
-            <span class="text-[10px] font-medium">Discover</span>
+            <span>Discover</span>
         </a>
-        <a class="flex flex-col items-center gap-1" href="/upload">
-            <div
-                class="w-12 h-10 bg-primary rounded-xl flex items-center justify-center -mt-6 shadow-lg shadow-primary/30 text-white">
-                <span class="material-symbols-outlined">add</span>
-            </div>
-            <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 mt-1">Upload</span>
+        <a href="/upload">
+            <span class="site-nav-upload-icon material-symbols-outlined">add</span>
+            <span class="site-nav-upload-label">Upload</span>
         </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="/reels">
+        <a href="/reels">
             <span class="material-symbols-outlined">videocam</span>
-            <span class="text-[10px] font-medium">Reels</span>
+            <span>Reels</span>
         </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="/user-profile">
+        <a href="/user-profile">
             <span class="material-symbols-outlined">account_circle</span>
-            <span class="text-[10px] font-medium">Profile</span>
+            <span>Profile</span>
         </a>
     </div>
 </nav>

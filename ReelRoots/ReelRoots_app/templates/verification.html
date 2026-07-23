@@ -9,18 +9,20 @@
     <style>
         :root { --rr-green: #1f5e4a; --rr-gold: #d4af37; }
         body { margin: 0; background: #f4f8f5; color: #173229; font-family: system-ui, sans-serif; }
-        .verify-wrap { max-width: 900px; margin: 0 auto; padding: 88px 18px 100px; }
+        * { box-sizing: border-box; }
+        .verify-wrap { width: min(100% - 2rem, 900px); margin: 0 auto; padding: 88px 0 110px; }
         .verify-hero { margin-bottom: 22px; }
         .verify-hero h1 { margin: 0 0 8px; font-size: clamp(28px, 6vw, 46px); letter-spacing: -.04em; }
         .verify-hero p { max-width: 650px; margin: 0; color: #5d6e65; line-height: 1.6; }
-        .verify-card { border: 1px solid #d8e5dc; border-radius: 22px; padding: 20px; background: white; box-shadow: 0 12px 32px rgba(23,50,41,.07); }
+        .verify-card { border: 1px solid #d8e5dc; border-radius: 22px; padding: clamp(16px, 3vw, 26px); background: white; box-shadow: 0 12px 32px rgba(23,50,41,.07); }
         .verify-form { display: grid; gap: 13px; }
+        .verify-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
         .verify-form label { display: grid; gap: 6px; color: #4b6257; font-size: 12px; font-weight: 800; }
         .verify-form input, .verify-form textarea, .verify-form select { width: 100%; border: 1px solid #cbdad0; border-radius: 12px; padding: 12px; box-sizing: border-box; background: #fbfdfb; color: #173229; font: inherit; }
         .verify-form textarea { min-height: 150px; resize: vertical; }
         .verify-form [data-field] { display: none; }
         .verify-form [data-field].active { display: grid; }
-        .verify-submit { justify-self: start; border: 0; border-radius: 999px; padding: 12px 20px; background: var(--rr-green); color: white; font-weight: 800; cursor: pointer; }
+        .verify-submit { justify-self: start; min-height: 48px; border: 0; border-radius: 999px; padding: 12px 20px; background: var(--rr-green); color: white; font-weight: 800; cursor: pointer; }
         .verify-submit:disabled { opacity: .55; cursor: wait; }
         .status-panel { display: none; margin-top: 20px; }
         .status-panel.active { display: block; }
@@ -44,6 +46,7 @@
         .claim-card a { color: var(--rr-green); font-weight: 800; }
         .error { display: none; margin-top: 12px; color: #9b332d; font-size: 13px; font-weight: 700; }
         .error.active { display: block; }
+        @media (max-width: 640px) { .verify-wrap { width: min(100% - 1.25rem, 900px); padding-top: 76px; } .verify-grid { grid-template-columns: 1fr; } .verify-submit { width: 100%; } .result h2 { font-size: 22px; } }
     </style>
 </head>
 <body>
@@ -56,15 +59,17 @@
         <section class="verify-card">
             <form class="verify-form" id="verification-form" enctype="multipart/form-data">
                 {% csrf_token %}
-                <label>What are you submitting?
-                    <select name="input_type" id="input-type">
-                        <option value="text">Text</option><option value="url">URL</option><option value="article">Article</option><option value="webpage">Webpage</option><option value="pdf">PDF</option><option value="video">Video URL</option><option value="image">Image</option>
-                    </select>
-                </label>
+                <div class="verify-grid">
+                    <label>What are you submitting?
+                        <select name="input_type" id="input-type">
+                            <option value="text">Text</option><option value="url">URL</option><option value="article">Article</option><option value="webpage">Webpage</option><option value="pdf">PDF</option><option value="video">Video URL</option><option value="image">Image</option>
+                        </select>
+                    </label>
+                    <label>Optional title <input name="content_title" type="text" maxlength="500" placeholder="Give this submission a helpful title"></label>
+                </div>
                 <label data-field="url">URL <input name="source_url" type="url" placeholder="https://example.org/article"></label>
                 <label data-field="text" class="active">Text or claim <textarea name="input_text" placeholder="Paste the claim or passage you want ReelRoots to examine."></textarea></label>
                 <label data-field="file">File <input name="source_file" type="file" accept=".pdf,.txt,.md,.png,.jpg,.jpeg,.webp"></label>
-                <label>Optional title <input name="content_title" type="text" maxlength="500" placeholder="Give this submission a helpful title"></label>
                 <button class="verify-submit" type="submit">Start verification</button>
                 <div class="error" id="form-error"></div>
             </form>

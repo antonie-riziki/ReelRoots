@@ -5,14 +5,17 @@ from datetime import timedelta
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+from django.db import DatabaseError
 from django.views.decorators.http import require_GET, require_POST
 
 from .decorators import api_login_required, reelroots_login_required
 from .models import VerificationRequest, VerificationResult
 from .verification_jobs import enqueue_verification
+import logging
 
 
 MAX_VERIFICATION_REQUESTS_PER_HOUR = 10
+logger = logging.getLogger(__name__)
 
 
 @reelroots_login_required
@@ -111,14 +114,18 @@ def create_verification_request(request):
         return JsonResponse({"error": "Submit a URL, file, or text to begin verification."}, status=400)
     if source_file and source_file.size > 8 * 1024 * 1024:
         return JsonResponse({"error": "Uploaded files must be smaller than 8 MB."}, status=400)
-    verification_request = VerificationRequest.objects.create(
-        profile=request.reelroots_profile,
-        input_type=input_type,
-        source_url=source_url,
-        source_file=source_file,
-        input_text=input_text,
-        content_title=str(request.POST.get("content_title", ""))[:500],
-    )
+    try:
+        verification_request = VerificationRequest.objects.create(
+            profile=request.reelroots_profile,
+            input_type=input_type,
+            source_url=source_url,
+            source_file=source_file,
+            input_text=input_text,
+            content_title=str(request.POST.get("content_title", ""))[:500],
+        )
+    except DatabaseError:
+        logger.exception("Verification request could not be stored")
+        return JsonResponse({"error": "We could not save this verification request. Please try again."}, status=503)
     enqueue_verification(verification_request.id)
     return JsonResponse(_request_payload(verification_request, include_result=False), status=202)
 
